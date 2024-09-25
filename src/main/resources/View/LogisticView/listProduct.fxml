@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="440.0" prefWidth="785.0" styleClass="popView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.Purchase.PurchaseController">
+   <children>
+      <VBox prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <CustomTextField fx:id="txtSearchFastProduct" layoutX="229.0" layoutY="13.0" prefHeight="25.0" prefWidth="340.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font></CustomTextField>
+                  <Label layoutX="14.0" layoutY="15.0" text="Busqueda Rapida : " textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font></Label>
+                  <Button fx:id="btnAddProduct" layoutX="594.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-radius: 10; -fx-background-color: transparent;">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../Images/Icons/categories.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="btnAddCategories" layoutX="635.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-radius: 10; -fx-background-color: transparent;">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../Images/Icons/iconCategories.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+            </AnchorPane>
+            <TableView fx:id="listSearchProduct" editable="true" prefHeight="525.0" prefWidth="693.0" stylesheets="@../../CSS/tableView.css">
+               <columns>
+                  <TableColumn fx:id="colIdProductPurchase" maxWidth="35.0" minWidth="35.0" prefWidth="35.0" style="-fx-alignment: center;" text="Cod" />
+                  <TableColumn fx:id="colBrandPurchase" maxWidth="150.0" minWidth="100.0" prefWidth="100.0" style="-fx-alignment: center;" text="Marca" />
+                  <TableColumn editable="false" maxWidth="300.0" minWidth="200.0" prefWidth="200.0" sortable="false" text="Categoria">
+                     <columns>
+                        <TableColumn fx:id="colCategory" maxWidth="150.0" minWidth="100.0" prefWidth="100.0" style="-fx-alignment: center;" text="Principal" />
+                        <TableColumn fx:id="colSubcategory" maxWidth="150.0" minWidth="100.0" prefWidth="100.0" style="-fx-alignment: center;" text="Sub" />
+                     </columns>
+                  </TableColumn>
+                  <TableColumn fx:id="colDescriptionPurchase" editable="false" maxWidth="300.0" minWidth="250.0" prefWidth="250.0" sortable="false" style="-fx-alignment: center;" text="Descripcion" />
+                  <TableColumn fx:id="colUnit" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" style="-fx-alignment: center;" text="Un" />
+                  <TableColumn fx:id="colStatus" maxWidth="106.0" minWidth="106.0" prefWidth="106.0" style="-fx-alignment: center;" text="Estado" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+               </VBox.margin>
+            </TableView>
+         </children>
+      </VBox>
+   </children>
+</StackPane>

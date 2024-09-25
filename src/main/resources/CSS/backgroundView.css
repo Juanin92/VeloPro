@@ -1,0 +1,6 @@
+.principalView {
+    -fx-background-color: linear-gradient(to right, #3A6073,#2c4454,#16222A,#16222A);
+}
+.popView {
+    -fx-background-color: linear-gradient(to right, #2c4454,#16222A);
+}

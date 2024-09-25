@@ -1,0 +1,27 @@
+.custom-button {
+    -fx-border-color: transparent transparent white transparent;
+    -fx-border-radius: 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+
+.custom-button-report {
+    -fx-border-color: transparent transparent;
+    -fx-border-radius: 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+
+.custom-button-selected, .custom-button-report-selected {
+    -fx-border-color: white;
+    -fx-border-radius: 10;
+    -fx-background-color: transparent;
+    -fx-text-fill: white !important;
+}
+
+.custom-button:hover, .custom-button-report:hover {
+    -fx-border-color: #ff0066;
+    -fx-border-radius: 10;
+    -fx-background-color: transparent;
+    -fx-text-fill: white !important;
+}

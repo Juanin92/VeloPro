@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.effect.Reflection?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="364.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.User.LoginController">
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="44.0" layoutY="23.0" style="-fx-text-fill: white;" text="bienvenidos">
+         <font>
+            <Font name="System Bold" size="48.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="82.0" layoutY="319.0" style="-fx-text-fill: white;" text="Iniciando Software">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="219.0" fitWidth="150.0" layoutX="107.0" layoutY="114.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/logo.jpeg" />
+         </image>
+         <effect>
+            <Reflection bottomOpacity="0.07" fraction="0.29" topOpacity="0.41" />
+         </effect>
+      </ImageView>
+      <ProgressBar fx:id="progressBar" layoutX="81.0" layoutY="354.0" prefWidth="200.0" progress="0.0" />
+   </children>
+</AnchorPane>

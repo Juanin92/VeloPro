@@ -1,0 +1,53 @@
+.chart-pie-label-line {
+    -fx-stroke: #8b4513;
+    -fx-fill: #8b4513;
+}
+.chart-pie-label {
+    -fx-fill: #8b4513;
+    -fx-font-size: 1em;
+}
+.chart-legend {
+   -fx-background-color:  #fcfce8;
+   -fx-stroke: #daa520;
+}
+.chart-bar{
+    -fx-bar-fill: #ffff00;
+    -fx-bar-stroke: black;
+    -fx-bar-stroke-width: 2px;
+}
+.chart-title {
+    -fx-text-fill: #ffffff;
+}
+.axis-label {
+    -fx-text-fill: #ffffff;
+}
+.default-color0.chart-pie { -fx-pie-color: #ff6347; } /* Tomato */
+.default-color1.chart-pie { -fx-pie-color: #40e0d0; } /* Turquoise */
+.default-color2.chart-pie { -fx-pie-color: #8a2be2; } /* BlueViolet */
+.default-color3.chart-pie { -fx-pie-color: #ff1493; } /* DeepPink */
+.default-color4.chart-pie { -fx-pie-color: #ff4500; } /* OrangeRed */
+.default-color5.chart-pie { -fx-pie-color: #2e8b57; } /* SeaGreen */
+.default-color6.chart-pie { -fx-pie-color: #d2691e; } /* Chocolate */
+.default-color7.chart-pie { -fx-pie-color: #1e90ff; } /* DodgerBlue */
+.default-color8.chart-pie { -fx-pie-color: #da70d6; } /* Orchid */
+.default-color9.chart-pie { -fx-pie-color: #ff8c00; } /* DarkOrange */
+.default-color10.chart-pie { -fx-pie-color: #b22222; } /* FireBrick */
+.default-color11.chart-pie { -fx-pie-color: #32cd32; } /* LimeGreen */
+.default-color12.chart-pie { -fx-pie-color: #8b0000; } /* DarkRed */
+.default-color13.chart-pie { -fx-pie-color: #00ced1; } /* DarkTurquoise */
+.default-color14.chart-pie { -fx-pie-color: #ff69b4; } /* HotPink */
+.default-color15.chart-pie { -fx-pie-color: #4169e1; } /* RoyalBlue */
+.default-color16.chart-pie { -fx-pie-color: #f0e68c; } /* Khaki */
+.default-color17.chart-pie { -fx-pie-color: #d3d3d3; } /* LightGray */
+.default-color18.chart-pie { -fx-pie-color: #ffb6c1; } /* LightPink */
+.default-color19.chart-pie { -fx-pie-color: #00fa9a; } /* MediumSpringGreen */
+.default-color20.chart-pie { -fx-pie-color: #adff2f; } /* GreenYellow */
+.default-color21.chart-pie { -fx-pie-color: #b0c4de; } /* LightSteelBlue */
+.default-color22.chart-pie { -fx-pie-color: #ffdead; } /* NavajoWhite */
+.default-color23.chart-pie { -fx-pie-color: #c71585; } /* MediumVioletRed */
+.default-color24.chart-pie { -fx-pie-color: #e9967a; } /* DarkSalmon */
+.default-color25.chart-pie { -fx-pie-color: #f4a460; } /* SandyBrown */
+.default-color26.chart-pie { -fx-pie-color: #90ee90; } /* LightGreen */
+.default-color27.chart-pie { -fx-pie-color: #f08080; } /* LightCoral */
+.default-color28.chart-pie { -fx-pie-color: #d8bfd8; } /* Thistle */
+.default-color29.chart-pie { -fx-pie-color: #4682b4; } /* SteelBlue */

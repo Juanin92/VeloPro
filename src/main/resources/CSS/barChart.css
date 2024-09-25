@@ -1,0 +1,11 @@
+.my-bar-chart .default-color0 {
+    -fx-bar-fill: #00ff99;
+    -fx-bar-stroke: black;
+    -fx-bar-stroke-width: 2px;
+}
+.chart-title {
+    -fx-text-fill: #ffffff;
+}
+.axis-label {
+    -fx-text-fill: #ffffff;
+}

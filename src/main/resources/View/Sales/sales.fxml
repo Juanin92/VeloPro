@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.effect.Reflection?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
+
+<StackPane fx:id="saleView" prefHeight="650.0" prefWidth="1123.0" styleClass="principalView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.Sale.SaleController">
+   <children>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <AnchorPane prefHeight="83.0" prefWidth="1123.0">
+               <children>
+                  <Button fx:id="btnProduct" layoutX="24.0" layoutY="15.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-color: transparent;" text="Producto" textFill="WHITE">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <effect>
+                        <Reflection />
+                     </effect>
+                     <graphic>
+                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../Images/Icons/iconFind.png" />
+                           </image>
+                           <effect>
+                              <Reflection />
+                           </effect>
+                        </ImageView>
+                     </graphic></Button>
+                  <Label fx:id="lblUser" layoutX="280.0" prefHeight="83.0" prefWidth="211.0" text="Nombre Usuario" textAlignment="CENTER" textFill="#fdfcfc" wrapText="true">
+                     <font>
+                        <Font size="24.0" />
+                     </font></Label>
+                  <Label fx:id="lblCostumer" alignment="CENTER" contentDisplay="CENTER" layoutX="829.0" layoutY="3.0" prefHeight="71.0" prefWidth="253.0" text="Nombre Cliente" textAlignment="CENTER" textFill="#fdfcfc" visible="false" wrapText="true">
+                     <font>
+                        <Font size="24.0" />
+                     </font></Label>
+                  <Label fx:id="lblDate" layoutX="584.0" layoutY="6.0" text="Fecha" textFill="#fdfcfc">
+                     <font>
+                        <Font size="24.0" />
+                     </font></Label>
+                  <Label fx:id="lblNumberSale" layoutX="604.0" layoutY="36.0" text="Numero Ventas" textFill="#fdfcfc">
+                     <font>
+                        <Font size="24.0" />
+                     </font></Label>
+                  <ComboBox fx:id="cbCostumer" layoutX="839.0" layoutY="21.0" prefHeight="39.0" prefWidth="231.0" promptText="Seleccione Cliente" visible="false" />
+               </children>
+            </AnchorPane>
+            <TableView fx:id="saleTable" prefHeight="298.0" prefWidth="1120.0" stylesheets="@../../CSS/tableView.css">
+               <columns>
+                  <TableColumn fx:id="colProduct" editable="false" prefWidth="396.0000101327896" sortable="false" style="-fx-alignment: center;" text="Producto" />
+                  <TableColumn fx:id="colCategory" editable="false" prefWidth="139.99996948242188" sortable="false" style="-fx-alignment: center;" text="Categoria" />
+                  <TableColumn fx:id="colUnit" editable="false" prefWidth="74.0" sortable="false" style="-fx-alignment: center;" text="Kg" />
+                  <TableColumn fx:id="colPrice" editable="false" prefWidth="164.66665649414062" sortable="false" style="-fx-alignment: center;" text="Precio" />
+                  <TableColumn fx:id="colQuantity" editable="false" prefWidth="151.33331298828125" sortable="false" style="-fx-alignment: center;" text="Cantidad" />
+                  <TableColumn fx:id="colTotal" editable="false" prefWidth="115.33331298828125" sortable="false" style="-fx-alignment: center;" text="Total" />
+                  <TableColumn fx:id="colAction" editable="false" prefWidth="63.333251953125" sortable="false" style="-fx-alignment: center;" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            <HBox alignment="CENTER" prefHeight="241.0" prefWidth="1123.0">
+               <children>
+                  <AnchorPane fx:id="saleTypePane" disable="true" prefHeight="241.0" prefWidth="635.0">
+                     <children>
+                        <Button fx:id="btnCash" layoutX="22.0" layoutY="90.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-radius: 10; -fx-background-color: transparent;" stylesheets="@../../CSS/button.css" text="Efectivo" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../Images/Icons/iconCash.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnCredit" layoutX="24.0" layoutY="163.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-radius: 10; -fx-background-color: transparent;" stylesheets="@../../CSS/button.css" text="Credito" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../Images/Icons/iconCreditcard.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnDebit" layoutX="198.0" layoutY="163.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-radius: 10; -fx-background-color: transparent;" stylesheets="@../../CSS/button.css" text="Debito" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../Images/Icons/iconPos.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnMixed" layoutX="376.0" layoutY="165.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-radius: 10; -fx-background-color: transparent;" stylesheets="@../../CSS/button.css" text="Mixto" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../Images/Icons/iconMixed.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Label layoutX="185.0" layoutY="31.0" text="Tipo de Venta" textAlignment="CENTER" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="btnLoan" layoutX="395.0" layoutY="90.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-radius: 10; -fx-background-color: transparent;" stylesheets="@../../CSS/button.css" text="Prestamo" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../Images/Icons/iconLoan.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnTransfer" layoutX="182.0" layoutY="90.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-radius: 10; -fx-background-color: transparent;" stylesheets="@../../CSS/button.css" text="Transferencia" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../Images/Icons/iconsBanktransfer.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="241.0" prefWidth="661.0">
+                     <children>
+                        <AnchorPane fx:id="paneLabels" layoutX="267.0" layoutY="47.0" prefHeight="118.0" prefWidth="295.0">
+                           <children>
+                              <Label fx:id="lblDiscountFixed" layoutX="81.0" text="Descuento :" textFill="WHITE" visible="false">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="lblDiscount" layoutX="208.0" layoutY="-1.0" textFill="WHITE">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="lblTypePay" layoutX="98.0" layoutY="27.0" text="Efectivo :" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="3.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="lblChangeFixed" layoutX="115.0" layoutY="55.0" text="Vuelto :" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="lblCash" layoutX="208.0" layoutY="25.0" textFill="WHITE">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="lblChange" layoutX="208.0" layoutY="53.0" textFill="WHITE">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="lblRemainFixed" layoutX="82.0" text="Diferencia :" textFill="WHITE" visible="false">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="lblLoanFixed" layoutX="84.0" layoutY="27.0" text="Prestamo :" textFill="WHITE" visible="false">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="3.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                        <Button fx:id="btnPay" disable="true" layoutX="291.0" layoutY="168.0" mnemonicParsing="false" onAction="#addSale" style="-fx-background-color: green; -fx-text-fill: white; -fx-background-radius: 10;" text="Pagar">
+                           <font>
+                              <Font size="28.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <effect>
+                              <Reflection />
+                           </effect>
+                        </Button>
+                        <Button fx:id="btnCancelPay" layoutX="415.0" layoutY="168.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-color: red; -fx-text-fill: white; -fx-background-radius: 10;" text="Cancelar">
+                           <font>
+                              <Font size="28.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <effect>
+                              <Reflection />
+                           </effect>
+                        </Button>
+                        <AnchorPane fx:id="paneDiscount" layoutX="43.0" layoutY="9.0" prefHeight="104.0" prefWidth="200.0" visible="false">
+                           <children>
+                              <CheckBox fx:id="cbDiscount" layoutX="44.0" layoutY="14.0" mnemonicParsing="false" text="Descuento" textFill="WHITE">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </CheckBox>
+                              <CustomTextField fx:id="txtDiscount" alignment="CENTER" layoutX="25.0" layoutY="52.0" visible="false" />
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane fx:id="paneAmount" layoutX="52.0" layoutY="106.0" prefHeight="118.0" prefWidth="200.0" visible="false">
+                           <children>
+                              <CustomTextField fx:id="txtAmountCash" alignment="CENTER" layoutX="18.0" layoutY="51.0" prefHeight="39.0" prefWidth="163.0">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="TEXT" />
+                                 </cursor>
+                              </CustomTextField>
+                              <Label fx:id="lblAmountCash" layoutX="63.0" layoutY="23.0" text="Monto" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                        <Label fx:id="lblTotal" layoutX="473.0" layoutY="16.0" textFill="WHITE">
+                           <font>
+                              <Font size="22.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="287.0" layoutY="14.0" text="Total a Pagar :" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</StackPane>
