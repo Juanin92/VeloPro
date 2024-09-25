@@ -2,6 +2,7 @@ package cl.jic.VeloPro.Controller.Report;
 
 import cl.jic.VeloPro.Controller.HomeController;
 import cl.jic.VeloPro.Model.DTO.*;
+import cl.jic.VeloPro.Model.Entity.Product.Product;
 import cl.jic.VeloPro.Service.Report.Interfaces.IReportService;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
@@ -25,9 +26,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.Year;
@@ -47,6 +50,8 @@ public class ReportController implements Initializable {
     @FXML private RadioButton rb30Days, rb60Days, rb6Months, rb90Days, rbYear;
     @FXML private Label lblMessage;
     @FXML private TableView<Object> tableRank;
+    @FXML private TableColumn<Object, Object> colA;
+    @FXML private TableColumn<Object, Object> colB;
 
     @Autowired private IReportService reportService;
     @Autowired private ButtonManager buttonManager;
@@ -172,6 +177,7 @@ public class ReportController implements Initializable {
             lblMessage.setText(" " + end + " - " + start);
 
             List<DailySaleCountDTO> dailySale = reportService.getDailySale(start,end);
+            ObservableList<Object> list = FXCollections.observableArrayList();
             Map<YearMonth, Double> saleByMonth = dailySale.stream()
                     .collect(Collectors.groupingBy(
                             sale -> YearMonth.from(sale.getDate()),
@@ -186,11 +192,10 @@ public class ReportController implements Initializable {
             barChart.getData().clear();
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             if (rb30Days.isSelected() || range.equals("daily")){
-                System.out.println("LISTA: "+dailySale);
-                System.out.println("30 dias");
                 for (DailySaleCountDTO data : dailySale) {
                     String date = String.valueOf(data.getDate());
                     Number sales = data.getSale();
+                    list.add(data);
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(date, sales);
                     Label label = new Label(sales.toString());
@@ -209,11 +214,11 @@ public class ReportController implements Initializable {
                 }
             }
             if (rb90Days.isSelected() || rb6Months.isSelected() || rb60Days.isSelected() || rbYear.isSelected() || range.equals("monthly")){
-                System.out.println("LISTA: "+dailySale);
-                System.out.println("60 dias");
                 for (Map.Entry<YearMonth, Double> entry : saleByMonth.entrySet()) {
                     String month = entry.getKey().format(DateTimeFormatter.ofPattern("MMM"));
+                    LocalDate date = entry.getKey().atDay(1);
                     int sales = entry.getValue().intValue();
+                    list.add(new DailySaleCountDTO(date,Long.parseLong(String.valueOf(sales))));
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(month, sales);
                     Label label = new Label(String.valueOf(sales));
@@ -234,7 +239,9 @@ public class ReportController implements Initializable {
             if (range.equals("annual")){
                 for (Map.Entry<Year, Double> entry : saleByYear.entrySet()) {
                     String year = entry.getKey().format(DateTimeFormatter.ofPattern("yyyy"));
+                    LocalDate date = entry.getKey().atDay(1);
                     int sales = entry.getValue().intValue();
+                    list.add(new DailySaleCountDTO(date,Long.parseLong(String.valueOf(sales))));
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(year, sales);
                     Label label = new Label(String.valueOf(sales));
@@ -254,7 +261,7 @@ public class ReportController implements Initializable {
             }
             barChart.setTitle("Total de venta : " + totalSale);
             barChart.getData().add(series);
-            populatePieChart(start,end);
+            loadTableRank(list, "date", "sale", "Fecha", "N° Ventas");
         }catch (Exception e){
             lblMessage.setText(e.getMessage());
         }
@@ -268,6 +275,7 @@ public class ReportController implements Initializable {
             lblMessage.setText(" " + end + " - " + start);
 
             List<DailySaleAvgDTO> dailySaleAvg = reportService.getAverageTotalSaleDaily(start,end);
+            ObservableList<Object> list = FXCollections.observableArrayList();
             List<Double> Averages = new ArrayList<>();
             Map<YearMonth, Double> saleByMonth = dailySaleAvg.stream()
                     .collect(Collectors.groupingBy(
@@ -286,6 +294,8 @@ public class ReportController implements Initializable {
                 for (DailySaleAvgDTO data : dailySaleAvg) {
                     String date = String.valueOf(data.getDate());
                     Number avg = data.getAvg();
+                    list.add(data);
+                    System.out.println("LIST : "+list);
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(date, avg);
                     Label label = new Label(String.valueOf(String.format("$%,d", avg)));
@@ -308,6 +318,9 @@ public class ReportController implements Initializable {
                 for (Map.Entry<YearMonth, Double> entry : saleByMonth.entrySet()) {
                     String month = entry.getKey().format(DateTimeFormatter.ofPattern("MMM"));
                     int avg = entry.getValue().intValue();
+                    LocalDate date = entry.getKey().atDay(1);
+                    list.add(new DailySaleAvgDTO(date, BigDecimal.valueOf(avg)));
+                    System.out.println("LISTA MESES: "+ list);
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(month, avg);
                     Label label = new Label(String.valueOf(String.format("$%,d", avg)));
@@ -330,6 +343,8 @@ public class ReportController implements Initializable {
                 for (Map.Entry<Year, Double> entry : saleByYear.entrySet()) {
                     String year = entry.getKey().format(DateTimeFormatter.ofPattern("yyyy"));
                     int avg = entry.getValue().intValue();
+                    LocalDate date = entry.getKey().atDay(1);
+                    list.add(new DailySaleAvgDTO(date, BigDecimal.valueOf(avg)));
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(year, avg);
                     Label label = new Label(String.valueOf(String.format("$%,d", avg)));
@@ -351,6 +366,7 @@ public class ReportController implements Initializable {
             int prom = totalSale / Averages.size();
             barChart.setTitle("Monto promedio de venta: " + String.format("$%,d", prom));
             barChart.getData().add(series);
+            loadTableRank(list, "date", "avg", "Fecha", "Promedio Venta");
         }catch (Exception e){
             lblMessage.setText(e.getMessage());
         }
@@ -365,6 +381,7 @@ public class ReportController implements Initializable {
             lblMessage.setText(" " + end + " - " + start);
 
             List<DailySaleEarningDTO> dailySaleEarning = reportService.getEarningSale(start,end);
+            ObservableList<Object> list = FXCollections.observableArrayList();
             Map<YearMonth, Double> saleByMonth = dailySaleEarning.stream()
                     .collect(Collectors.groupingBy(
                             sale -> YearMonth.from(sale.getSaleDate()),
@@ -382,6 +399,7 @@ public class ReportController implements Initializable {
                 for (DailySaleEarningDTO data : dailySaleEarning) {
                     String date = String.valueOf(data.getSaleDate());
                     int profit = data.getProfit();
+                    list.add(data);
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(date, profit);
                     Label label = new Label(String.valueOf(String.format("$%,d", profit)));
@@ -403,6 +421,8 @@ public class ReportController implements Initializable {
                 for (Map.Entry<YearMonth, Double> entry : saleByMonth.entrySet()) {
                     String month = entry.getKey().format(DateTimeFormatter.ofPattern("MMM"));
                     int profit = entry.getValue().intValue();
+                    LocalDate date = entry.getKey().atDay(1);
+                    list.add(new DailySaleEarningDTO(date, BigDecimal.valueOf(profit)));
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(month, profit);
                     Label label = new Label(String.valueOf(String.format("$%,d", profit)));
@@ -424,6 +444,8 @@ public class ReportController implements Initializable {
                 for (Map.Entry<Year, Double> entry : saleByYear.entrySet()) {
                     String year = entry.getKey().format(DateTimeFormatter.ofPattern("yyyy"));
                     int profit = entry.getValue().intValue();
+                    LocalDate date = entry.getKey().atDay(1);
+                    list.add(new DailySaleEarningDTO(date, BigDecimal.valueOf(profit)));
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(year, profit);
                     Label label = new Label(String.valueOf(String.format("$%,d", profit)));
@@ -443,6 +465,7 @@ public class ReportController implements Initializable {
             }
             barChart.setTitle("Total de venta: " + String.format("$%,d", totalProfit));
             barChart.getData().add(series);
+            loadTableRank(list, "saleDate", "profit", "Fecha", "Ganancia");
         }catch (Exception e){
             lblMessage.setText(e.getMessage());
         }
@@ -455,6 +478,7 @@ public class ReportController implements Initializable {
             lblMessage.setText(" " + end + " - " + start);
 
             List<DailySaleSumDTO> dailySaleSum = reportService.getTotalSaleDaily(start,end);
+            ObservableList<Object> list = FXCollections.observableArrayList();
             Map<YearMonth, Double> saleByMonth = dailySaleSum.stream()
                     .collect(Collectors.groupingBy(
                             sale -> YearMonth.from(sale.getDate()),
@@ -472,6 +496,7 @@ public class ReportController implements Initializable {
                 for (DailySaleSumDTO data : dailySaleSum) {
                     String date = String.valueOf(data.getDate());
                     Number sum = data.getSum();
+                    list.add(data);
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(date, sum);
                     Label label = new Label(String.valueOf(String.format("$%,d", sum)));
@@ -493,6 +518,8 @@ public class ReportController implements Initializable {
                 for (Map.Entry<YearMonth, Double> entry : saleByMonth.entrySet()) {
                     String month = entry.getKey().format(DateTimeFormatter.ofPattern("MMM"));
                     int sum = entry.getValue().intValue();
+                    LocalDate date = entry.getKey().atDay(1);
+                    list.add(new DailySaleSumDTO(date, BigDecimal.valueOf(sum)));
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(month, sum);
                     Label label = new Label(String.valueOf(String.format("$%,d", sum)));
@@ -514,6 +541,8 @@ public class ReportController implements Initializable {
                 for (Map.Entry<Year, Double> entry : saleByYear.entrySet()) {
                     String year = entry.getKey().format(DateTimeFormatter.ofPattern("yyyy"));
                     int sum = entry.getValue().intValue();
+                    LocalDate date = entry.getKey().atDay(1);
+                    list.add(new DailySaleSumDTO(date, BigDecimal.valueOf(sum)));
 
                     XYChart.Data<String, Number> chartData = new XYChart.Data<>(year, sum);
                     Label label = new Label(String.valueOf(String.format("$%,d", sum)));
@@ -533,7 +562,8 @@ public class ReportController implements Initializable {
             }
             barChart.setTitle("Total de venta: " + String.format("$%,d", totalSale));
             barChart.getData().add(series);
-            populatePieChart(start,end);
+            loadTableRank(list, "date", "sum", "Fecha", "Suma de Ventas");
+//            populatePieChart(start,end);
         }catch (Exception e){
             lblMessage.setText(e.getMessage());
         }
@@ -541,10 +571,12 @@ public class ReportController implements Initializable {
 
     private void calculateProductSale(){
         try{
+            btnPieChart.setVisible(false);
             LocalDate end = calculateEndDate();
             lblMessage.setText(" " + end + " - " + start);
 
             List<ProductSaleDTO> mostSoldProduct = reportService.getMostProductSale(start, end);
+            ObservableList<Object> list = FXCollections.observableArrayList();
             barChart.getData().clear();
 
             Map<String, Integer> brandTotalMap = new HashMap<>();
@@ -552,6 +584,7 @@ public class ReportController implements Initializable {
                 String brand = data.getBrand();
                 int total = data.getTotal();
                 brandTotalMap.put(brand, brandTotalMap.getOrDefault(brand, 0) + total);
+                list.add(data);
             }
             List<Map.Entry<String, Integer>> sortedEntries = brandTotalMap.entrySet()
                     .stream()
@@ -577,8 +610,7 @@ public class ReportController implements Initializable {
             }
             barChart.setTitle("Los 10 productos más vendidos");
             barChart.getData().add(series);
-            tableRank.setVisible(true);
-            configureTableView(mostSoldProduct, "description");
+            loadTableRank(list, "description", "total", "Descripción", "Cantidad");
         } catch (Exception e) {
             lblMessage.setText(e.getMessage());
         }
@@ -586,15 +618,18 @@ public class ReportController implements Initializable {
 
     private void calculateCategorySale(){
         try{
+            btnPieChart.setVisible(false);
             LocalDate end = calculateEndDate();
             lblMessage.setText(" " + end + " - " + start);
 
             List<CategoriesSaleDTO> mostSoldCategory = reportService.getMostCategorySale(start,end);
+            ObservableList<Object> list = FXCollections.observableArrayList();
             barChart.getData().clear();
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             for (CategoriesSaleDTO data : mostSoldCategory) {
                 String name = String.valueOf(data.getName());
                 Number total = data.getTotal();
+                list.add(data);
 
                 XYChart.Data<String, Number> chartData = new XYChart.Data<>(name, total);
                 Label label = new Label(String.valueOf(data.getTotal()));
@@ -610,8 +645,7 @@ public class ReportController implements Initializable {
             }
             barChart.setTitle("Las 10 categorías más vendidas");
             barChart.getData().add(series);
-            tableRank.setVisible(true);
-            configureTableView(mostSoldCategory,"name");
+            loadTableRank(list, "name", "total", "Categoría", "Cantidad");
         }catch (Exception e){
             lblMessage.setText(e.getMessage());
         }
@@ -631,39 +665,6 @@ public class ReportController implements Initializable {
         }else if (selectedButton == 6) {
             calculateCategorySale();
         }
-    }
-
-    private void populatePieChart(LocalDate start, LocalDate end) {
-        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
-        List<DailySaleCountDTO> dailySaleList = reportService.getDailySale(start, end);
-        Map<String, Double> saleByPeriod;
-
-        if (rb30Days.isSelected() || range.equals("daily")) {
-            saleByPeriod = dailySaleList.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> sale.getDate().format(DateTimeFormatter.ofPattern("dd/MM")),
-                            Collectors.summingDouble(DailySaleCountDTO::getSale)
-                    ));
-        } else {
-            saleByPeriod = dailySaleList.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> {
-                                if (range.equals("annual")) {
-                                    return sale.getDate().format(DateTimeFormatter.ofPattern("yyyy"));
-                                } else {
-                                    return sale.getDate().format(DateTimeFormatter.ofPattern("MMM"));
-                                }
-                            },
-                            Collectors.summingDouble(DailySaleCountDTO::getSale)
-                    ));
-        }
-
-        for (Map.Entry<String, Double> entry : saleByPeriod.entrySet()) {
-            double percentage = (entry.getValue() * 100.0) / saleByPeriod.values().stream().mapToDouble(value -> value).sum();
-            PieChart.Data data = new PieChart.Data(entry.getKey() + " (" + String.format("%.1f%%", percentage) + ")", percentage);
-            pieChartData.add(data);
-        }
-        pieChart.setData(pieChartData);
     }
 
     private LocalDate calculateEndDate() {
@@ -689,63 +690,53 @@ public class ReportController implements Initializable {
         return null;
     }
 
-    private void configureTableView(List<?> data, String nameColumn) {
-        TableColumn<Object, String> colName = new TableColumn<>("Nombre");
-        TableColumn<Object, Number> colTotal = new TableColumn<>("Total");
-        colName.setCellValueFactory(new PropertyValueFactory<>(nameColumn));
-        colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
-        colName.setPrefWidth(110);
-        colTotal.setPrefWidth(20);
+    private void loadTableRank(ObservableList<Object> list, String columnAName, String columnBName, String a, String b){
+        colA.setText(a);
+        colB.setText(b);
+        tableRank.setVisible(true);
+        tableRank.setItems(list);
+        colA.setCellValueFactory(new PropertyValueFactory<>(columnAName));
+        colB.setCellValueFactory(new PropertyValueFactory<>(columnBName));
 
-        colName.setCellFactory(column -> new TableCell<Object, String>() {
-            private final Text text = new Text();
-            {
-                setGraphic(text);
-            }
+        configureTableViewNormal();
+    }
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    text.setText(item);
-                    setText(null);
-                    setGraphic(text);
+    private void configureTableViewNormal() {
+        if (colA.getText().equals("Fecha")) {
+            colA.setCellFactory(col -> new TableCell<Object, Object>() {
+                @Override
+                protected void updateItem(Object item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        if (item instanceof LocalDate date) {
+                            setText(date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                        }else {
+                            setText(item.toString());
+                        }
+                    }
                 }
-            }
-        });
-        colTotal.setCellFactory(column -> new TableCell<Object, Number>() {
-            private final Text text = new Text();
-            {
-                setGraphic(text);
-            }
-
-            @Override
-            protected void updateItem(Number item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    text.setText(item.toString());
-                    setText(null);
-                    setGraphic(text);
+            });
+        }
+        if (colB.getText().equals("Suma de Ventas") || colB.getText().equals("Ganancia") ||
+                colB.getText().equals("Promedio Venta")){
+            colB.setCellFactory(col -> new TableCell<Object, Object>() {
+                @Override
+                protected void updateItem(Object item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        if (item instanceof Integer value) {
+                            setText(String.format("$%,d", value));
+                        }else {
+                            setText(item.toString());
+                        }
+                    }
                 }
-            }
-        });
-
-        tableRank.getColumns().clear();
-        tableRank.getColumns().addAll(colName, colTotal);
-        ObservableList<Object> observableData = FXCollections.observableArrayList(data);
-        tableRank.setItems(observableData);
-
-        double rowHeight = 25.5;
-        int numRows = Math.min(observableData.size()+1, 10);
-        tableRank.setFixedCellSize(rowHeight);
-        double tableHeight = rowHeight * numRows;
-        tableRank.setPrefHeight(tableHeight);
+            });
+        }
     }
 
     private void selectedActionButton(ActionEvent event){

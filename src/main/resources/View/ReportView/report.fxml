@@ -9,6 +9,7 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.effect.ImageInput?>
 <?import javafx.scene.image.Image?>
@@ -139,15 +140,19 @@
                       <NumberAxis side="LEFT" tickLabelFill="WHITE" />
                     </yAxis>
                   </BarChart>
-                  <PieChart fx:id="pieChart" labelLineLength="6.0" labelsVisible="false" layoutX="576.0" layoutY="32.0" legendSide="LEFT" stylesheets="@../../CSS/pieChart.css" />
+                  <PieChart fx:id="pieChart" labelLineLength="6.0" labelsVisible="false" layoutX="576.0" layoutY="32.0" legendSide="LEFT" stylesheets="@../../CSS/pieChart.css" visible="false" />
                   <Label fx:id="lblMessage" layoutX="224.0" layoutY="32.0" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font></Label>
-                  <TableView fx:id="tableRank" layoutX="687.0" layoutY="114.0" prefHeight="305.0" prefWidth="331.0" stylesheets="@../../CSS/tableView.css" visible="false">
+                  <TableView fx:id="tableRank" layoutX="631.0" layoutY="81.0" prefHeight="347.0" prefWidth="437.0" stylesheets="@../../CSS/tableView.css" visible="false">
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                      </columnResizePolicy>
+                     <columns>
+                        <TableColumn fx:id="colA" prefWidth="75.0" text="ColumnA" />
+                        <TableColumn fx:id="colB" prefWidth="75.0" text="ColumnB" />
+                     </columns>
                   </TableView>
                </children>
             </AnchorPane>
