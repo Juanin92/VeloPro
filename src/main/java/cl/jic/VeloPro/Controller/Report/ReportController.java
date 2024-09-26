@@ -2,7 +2,6 @@ package cl.jic.VeloPro.Controller.Report;
 
 import cl.jic.VeloPro.Controller.HomeController;
 import cl.jic.VeloPro.Model.DTO.*;
-import cl.jic.VeloPro.Model.Entity.Product.Product;
 import cl.jic.VeloPro.Service.Report.Interfaces.IReportService;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
@@ -21,12 +20,11 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Setter;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -38,6 +36,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -178,16 +177,8 @@ public class ReportController implements Initializable {
 
             List<DailySaleCountDTO> dailySale = reportService.getDailySale(start,end);
             ObservableList<Object> list = FXCollections.observableArrayList();
-            Map<YearMonth, Double> saleByMonth = dailySale.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> YearMonth.from(sale.getDate()),
-                            Collectors.summingDouble(DailySaleCountDTO::getSale)
-                    ));
-            Map<Year, Double> saleByYear = dailySale.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> Year.from(sale.getDate()),
-                            Collectors.summingDouble(DailySaleCountDTO::getSale)
-                    ));
+            Map<YearMonth, Double> saleByMonth = calculateByMonth(dailySale, dailySaleCountDTO -> (double) dailySaleCountDTO.getSale(), DailySaleCountDTO::getDate);
+            Map<Year, Double> saleByYear = calculateByYear(dailySale, dailySaleCountDTO -> (double) dailySaleCountDTO.getSale(), DailySaleCountDTO::getDate);
 
             barChart.getData().clear();
             XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -196,19 +187,7 @@ public class ReportController implements Initializable {
                     String date = String.valueOf(data.getDate());
                     Number sales = data.getSale();
                     list.add(data);
-
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(date, sales);
-                    Label label = new Label(sales.toString());
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, date, sales, "quantity");
                     saleDto = (int) sales;
                     totalSale += saleDto;
                 }
@@ -220,18 +199,7 @@ public class ReportController implements Initializable {
                     int sales = entry.getValue().intValue();
                     list.add(new DailySaleCountDTO(date,Long.parseLong(String.valueOf(sales))));
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(month, sales);
-                    Label label = new Label(String.valueOf(sales));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, month, sales , "quantity");
                     saleDto = (int) sales;
                     totalSale += saleDto;
                 }
@@ -243,18 +211,7 @@ public class ReportController implements Initializable {
                     int sales = entry.getValue().intValue();
                     list.add(new DailySaleCountDTO(date,Long.parseLong(String.valueOf(sales))));
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(year, sales);
-                    Label label = new Label(String.valueOf(sales));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, year, sales, "quantity");
                     saleDto = (int) sales;
                     totalSale += saleDto;
                 }
@@ -277,16 +234,8 @@ public class ReportController implements Initializable {
             List<DailySaleAvgDTO> dailySaleAvg = reportService.getAverageTotalSaleDaily(start,end);
             ObservableList<Object> list = FXCollections.observableArrayList();
             List<Double> Averages = new ArrayList<>();
-            Map<YearMonth, Double> saleByMonth = dailySaleAvg.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> YearMonth.from(sale.getDate()),
-                            Collectors.summingDouble(DailySaleAvgDTO::getAvg)
-                    ));
-            Map<Year, Double> saleByYear = dailySaleAvg.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> Year.from(sale.getDate()),
-                            Collectors.summingDouble(DailySaleAvgDTO::getAvg)
-                    ));
+            Map<YearMonth, Double> saleByMonth = calculateByMonth(dailySaleAvg, dailySaleAvgDTO -> (double) dailySaleAvgDTO.getAvg(), DailySaleAvgDTO::getDate);
+            Map<Year, Double> saleByYear = calculateByYear(dailySaleAvg, dailySaleAvgDTO -> (double) dailySaleAvgDTO.getAvg(), DailySaleAvgDTO::getDate);
 
             barChart.getData().clear();
             XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -295,20 +244,8 @@ public class ReportController implements Initializable {
                     String date = String.valueOf(data.getDate());
                     Number avg = data.getAvg();
                     list.add(data);
-                    System.out.println("LIST : "+list);
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(date, avg);
-                    Label label = new Label(String.valueOf(String.format("$%,d", avg)));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, date, avg, "price");
                     avgValue = data.getAvg();
                     totalSale += (int) avgValue;
                     Averages.add(avgValue);
@@ -320,20 +257,8 @@ public class ReportController implements Initializable {
                     int avg = entry.getValue().intValue();
                     LocalDate date = entry.getKey().atDay(1);
                     list.add(new DailySaleAvgDTO(date, BigDecimal.valueOf(avg)));
-                    System.out.println("LISTA MESES: "+ list);
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(month, avg);
-                    Label label = new Label(String.valueOf(String.format("$%,d", avg)));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, month, avg, "price");
                     avgValue = entry.getValue();
                     totalSale += (int) avgValue;
                     Averages.add(avgValue);
@@ -346,18 +271,7 @@ public class ReportController implements Initializable {
                     LocalDate date = entry.getKey().atDay(1);
                     list.add(new DailySaleAvgDTO(date, BigDecimal.valueOf(avg)));
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(year, avg);
-                    Label label = new Label(String.valueOf(String.format("$%,d", avg)));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, year, avg, "price");
                     avgValue = entry.getValue();
                     totalSale += (int) avgValue;
                     Averages.add(avgValue);
@@ -382,16 +296,8 @@ public class ReportController implements Initializable {
 
             List<DailySaleEarningDTO> dailySaleEarning = reportService.getEarningSale(start,end);
             ObservableList<Object> list = FXCollections.observableArrayList();
-            Map<YearMonth, Double> saleByMonth = dailySaleEarning.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> YearMonth.from(sale.getSaleDate()),
-                            Collectors.summingDouble(DailySaleEarningDTO::getProfit)
-                    ));
-            Map<Year, Double> saleByYear = dailySaleEarning.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> Year.from(sale.getSaleDate()),
-                            Collectors.summingDouble(DailySaleEarningDTO::getProfit)
-                    ));
+            Map<YearMonth, Double> saleByMonth = calculateByMonth(dailySaleEarning, dailySaleEarningDTO -> (double) dailySaleEarningDTO.getProfit(), DailySaleEarningDTO::getSaleDate);
+            Map<Year, Double> saleByYear = calculateByYear(dailySaleEarning, dailySaleEarningDTO -> (double) dailySaleEarningDTO.getProfit(), DailySaleEarningDTO::getSaleDate);
 
             barChart.getData().clear();
             XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -401,18 +307,7 @@ public class ReportController implements Initializable {
                     int profit = data.getProfit();
                     list.add(data);
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(date, profit);
-                    Label label = new Label(String.valueOf(String.format("$%,d", profit)));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, date, profit, "price");
                     saleDto = (int) profit;
                     totalProfit += saleDto;
                 }
@@ -424,18 +319,7 @@ public class ReportController implements Initializable {
                     LocalDate date = entry.getKey().atDay(1);
                     list.add(new DailySaleEarningDTO(date, BigDecimal.valueOf(profit)));
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(month, profit);
-                    Label label = new Label(String.valueOf(String.format("$%,d", profit)));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, month, profit, "price");
                     saleDto = (int) profit;
                     totalProfit += saleDto;
                 }
@@ -447,18 +331,7 @@ public class ReportController implements Initializable {
                     LocalDate date = entry.getKey().atDay(1);
                     list.add(new DailySaleEarningDTO(date, BigDecimal.valueOf(profit)));
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(year, profit);
-                    Label label = new Label(String.valueOf(String.format("$%,d", profit)));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, year, profit, "price");
                     saleDto = (int) profit;
                     totalProfit += saleDto;
                 }
@@ -479,16 +352,8 @@ public class ReportController implements Initializable {
 
             List<DailySaleSumDTO> dailySaleSum = reportService.getTotalSaleDaily(start,end);
             ObservableList<Object> list = FXCollections.observableArrayList();
-            Map<YearMonth, Double> saleByMonth = dailySaleSum.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> YearMonth.from(sale.getDate()),
-                            Collectors.summingDouble(DailySaleSumDTO::getSum)
-                    ));
-            Map<Year, Double> saleByYear = dailySaleSum.stream()
-                    .collect(Collectors.groupingBy(
-                            sale -> Year.from(sale.getDate()),
-                            Collectors.summingDouble(DailySaleSumDTO::getSum)
-                    ));
+            Map<YearMonth, Double> saleByMonth = calculateByMonth(dailySaleSum, dailySaleSumDTO -> (double) dailySaleSumDTO.getSum(), DailySaleSumDTO::getDate);
+            Map<Year, Double> saleByYear = calculateByYear(dailySaleSum, dailySaleSumDTO -> (double) dailySaleSumDTO.getSum(), DailySaleSumDTO::getDate);
 
             barChart.getData().clear();
             XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -498,18 +363,7 @@ public class ReportController implements Initializable {
                     Number sum = data.getSum();
                     list.add(data);
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(date, sum);
-                    Label label = new Label(String.valueOf(String.format("$%,d", sum)));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, date, sum, "price");
                     saleDto = (int) sum;
                     totalSale += saleDto;
                 }
@@ -521,18 +375,7 @@ public class ReportController implements Initializable {
                     LocalDate date = entry.getKey().atDay(1);
                     list.add(new DailySaleSumDTO(date, BigDecimal.valueOf(sum)));
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(month, sum);
-                    Label label = new Label(String.valueOf(String.format("$%,d", sum)));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, month, sum, "price");
                     saleDto = (int) sum;
                     totalSale += saleDto;
                 }
@@ -544,18 +387,7 @@ public class ReportController implements Initializable {
                     LocalDate date = entry.getKey().atDay(1);
                     list.add(new DailySaleSumDTO(date, BigDecimal.valueOf(sum)));
 
-                    XYChart.Data<String, Number> chartData = new XYChart.Data<>(year, sum);
-                    Label label = new Label(String.valueOf(String.format("$%,d", sum)));
-                    label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                    label.setTranslateY(-35);
-
-                    chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            StackPane stackPane = (StackPane) newNode;
-                            stackPane.getChildren().add(label);
-                        }
-                    });
-                    series.getData().add(chartData);
+                    addDataToChart(series, year, sum, "price");
                     saleDto = (int) sum;
                     totalSale += saleDto;
                 }
@@ -563,7 +395,6 @@ public class ReportController implements Initializable {
             barChart.setTitle("Total de venta: " + String.format("$%,d", totalSale));
             barChart.getData().add(series);
             loadTableRank(list, "date", "sum", "Fecha", "Suma de Ventas");
-//            populatePieChart(start,end);
         }catch (Exception e){
             lblMessage.setText(e.getMessage());
         }
@@ -571,7 +402,6 @@ public class ReportController implements Initializable {
 
     private void calculateProductSale(){
         try{
-            btnPieChart.setVisible(false);
             LocalDate end = calculateEndDate();
             lblMessage.setText(" " + end + " - " + start);
 
@@ -595,18 +425,7 @@ public class ReportController implements Initializable {
             for (Map.Entry<String, Integer> entry : sortedEntries) {
                 String brand = entry.getKey();
                 int total = entry.getValue();
-
-                XYChart.Data<String, Number> chartData = new XYChart.Data<>(brand, total);
-                Label label = new Label(String.valueOf(total));
-                label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                label.setTranslateY(-35);
-                chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                    if (newNode != null) {
-                        StackPane stackPane = (StackPane) newNode;
-                        stackPane.getChildren().add(label);
-                    }
-                });
-                series.getData().add(chartData);
+                addDataToChart(series, brand, total, "quantity");
             }
             barChart.setTitle("Los 10 productos más vendidos");
             barChart.getData().add(series);
@@ -618,7 +437,6 @@ public class ReportController implements Initializable {
 
     private void calculateCategorySale(){
         try{
-            btnPieChart.setVisible(false);
             LocalDate end = calculateEndDate();
             lblMessage.setText(" " + end + " - " + start);
 
@@ -630,18 +448,7 @@ public class ReportController implements Initializable {
                 String name = String.valueOf(data.getName());
                 Number total = data.getTotal();
                 list.add(data);
-
-                XYChart.Data<String, Number> chartData = new XYChart.Data<>(name, total);
-                Label label = new Label(String.valueOf(data.getTotal()));
-                label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
-                label.setTranslateY(-35);
-                chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                    if (newNode != null) {
-                        StackPane stackPane = (StackPane) newNode;
-                        stackPane.getChildren().add(label);
-                    }
-                });
-                series.getData().add(chartData);
+                addDataToChart(series, name, total, "quantity");
             }
             barChart.setTitle("Las 10 categorías más vendidas");
             barChart.getData().add(series);
@@ -684,25 +491,62 @@ public class ReportController implements Initializable {
             start = dateTo.getValue();
             LocalDate end = dateFrom.getValue();
             range = determinateRangeDate(start, end);
-            System.out.println("rango: "+range);
             return end;
         }
         return null;
     }
 
+    private <T> Map<YearMonth, Double> calculateByMonth(List<T> list, Function<T, Double> function, Function<T, LocalDate> dateFunction) {
+        return list.stream()
+                .collect(Collectors.groupingBy(
+                        sale -> YearMonth.from(dateFunction.apply(sale)),
+                        Collectors.summingDouble(function::apply)
+                ));
+    }
+
+    private <T> Map<Year, Double> calculateByYear(List<T> list, Function<T, Double> function, Function<T, LocalDate> dateFunction) {
+        return list.stream()
+                .collect(Collectors.groupingBy(
+                        sale -> Year.from(dateFunction.apply(sale)),
+                        Collectors.summingDouble(function::apply)
+                ));
+    }
+
+    private void addDataToChart(XYChart.Series<String, Number> series, String category, Number value, String validation){
+        String name;
+        XYChart.Data<String, Number> chartData = new XYChart.Data<>(category, value);
+        if (validation.equals("quantity")){
+            name = String.valueOf(value);
+        } else {
+            int item = value.intValue();
+            name = String.valueOf(String.valueOf(String.format("$%,d", item)));
+        }
+        Label label = new Label(name);
+        label.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
+        label.setTranslateY(-35);
+
+        chartData.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                StackPane stackPane = (StackPane) newNode;
+                stackPane.getChildren().add(label);
+            }
+        });
+        series.getData().add(chartData);
+    }
+
     private void loadTableRank(ObservableList<Object> list, String columnAName, String columnBName, String a, String b){
+        tableRank.setVisible(true);
         colA.setText(a);
         colB.setText(b);
-        tableRank.setVisible(true);
         tableRank.setItems(list);
         colA.setCellValueFactory(new PropertyValueFactory<>(columnAName));
         colB.setCellValueFactory(new PropertyValueFactory<>(columnBName));
 
-        configureTableViewNormal();
+        configureTableView(a, b);
     }
 
-    private void configureTableViewNormal() {
-        if (colA.getText().equals("Fecha")) {
+    private void configureTableView(String columnA, String columnB) {
+        if (columnA.equals("Fecha")) {
             colA.setCellFactory(col -> new TableCell<Object, Object>() {
                 @Override
                 protected void updateItem(Object item, boolean empty) {
@@ -719,8 +563,16 @@ public class ReportController implements Initializable {
                 }
             });
         }
-        if (colB.getText().equals("Suma de Ventas") || colB.getText().equals("Ganancia") ||
-                colB.getText().equals("Promedio Venta")){
+        colB.setCellFactory(col -> new TableCell<Object, Object>() {
+            @Override
+            protected void updateItem(Object item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.toString());
+            }
+        });
+
+        if (columnB.equals("Suma de Ventas") || columnB.equals("Ganancia") ||
+                columnB.equals("Promedio Venta")){
             colB.setCellFactory(col -> new TableCell<Object, Object>() {
                 @Override
                 protected void updateItem(Object item, boolean empty) {
