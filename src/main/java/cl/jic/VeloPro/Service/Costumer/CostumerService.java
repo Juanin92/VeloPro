@@ -67,11 +67,6 @@ public class CostumerService implements ICostumerService {
         }
     }
 
-    private Costumer getCostumerCreated(String name, String surname) {
-        Optional<Costumer> costumerOptional = costumerRepo.findByNameAndSurnameAndEmail(capitalize(name), capitalize(surname));
-        return costumerOptional.orElse(null);
-    }
-
     @Override
     public List<Costumer> getAll() {
         return costumerRepo.findAll();
@@ -119,6 +114,11 @@ public class CostumerService implements ICostumerService {
     @Override
     public void updateTotalDebt(Costumer costumer) {
         costumerRepo.save(costumer);
+    }
+
+    private Costumer getCostumerCreated(String name, String surname) {
+        Optional<Costumer> costumerOptional = costumerRepo.findByNameAndSurname(capitalize(name), capitalize(surname));
+        return costumerOptional.orElse(null);
     }
 
     private String capitalize(String value) {
