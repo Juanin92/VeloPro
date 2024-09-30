@@ -84,6 +84,9 @@ public class AddEditCostumerController implements Initializable {
             notificationManager.successNotification("Registro Exitoso!", "Cliente " + costumer.getName() + " " + costumer.getSurname() + ", " + "Registrado en el sistema", Pos.CENTER);
             closeView();
         } catch (IllegalArgumentException e){
+            if (e.getMessage().equals("Cliente Existente: Hay registro de este cliente.")){
+                notificationManager.errorNotification("Error!", e.getMessage(), Pos.CENTER);
+            }
             handleValidationException(e.getMessage());
         }
         ICostumerList.loadDataCostumerList();
@@ -99,7 +102,10 @@ public class AddEditCostumerController implements Initializable {
             notificationManager.successNotification("Actualizado Exitoso!", "Cliente " + costumer.getName() + " " + costumer.getSurname() + ", " + "Se ha Actualizado.", Pos.CENTER);
             closeView();
             currentCostumer = null;
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().equals("Cliente Existente: Hay registro de este cliente.")){
+                notificationManager.errorNotification("Error!", e.getMessage(), Pos.CENTER);
+            }
             handleValidationException(e.getMessage());
         }
         ICostumerList.loadDataCostumerList();

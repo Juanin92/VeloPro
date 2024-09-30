@@ -8,7 +8,9 @@ import cl.jic.VeloPro.Repository.Costumer.CostumerRepo;
 import cl.jic.VeloPro.Repository.Costumer.TicketHistoryRepo;
 import cl.jic.VeloPro.Repository.Sale.SaleRepo;
 import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
+import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.Validation.CostumerValidator;
+import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CostumerService implements ICostumerService {
@@ -30,28 +33,43 @@ public class CostumerService implements ICostumerService {
 
     @Override
     public void addNewCostumer(Costumer costumer) {
-        if (costumer.getEmail() == null || costumer.getEmail().isEmpty()){
-            costumer.setEmail("x@x.xxx");
+        Costumer costumerDB = getCostumerCreated(costumer.getName(), costumer.getSurname());
+        if (costumerDB != null){
+            throw new IllegalArgumentException("Cliente Existente: Hay registro de este cliente.");
+        }else {
+            if (costumer.getEmail() == null || costumer.getEmail().isEmpty()) {
+                costumer.setEmail("x@x.xxx");
+            }
+            validator.validate(costumer);
+            costumer.setAccount(true);
+            costumer.setStatus(PaymentStatus.NULO);
+            costumer.setTotalDebt(0);
+            costumer.setDebt(0);
+            costumer.setName(capitalize(costumer.getName()));
+            costumer.setSurname(capitalize(costumer.getSurname()));
+            costumerRepo.save(costumer);
         }
-        validator.validate(costumer);
-        costumer.setAccount(true);
-        costumer.setStatus(PaymentStatus.NULO);
-        costumer.setTotalDebt(0);
-        costumer.setDebt(0);
-        costumer.setName(costumer.getName().substring(0,1).toUpperCase() + costumer.getName().substring(1));
-        costumer.setSurname(costumer.getSurname().substring(0,1).toUpperCase() + costumer.getSurname().substring(1));
-        costumerRepo.save(costumer);
     }
 
     @Override
     public void updateCostumer(Costumer costumer) {
-        if (costumer.getEmail() == null || costumer.getEmail().isEmpty()){
-            costumer.setEmail("x@x.xxx");
+        Costumer costumerDB = getCostumerCreated(costumer.getName(), costumer.getSurname());
+        if (costumerDB != null){
+            throw new IllegalArgumentException("Cliente Existente: Hay registro de este cliente.");
+        }else {
+            if (costumer.getEmail() == null || costumer.getEmail().isEmpty()) {
+                costumer.setEmail("x@x.xxx");
+            }
+            validator.validate(costumer);
+            costumer.setName(capitalize(costumer.getName()));
+            costumer.setSurname(capitalize(costumer.getSurname()));
+            costumerRepo.save(costumer);
         }
-        validator.validate(costumer);
-        costumer.setName(costumer.getName().substring(0,1).toUpperCase() + costumer.getName().substring(1));
-        costumer.setSurname(costumer.getSurname().substring(0,1).toUpperCase() + costumer.getSurname().substring(1));
-        costumerRepo.save(costumer);
+    }
+
+    private Costumer getCostumerCreated(String name, String surname) {
+        Optional<Costumer> costumerOptional = costumerRepo.findByNameAndSurnameAndEmail(capitalize(name), capitalize(surname));
+        return costumerOptional.orElse(null);
     }
 
     @Override
@@ -101,5 +119,22 @@ public class CostumerService implements ICostumerService {
     @Override
     public void updateTotalDebt(Costumer costumer) {
         costumerRepo.save(costumer);
+    }
+
+    private String capitalize(String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        String[] words = value.split(" ");
+        StringBuilder capitalized = new StringBuilder();
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                capitalized.append(word.substring(0, 1).toUpperCase());
+                capitalized.append(word.substring(1).toLowerCase());
+                capitalized.append(" ");
+            }
+        }
+        return capitalized.toString().trim();
     }
 }
