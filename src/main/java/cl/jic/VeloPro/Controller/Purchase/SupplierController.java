@@ -85,6 +85,9 @@ public class SupplierController implements Initializable {
             stackPaneAddSupplier.setVisible(false);
             notificationManager.successNotification("Registro Exitoso!", supplier.getName() + " ha sido agregado al sistema correctamente.", Pos.CENTER);
         }catch (Exception e){
+            if (e.getMessage().equals("Proveedor Existente: Hay registro de este proveedor.")){
+                notificationManager.errorNotification("Error!", e.getMessage(), Pos.CENTER);
+            }
            handleValidationException(e.getMessage());
         }
     }
@@ -106,6 +109,9 @@ public class SupplierController implements Initializable {
             stackPaneAddSupplier.setVisible(false);
             notificationManager.successNotification("Actualización Exitoso!", supplier.getName() + " ha sido actualizado correctamente.", Pos.CENTER);
         }catch (Exception e){
+            if (e.getMessage().equals("Proveedor Existente: Hay registro de este proveedor.")){
+                notificationManager.errorNotification("Error!", e.getMessage(), Pos.CENTER);
+            }
             handleValidationException(e.getMessage());
         }
     }
