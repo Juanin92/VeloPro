@@ -82,6 +82,9 @@ public class UserController implements Initializable {
             userService.addUser(user);
             notificationManager.successNotification("Registro Exitoso!", "Usuario " + user.getName() + " " + user.getSurname() + ", Registrado en el sistema", Pos.CENTER);
         } catch (Exception e) {
+            if (e.getMessage().equals("Usuario Existente: Ya hay existe el usuario")){
+                notificationManager.errorNotification("Error", e.getMessage(), Pos.CENTER);
+            }
             handleValidationException(e.getMessage());
         }
     }
@@ -325,7 +328,7 @@ public class UserController implements Initializable {
             case "Ingrese Email válido.":
                 graphicsValidator.settingAndValidationTextField(txtEmail, true, errorMessage);
                 break;
-            case "Ingrese nombre de usuario.":
+            case "Ingrese nombre de usuario.", "Este nombre de usuario ya existe":
                 graphicsValidator.settingAndValidationTextField(txtUsername, true, errorMessage);
                 break;
             case "Ingrese contraseña válido. (Debe tener 8 o más caracteres o números)":
