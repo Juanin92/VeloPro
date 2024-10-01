@@ -7,14 +7,14 @@ import cl.jic.VeloPro.Controller.Sale.CashRegisterController;
 import cl.jic.VeloPro.Controller.Sale.SaleController;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
-import cl.jic.VeloPro.Service.Sale.Interfaces.ICashRegisterService;
 import cl.jic.VeloPro.Session.Session;
+import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.VeloProApplication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -41,11 +41,10 @@ public class HomeController implements Initializable {
     @FXML private Button btnCostumer, btnExit, btnReport, btnSale, btnSetting, btnStock, btnLogo;
     @FXML private Label lblTimeLocal, lblDateLocal;
     @FXML private StackPane homeView;
-    @FXML private AnchorPane paneHome, paneBtnStock, paneBtnSale, paneBtnSetting, paneBtnCostumer, paneBtnReport, paneBtnExit;
+    @FXML private AnchorPane paneHome, paneBtnStock, paneBtnSale, paneBtnSetting, paneBtnCostumer, paneBtnReport;
 
-    @Autowired private ICashRegisterService cashRegisterService;
     @Autowired private Session session;
-    @Setter private HomeController homeController;
+    @Autowired private NotificationManager notifications;
     @Setter private boolean activeToken;
     private User currentUser;
     private boolean out = false;
@@ -58,6 +57,18 @@ public class HomeController implements Initializable {
         managedUserView(currentUser);
         showCashRegisterOpeningForm();
         validateToken(activeToken);
+        homeView.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.windowProperty().addListener((observableWindow, oldWindow, newWindow) -> {
+                    if (newWindow != null) {
+                        newWindow.setOnCloseRequest(event -> {
+                            event.consume();
+                            handleClosingRegisterView();
+                        });
+                    }
+                });
+            }
+        });
     }
 
     @FXML
@@ -121,27 +132,7 @@ public class HomeController implements Initializable {
             homeView.getChildren().add(paneHome);
             changeColorMenu(null,btnLogo);
         }else if (event.getSource().equals(btnExit)) {
-            if (out){
-                Stage stage = (Stage) homeView.getScene().getWindow();
-                stage.close();
-            }else {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/Sales/closingCashRegister.fxml"));
-                fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
-                Parent root = fxmlLoader.load();
-                CashRegisterController cashRegisterController =  fxmlLoader.getController();
-                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                cashRegisterController.setHomeView(currentStage);
-
-                Stage stage = new Stage();
-                stage.setTitle("Registro Cierre Caja");
-                stage.setScene(new Scene(root));
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.showAndWait();
-
-                if (currentUser.getRole().equals(Rol.MASTER)){
-                    currentStage.close();
-                }
-            }
+            handleClosingRegisterView();
         }
     }
 
@@ -170,7 +161,35 @@ public class HomeController implements Initializable {
                 }
                 stage.showAndWait();
             } catch (IOException e) {
-                e.printStackTrace();
+                notifications.errorNotification("Error de Sistema", "No se ha podido realizar la acción", Pos.TOP_CENTER);
+            }
+        }
+    }
+
+    private void handleClosingRegisterView() {
+        if (out || currentUser.getRole().equals(Rol.WAREHOUSE)){
+            Stage stage = (Stage) homeView.getScene().getWindow();
+            stage.close();
+        }else {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/Sales/closingCashRegister.fxml"));
+                fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
+                Parent root = fxmlLoader.load();
+                CashRegisterController cashRegisterController = fxmlLoader.getController();
+                Stage currentStage = (Stage) homeView.getScene().getWindow();
+                cashRegisterController.setHomeView(currentStage);
+
+                Stage stage = new Stage();
+                stage.setTitle("Registro Cierre Caja");
+                stage.setScene(new Scene(root));
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.showAndWait();
+
+                if (currentUser.getRole().equals(Rol.MASTER)) {
+                    currentStage.close();
+                }
+            }catch (IOException e) {
+                notifications.errorNotification("Error de Sistema", "No se ha podido realizar la acción", Pos.TOP_CENTER);
             }
         }
     }
