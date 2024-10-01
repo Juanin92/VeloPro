@@ -216,9 +216,6 @@ public class StockController implements Initializable, IProductList{
                                 btnEliminate.setDisable(true);
                                 product.setStatus(true);
                             }
-                            btnEliminate.setDisable(currentUser.getRole().equals(Rol.SELLER));
-                            btnEdit.setDisable(currentUser.getRole().equals(Rol.SELLER));
-
                             HBox buttons = new HBox(btnEdit, btnEliminate);
                             buttons.setAlignment(Pos.CENTER);
                             buttons.setSpacing(5);
@@ -270,7 +267,7 @@ public class StockController implements Initializable, IProductList{
     }
 
     private void managedUserView(User user){
-        if(user.getRole().equals(Rol.SELLER)){
+        if(user.getRole().equals(Rol.SELLER) || user.getRole().equals(Rol.GUEST)){
             btnAddCategories.setDisable(true);
             btnAddProduct.setDisable(true);
             btnSupplier.setDisable(true);

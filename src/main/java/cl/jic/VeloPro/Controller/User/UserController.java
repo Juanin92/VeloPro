@@ -171,10 +171,12 @@ public class UserController implements Initializable {
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        tableUser.getSelectionModel().selectedItemProperty().addListener((observableValue, user, newValue) -> {
-            userSelectedList = newValue;
-            showAndLoadaElementsTable();
-        });
+        if (currentUser.getRole().equals(Rol.MASTER)) {
+            tableUser.getSelectionModel().selectedItemProperty().addListener((observableValue, user, newValue) -> {
+                userSelectedList = newValue;
+                showAndLoadaElementsTable();
+            });
+        }
         configurationTableView();
     }
 

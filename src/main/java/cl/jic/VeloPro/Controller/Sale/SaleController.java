@@ -3,6 +3,7 @@ package cl.jic.VeloPro.Controller.Sale;
 import cl.jic.VeloPro.Controller.HomeController;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.MovementsType;
+import cl.jic.VeloPro.Model.Enum.Rol;
 import cl.jic.VeloPro.Service.Report.Interfaces.IKardexService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.IPaymentService;
 import cl.jic.VeloPro.Session.Session;
@@ -120,6 +121,8 @@ public class SaleController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         currentUser = session.getCurrentUser();
+        btnLoan.setVisible(!currentUser.getRole().equals(Rol.GUEST));
+        btnMixed.setVisible(!currentUser.getRole().equals(Rol.GUEST));
         if (url.toString().contains("listProductSale.fxml")){
             Platform.runLater(this::loadDataProductSearchList);
             setupSearchFilterProduct();

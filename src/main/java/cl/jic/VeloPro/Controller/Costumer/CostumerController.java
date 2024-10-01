@@ -76,6 +76,7 @@ public class CostumerController implements Initializable, ICostumerList {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         currentUser = session.getCurrentUser();
+        btnAddCostumer.setDisable(currentUser.getRole().equals(Rol.GUEST));
         configurationTableView();
         setupSearchFilter();
         loadDataCostumerList();
@@ -237,9 +238,6 @@ public class CostumerController implements Initializable, ICostumerList {
                             setGraphic(null);
                         } else {
                             Costumer costumer = getTableView().getItems().get(getIndex());
-                            if (currentUser.getRole().equals(Rol.SELLER) || currentUser.getRole().equals(Rol.GUEST)){
-                                btnEliminate.setDisable(true);
-                            }
                             if (costumer.getDebt() > 0){
                                 btnEliminate.setDisable(true);
                                 btnPay.setDisable(false);
@@ -248,7 +246,9 @@ public class CostumerController implements Initializable, ICostumerList {
                                 btnPay.setDisable(true);
                             }
                             btnEliminate.setVisible(costumer.isAccount());
-                            btnEdit.setDisable(currentUser.getRole().equals(Rol.GUEST));
+                            btnEliminate.setDisable(currentUser.getRole().equals(Rol.SELLER));
+                            btnEdit.setVisible(!currentUser.getRole().equals(Rol.GUEST));
+                            btnEliminate.setVisible(!currentUser.getRole().equals(Rol.GUEST));
                             btnPay.setVisible(costumer.isAccount());
 
                             HBox buttons = new HBox(btnPay, btnEdit, btnEliminate);

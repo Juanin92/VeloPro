@@ -61,10 +61,11 @@ public class SettingController implements Initializable {
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     private ObservableList<CashRegister> list = FXCollections.observableArrayList();
     private Button buttonSelected;
+    private User currentUser;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        User currentUser = session.getCurrentUser();
+        currentUser = session.getCurrentUser();
         managedUserView(currentUser);
         loadDataCashRegisterList();
         validateToken(activeToken);
@@ -155,7 +156,9 @@ public class SettingController implements Initializable {
                         autosize();
                         setOnMouseClicked(mouseEvent -> {
                             if (!isEmpty()) {
-                                startEdit();
+                                if (currentUser.getRole().equals(Rol.MASTER)){
+                                    startEdit();
+                                }
                             }
                         });
                     }
@@ -228,7 +231,9 @@ public class SettingController implements Initializable {
                         autosize();
                         setOnMouseClicked(mouseEvent -> {
                             if (!isEmpty()) {
-                                startEdit();
+                                if (currentUser.getRole().equals(Rol.MASTER)){
+                                    startEdit();
+                                }
                             }
                         });
                     }
@@ -303,7 +308,9 @@ public class SettingController implements Initializable {
                         autosize();
                         setOnMouseClicked(mouseEvent -> {
                             if (!isEmpty()) {
-                                startEdit();
+                                if (currentUser.getRole().equals(Rol.MASTER)){
+                                    startEdit();
+                                }
                             }
                         });
                     }

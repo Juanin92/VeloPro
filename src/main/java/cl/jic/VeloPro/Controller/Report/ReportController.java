@@ -2,7 +2,10 @@ package cl.jic.VeloPro.Controller.Report;
 
 import cl.jic.VeloPro.Controller.HomeController;
 import cl.jic.VeloPro.Model.DTO.*;
+import cl.jic.VeloPro.Model.Entity.User;
+import cl.jic.VeloPro.Model.Enum.Rol;
 import cl.jic.VeloPro.Service.Report.Interfaces.IReportService;
+import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
 import cl.jic.VeloPro.VeloProApplication;
@@ -55,6 +58,7 @@ public class ReportController implements Initializable {
     @Autowired private IReportService reportService;
     @Autowired private ButtonManager buttonManager;
     @Autowired private ShowingStageValidation stageValidation;
+    @Autowired private Session session;
 
     @Setter private HomeController homeController;
     private LocalDate start = LocalDate.now();
@@ -66,6 +70,8 @@ public class ReportController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        User currentUser = session.getCurrentUser();
+        btnSaleTable.setVisible(!currentUser.getRole().equals(Rol.WAREHOUSE));
         loadData();
     }
 
