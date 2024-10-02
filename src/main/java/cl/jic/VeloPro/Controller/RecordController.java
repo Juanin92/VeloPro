@@ -146,7 +146,7 @@ public class RecordController implements Initializable {
                 for (Record record : list) {
                     if (record.getUser().getName().toLowerCase().contains(word) ||
                             record.getUser().getSurname().toLowerCase().contains(word) ||
-                            record.getAction().equals(word)) {
+                            record.getAction().toLowerCase().equals(word)) {
                         filteredList.add(record);
                     }
                 }
