@@ -3,6 +3,7 @@ package cl.jic.VeloPro.Controller.Costumer;
 import cl.jic.VeloPro.Controller.HomeController;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Utility.EmailService;
@@ -62,6 +63,7 @@ public class CostumerController implements Initializable, ICostumerList {
 
     @Autowired private ICostumerService costumerService;
     @Autowired private ITicketHistoryService ticketHistoryService;
+    @Autowired private IRecordService recordService;
     @Autowired private EmailService emailService;
     @Autowired private ButtonManager buttonManager;
     @Autowired private ShowingStageValidation stageValidation;
@@ -109,10 +111,8 @@ public class CostumerController implements Initializable, ICostumerList {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/CostumerView/costumerRegister.fxml"));
         fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
         Parent root = fxmlLoader.load();
-
         AddEditCostumerController controller = fxmlLoader.getController();
         controller.setCurrentCostumer(costumer);
-
         Scene scene = new Scene(root);
         costumerRegister = new Stage();
         costumerRegister.setScene(scene);
@@ -210,6 +210,7 @@ public class CostumerController implements Initializable, ICostumerList {
                             costumerService.delete(costumer);
                             loadDataCostumerList();
                             costumerList.refresh();
+                            recordService.registerAction(currentUser,"DELETE", "Elimino Cliente " + costumer.getName() + " " + costumer.getSurname());
                         });
                         btnEdit.setOnAction((event) -> {
                             Costumer costumer = getTableView().getItems().get(getIndex());
@@ -351,7 +352,7 @@ public class CostumerController implements Initializable, ICostumerList {
 
     @FXML
     private void setupSearchFilter() {
-        txtFindCostumer .textProperty().addListener((observable, oldValue, newValue) -> {
+        txtFindCostumer.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
                 costumerList.setItems(list);
                 costumerList.refresh();

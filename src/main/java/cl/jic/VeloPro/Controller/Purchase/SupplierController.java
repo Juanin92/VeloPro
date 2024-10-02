@@ -2,6 +2,8 @@ package cl.jic.VeloPro.Controller.Purchase;
 
 import cl.jic.VeloPro.Model.Entity.Purchase.Supplier;
 import cl.jic.VeloPro.Service.Purchase.Interfaces.ISupplierService;
+import cl.jic.VeloPro.Service.Record.IRecordService;
+import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.Validation.GraphicsValidator;
 import javafx.collections.FXCollections;
@@ -33,8 +35,10 @@ public class SupplierController implements Initializable {
     @FXML private Label lblEmail, lblName, lblPhone, lblRut;
 
     @Autowired private ISupplierService supplierService;
+    @Autowired private IRecordService recordService;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private NotificationManager notificationManager;
+    @Autowired private Session session;
 
     private Supplier selectedSupplier;
 
@@ -84,6 +88,7 @@ public class SupplierController implements Initializable {
             clearField();
             stackPaneAddSupplier.setVisible(false);
             notificationManager.successNotification("Registro Exitoso!", supplier.getName() + " ha sido agregado al sistema correctamente.", Pos.CENTER);
+            recordService.registerAction(session.getCurrentUser(), "CREATE", "Crear Proveedor" + supplier.getName());
         }catch (Exception e){
             if (e.getMessage().equals("Proveedor Existente: Hay registro de este proveedor.")){
                 notificationManager.errorNotification("Error!", e.getMessage(), Pos.CENTER);
@@ -108,6 +113,7 @@ public class SupplierController implements Initializable {
             clearField();
             stackPaneAddSupplier.setVisible(false);
             notificationManager.successNotification("Actualización Exitoso!", supplier.getName() + " ha sido actualizado correctamente.", Pos.CENTER);
+            recordService.registerAction(session.getCurrentUser(), "CHANGE", "Cambio Proveedor" + supplier.getName());
         }catch (Exception e){
             if (e.getMessage().equals("Proveedor Existente: Hay registro de este proveedor.")){
                 notificationManager.errorNotification("Error!", e.getMessage(), Pos.CENTER);

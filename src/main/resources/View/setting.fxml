@@ -78,6 +78,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
+                  <Button fx:id="btnRecord" layoutX="69.0" layoutY="604.0" mnemonicParsing="false" onAction="#handleButton" text="Historial" visible="false" />
                </children>
             </AnchorPane>
             <StackPane fx:id="paneSettingView" prefHeight="650.0" prefWidth="930.0">

@@ -8,6 +8,7 @@ import cl.jic.VeloPro.Model.Entity.Product.UnitProduct;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
 import cl.jic.VeloPro.Service.Product.Interface.IProductService;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;

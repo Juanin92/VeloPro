@@ -1,7 +1,9 @@
 package cl.jic.VeloPro.Controller.Report;
 
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleService;
+import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Utility.ExcelGenerator;
 import cl.jic.VeloPro.Utility.NotificationManager;
@@ -40,10 +42,12 @@ public class SaleRegisterController implements Initializable {
     @FXML private DatePicker dateTo, dateFrom;
 
     @Autowired private ISaleService saleService;
+    @Autowired private IRecordService recordService;
     @Autowired private PDFGenerator pdfGenerator;
     @Autowired private ExcelGenerator excelGenerator;
     @Autowired private ButtonManager buttonManager;
     @Autowired private NotificationManager notificationManager;
+    @Autowired private Session session;
 
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("es", "CL"));
     private  ObservableList<Sale> saleList;
@@ -58,10 +62,12 @@ public class SaleRegisterController implements Initializable {
             try {
                 ObservableList<Sale> listToExport = (filteredList != null && !filteredList.isEmpty()) ? filteredList : saleList;
                 excelGenerator.createSaleFile(listToExport, "Ventas");
+                recordService.registerAction(session.getCurrentUser(), "CREATE", "Crea Archivo Excel Ventas");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
+        recordService.registerAction(session.getCurrentUser(), "VIEW", "Ventas Registro");
     }
 
     public void loadDataSaleList(){

@@ -4,6 +4,7 @@ import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
 import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Utility.NotificationManager;
@@ -40,6 +41,7 @@ public class AddEditCostumerController implements Initializable {
 
     @Autowired private ICostumerService costumerService;
     @Autowired private ICostumerList ICostumerList;
+    @Autowired private IRecordService recordService;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private Session session;
     @Autowired private NotificationManager notificationManager;
@@ -82,6 +84,7 @@ public class AddEditCostumerController implements Initializable {
             costumer.setEmail(txtEmailCostumer.getText());
             costumerService.addNewCostumer(costumer);
             notificationManager.successNotification("Registro Exitoso!", "Cliente " + costumer.getName() + " " + costumer.getSurname() + ", " + "Registrado en el sistema", Pos.CENTER);
+            recordService.registerAction(currentUser,"CREATE", "Crear Cliente " + costumer.getName() + " " + costumer.getSurname());
             closeView();
         } catch (IllegalArgumentException e){
             if (e.getMessage().equals("Cliente Existente: Hay registro de este cliente.")){
@@ -100,6 +103,7 @@ public class AddEditCostumerController implements Initializable {
             costumer.setEmail(txtEmailCostumer.getText());
             costumerService.updateCostumer(costumer);
             notificationManager.successNotification("Actualizado Exitoso!", "Cliente " + costumer.getName() + " " + costumer.getSurname() + ", " + "Se ha Actualizado.", Pos.CENTER);
+            recordService.registerAction(currentUser,"CHANGE", "Cambio Cliente " + costumer.getName() + " " + costumer.getSurname());
             closeView();
             currentCostumer = null;
         } catch (IllegalArgumentException e) {
@@ -134,6 +138,7 @@ public class AddEditCostumerController implements Initializable {
                     txtEmailCostumer.setText(currentCostumer.getEmail());
                     btnSaveCostumer.setVisible(false);
                     btnUpdateCostumer.setVisible(true);
+                    recordService.registerAction(currentUser,"ACTIVE", "Activo Cliente " + currentCostumer.getName() + " " + currentCostumer.getSurname());
                 });
             }
         }

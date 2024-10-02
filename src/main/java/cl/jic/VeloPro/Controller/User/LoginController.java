@@ -2,6 +2,7 @@ package cl.jic.VeloPro.Controller.User;
 
 import cl.jic.VeloPro.Controller.HomeController;
 import cl.jic.VeloPro.Model.Entity.User;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.User.IUserService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.EmailService;
@@ -42,9 +43,10 @@ public class LoginController implements Initializable {
     @FXML private Label lblUsername, lblPass, lblMessage;
     @FXML private ProgressBar progressBar;
 
+    @Autowired private IUserService userService;
+    @Autowired private IRecordService recordService;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private NotificationManager notificationManager;
-    @Autowired private IUserService userService;
     @Autowired private Session session;
     @Autowired private EmailService emailService;
     private boolean activeToken = false;
@@ -88,6 +90,7 @@ public class LoginController implements Initializable {
                 stage.show();
                 Stage loginView = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 loginView.close();
+                recordService.registerEntry(authenticatedUser);
             }else {
                 lblMessage.setVisible(true);
             }
@@ -103,6 +106,7 @@ public class LoginController implements Initializable {
                 userService.sendEmailCode(user);
                 notificationManager.successNotification("Correo enviado", "Email con su código de verificación ha sido enviado", Pos.CENTER);
                 activeToken = true;
+                recordService.registerAction(user, "CHANGE PASSWORD", "Correo enviado con token");
             }
         }catch (Exception ex){
             notificationManager.errorNotification("Error!", ex.getMessage(), Pos.TOP_CENTER);

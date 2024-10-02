@@ -4,11 +4,11 @@ import cl.jic.VeloPro.Controller.HomeController;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.MovementsType;
 import cl.jic.VeloPro.Model.Enum.Rol;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.Report.Interfaces.IKardexService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.IPaymentService;
 import cl.jic.VeloPro.Session.Session;
-import cl.jic.VeloPro.Utility.ButtonManager;
-import cl.jic.VeloPro.Utility.EmailService;
+import cl.jic.VeloPro.Utility.*;
 import cl.jic.VeloPro.Model.DTO.DetailSaleDTO;
 import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
 import cl.jic.VeloPro.Model.Entity.Product.*;
@@ -20,8 +20,6 @@ import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
 import cl.jic.VeloPro.Service.Product.Interface.IProductService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleDetailService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleService;
-import cl.jic.VeloPro.Utility.NotificationManager;
-import cl.jic.VeloPro.Utility.PDFGenerator;
 import cl.jic.VeloPro.Validation.GraphicsValidator;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
 import cl.jic.VeloPro.VeloProApplication;
@@ -94,10 +92,11 @@ public class SaleController implements Initializable {
     @Autowired private ISaleDetailService saleDetailService;
     @Autowired private IPaymentService paymentService;
     @Autowired private ICostumerService costumerService;
-    @Autowired private EmailService emailService;
-    @Autowired private PDFGenerator pdfGenerator;
     @Autowired private ITicketHistoryService ticketHistoryService;
     @Autowired private IKardexService kardexService;
+    @Autowired private IRecordService recordService;
+    @Autowired private EmailService emailService;
+    @Autowired private PDFGenerator pdfGenerator;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private ButtonManager buttonManager;
     @Autowired private NotificationManager notificationManager;
@@ -238,6 +237,7 @@ public class SaleController implements Initializable {
             }
 
             notificationManager.successNotification("Venta Exitosa!", "La venta " + lblNumberSale.getText() + " se ha efectuado correctamente.", Pos.TOP_CENTER);
+            recordService.registerAction(currentUser, "CREATE", "Crea Venta " + sale.getDocument());
             pdfGenerator.openPDF(filePath);
             resetAfterSale();
         }catch (Exception e){

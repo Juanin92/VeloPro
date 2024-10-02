@@ -2,6 +2,7 @@ package cl.jic.VeloPro.Controller.User;
 
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.User.IUserService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
@@ -50,6 +51,7 @@ public class UserController implements Initializable {
     @FXML private AnchorPane paneAddUser, paneListUser, paneChangePassword, paneUpdateList;
 
     @Autowired private IUserService userService;
+    @Autowired private IRecordService recordService;
     @Autowired private ButtonManager buttonManager;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private NotificationManager notificationManager;
@@ -81,6 +83,7 @@ public class UserController implements Initializable {
             user.setRole(cbRol.getValue());
             userService.addUser(user);
             notificationManager.successNotification("Registro Exitoso!", "Usuario " + user.getName() + " " + user.getSurname() + ", Registrado en el sistema", Pos.CENTER);
+            recordService.registerAction(currentUser, "CREATE", "Crea Usuario " + user.getRut());
         } catch (Exception e) {
             if (e.getMessage().equals("Usuario Existente: Ya hay existe el usuario")){
                 notificationManager.errorNotification("Error", e.getMessage(), Pos.CENTER);
@@ -101,6 +104,7 @@ public class UserController implements Initializable {
             currentUser.setUsername(txtUsername.getText());
             userService.updateUser(currentUser);
             notificationManager.successNotification("Actualización Exitosa!", "Usuario " + currentUser.getName() + " " + currentUser.getSurname() + ", Actualizado en el sistema", Pos.CENTER);
+            recordService.registerAction(currentUser, "CHANGE", "Cambio Usuario " + currentUser.getRut());
             tableUser.refresh();
             activeToken = false;
         }catch (Exception e){
@@ -117,6 +121,7 @@ public class UserController implements Initializable {
                     try{
                         userService.sendEmailCode(currentUser);
                         notificationManager.successNotification("Envio Exitoso", "Se ha enviado a su correo el código, Ingrese en el campo contraseña actual", Pos.CENTER);
+                        recordService.registerAction(currentUser, "CHANGE", "Cambio Password " + currentUser.getRut());
                     }catch (Exception e){
                         notificationManager.errorNotification("Error de Envio", e.getMessage(), Pos.CENTER);
                     }
@@ -192,6 +197,7 @@ public class UserController implements Initializable {
                         btnEliminate.setOnAction((event) -> {
                             User user = getTableView().getItems().get(getIndex());
                             userService.deleteUser(user);
+                            recordService.registerAction(currentUser, "DELETE", "Eliminar Usuario " + user.getRut());
                             loadDataUserList();
                         });
                     }

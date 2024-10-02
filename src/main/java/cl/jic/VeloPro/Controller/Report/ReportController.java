@@ -4,6 +4,7 @@ import cl.jic.VeloPro.Controller.HomeController;
 import cl.jic.VeloPro.Model.DTO.*;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.Report.Interfaces.IReportService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
@@ -56,6 +57,7 @@ public class ReportController implements Initializable {
     @FXML private TableColumn<Object, Object> colB;
 
     @Autowired private IReportService reportService;
+    @Autowired private IRecordService recordService;
     @Autowired private ButtonManager buttonManager;
     @Autowired private ShowingStageValidation stageValidation;
     @Autowired private Session session;
@@ -73,6 +75,7 @@ public class ReportController implements Initializable {
         User currentUser = session.getCurrentUser();
         btnSaleTable.setVisible(!currentUser.getRole().equals(Rol.WAREHOUSE));
         loadData();
+        recordService.registerAction(currentUser, "VIEW", "Reportes");
     }
 
     @FXML

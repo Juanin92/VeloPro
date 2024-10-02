@@ -3,7 +3,9 @@ package cl.jic.VeloPro.Controller.Report;
 import cl.jic.VeloPro.Model.Entity.Kardex;
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
 import cl.jic.VeloPro.Model.Enum.MovementsType;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.Report.Interfaces.IKardexService;
+import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ExcelGenerator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -42,7 +44,9 @@ public class KardexController implements Initializable {
     @FXML private CustomTextField txtSearch;
 
     @Autowired private IKardexService kardexService;
+    @Autowired private IRecordService recordService;
     @Autowired private ExcelGenerator excelGenerator;
+    @Autowired private Session session;
 
     private ObservableList<Kardex> kardexList;
     private ObservableList<Kardex> filteredList;
@@ -55,10 +59,12 @@ public class KardexController implements Initializable {
             try {
                 ObservableList<Kardex> listToExport = (filteredList != null && !filteredList.isEmpty()) ? filteredList : kardexList;
                 excelGenerator.createKardexFile(listToExport, "Kardex");
+                recordService.registerAction(session.getCurrentUser(), "CREATE", "Crea Archivo kardex");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
+        recordService.registerAction(session.getCurrentUser(), "VIEW", "kardex");
     }
 
     public void loadDataKardexList(){

@@ -11,6 +11,7 @@ import cl.jic.VeloPro.Model.Entity.Purchase.PurchaseDetail;
 import cl.jic.VeloPro.Model.Entity.Purchase.Supplier;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.MovementsType;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.Report.Interfaces.IKardexService;
 import cl.jic.VeloPro.Service.Purchase.Interfaces.IPurchaseDetailService;
 import cl.jic.VeloPro.Service.Purchase.Interfaces.IPurchaseService;
@@ -84,6 +85,7 @@ public class PurchaseController implements Initializable {
     @Autowired private IPurchaseDetailService purchaseDetailService;
     @Autowired private IProductList productList;
     @Autowired private IKardexService kardexService;
+    @Autowired private IRecordService recordService;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private ButtonManager buttonManager;
     @Autowired private NotificationManager notificationManager;
@@ -212,6 +214,7 @@ public class PurchaseController implements Initializable {
                         cleanField();
 
                         notificationManager.successNotification("Registro Exitoso!", "La compra ha sido agregada al sistema correctamente.", Pos.CENTER);
+                        recordService.registerAction(currentUser, "CREATE", "Crear Compra" + purchase.getDocument());
                     }else {
                         notificationManager.errorNotification("Valores erróneo!","Verifique el total de la compra con el total de los producto. \nHay una diferencia de $" + (total - totalPricePurchaseList), Pos.CENTER);
                     }

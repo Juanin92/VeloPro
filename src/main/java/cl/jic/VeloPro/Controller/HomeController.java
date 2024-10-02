@@ -7,6 +7,7 @@ import cl.jic.VeloPro.Controller.Sale.CashRegisterController;
 import cl.jic.VeloPro.Controller.Sale.SaleController;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.VeloProApplication;
@@ -43,6 +44,7 @@ public class HomeController implements Initializable {
     @FXML private StackPane homeView;
     @FXML private AnchorPane paneHome, paneBtnStock, paneBtnSale, paneBtnSetting, paneBtnCostumer, paneBtnReport;
 
+    @Autowired private IRecordService recordService;
     @Autowired private Session session;
     @Autowired private NotificationManager notifications;
     @Setter private boolean activeToken;
@@ -170,6 +172,7 @@ public class HomeController implements Initializable {
         if (out || currentUser.getRole().equals(Rol.WAREHOUSE)){
             Stage stage = (Stage) homeView.getScene().getWindow();
             stage.close();
+            recordService.registerEnd(currentUser);
         }else {
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/Sales/closingCashRegister.fxml"));
@@ -188,6 +191,7 @@ public class HomeController implements Initializable {
                 if (currentUser.getRole().equals(Rol.MASTER)) {
                     currentStage.close();
                 }
+                recordService.registerEnd(currentUser);
             }catch (IOException e) {
                 notifications.errorNotification("Error de Sistema", "No se ha podido realizar la acción", Pos.TOP_CENTER);
             }

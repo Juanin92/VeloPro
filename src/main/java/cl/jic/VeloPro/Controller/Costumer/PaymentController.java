@@ -3,9 +3,12 @@ package cl.jic.VeloPro.Controller.Costumer;
 import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
 import cl.jic.VeloPro.Model.Entity.Costumer.PaymentCostumer;
 import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
+import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
 import cl.jic.VeloPro.Service.Costumer.Interface.IPaymentCostumerService;
 import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
+import cl.jic.VeloPro.Service.Record.IRecordService;
+import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Validation.GraphicsValidator;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -45,16 +48,20 @@ public class PaymentController implements Initializable {
     @Autowired private IPaymentCostumerService paymentCostumerService;
     @Autowired private ITicketHistoryService ticketHistoryService;
     @Autowired private ICostumerList ICostumerList;
+    @Autowired private IRecordService recordService;
     @Autowired private GraphicsValidator graphicsValidator;
+    @Autowired private Session session;
     @Setter private Costumer currentCostumer;
 
     ObservableList<PaymentCostumer> paymentList;
     List<TicketHistory> selectedTickets;
+    private User currentUser;
     private int totalPayment;
     private int debt;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        currentUser = session.getCurrentUser();
         Platform.runLater(this::loadCombo);
         Platform.runLater(this::loadDataPaymentList);
         Platform.runLater(this::calculateTotalPayment);
@@ -82,6 +89,7 @@ public class PaymentController implements Initializable {
             ICostumerList.loadDataCostumerList();
             ICostumerList.updateTotalDebt();
             loadCombo();
+            recordService.registerAction(currentUser,"PAYMENT", "Pago Cliente " + currentCostumer.getName() + " " + currentCostumer.getSurname() + ", Cantidad: " + Integer.parseInt(txtPayment.getText()));
         } catch (NumberFormatException e){
             handleValidationException("Ingrese solo números.");
         } catch (IllegalArgumentException e) {

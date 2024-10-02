@@ -4,6 +4,7 @@ import cl.jic.VeloPro.Model.Entity.Product.*;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.MovementsType;
 import cl.jic.VeloPro.Model.Enum.Rol;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.Report.Interfaces.IKardexService;
 import cl.jic.VeloPro.Service.Product.Interface.*;
 import cl.jic.VeloPro.Session.Session;
@@ -47,6 +48,7 @@ public class ProductController implements Initializable {
     @Autowired private IProductService productService;
     @Autowired private IProductList productList;
     @Autowired private IKardexService kardexService;
+    @Autowired private IRecordService recordService;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private NotificationManager notificationManager;
     @Autowired private Session session;
@@ -90,6 +92,7 @@ public class ProductController implements Initializable {
             productService.save(product);
             productList.loadDataStockList();
             notificationManager.successNotification("Registro Exitoso!", "El producto agregado al sistema correctamente.", Pos.CENTER );
+            recordService.registerAction(currentUser, "CREATE", "Crear Producto" + product.getDescription());
         }catch (Exception e){
             handleValidationException(e.getMessage());
         }
@@ -114,6 +117,7 @@ public class ProductController implements Initializable {
                     kardexService.addKardex(selectedProduct, Integer.parseInt(txtQuantity.getText()), "Actualización Precio", MovementsType.AJUSTE, currentUser);
                 }
                 notificationManager.successNotification("Actualización Exitosa!", "El producto se ha actualizado en el sistema correctamente.", Pos.CENTER);
+                recordService.registerAction(currentUser, "CHANGE", "Cambio Producto" + selectedProduct.getDescription());
             }else {
                 System.out.println("Implementar la actualizacion cuando no esta disponible el producto");
             }

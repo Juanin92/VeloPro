@@ -4,6 +4,7 @@ import cl.jic.VeloPro.Controller.User.UserController;
 import cl.jic.VeloPro.Model.Entity.Sale.CashRegister;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
+import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.ICashRegisterService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
@@ -16,13 +17,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.Setter;
 import org.controlsfx.control.textfield.CustomTextField;
+import org.eclipse.angus.mail.imap.protocol.IMAPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +43,7 @@ import java.util.ResourceBundle;
 @Component
 public class SettingController implements Initializable {
 
-    @FXML private Button btnAddUser, btnListCheckout, btnListUser, btnUpdateUser;
+    @FXML private Button btnAddUser, btnListCheckout, btnListUser, btnUpdateUser, btnRecord;
     @FXML private AnchorPane paneListCheckout;
     @FXML private StackPane paneSettingView;
     @FXML private TableView<CashRegister> cashRegisterTable;
@@ -51,6 +57,7 @@ public class SettingController implements Initializable {
     @FXML private TableColumn<CashRegister, User> colUser;
 
     @Autowired private ICashRegisterService cashRegisterService;
+    @Autowired private IRecordService recordService;
     @Autowired private Session session;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private ButtonManager buttonManager;
@@ -69,6 +76,7 @@ public class SettingController implements Initializable {
         managedUserView(currentUser);
         loadDataCashRegisterList();
         validateToken(activeToken);
+        recordService.registerAction(currentUser, "VIEW", "Registro Caja");
     }
 
     @FXML
@@ -114,6 +122,22 @@ public class SettingController implements Initializable {
             paneListCheckout.setVisible(false);
             buttonManager.selectedButtonPane(btnUpdateUser,buttonSelected);
             buttonSelected = btnUpdateUser;
+        } else if (event.getSource().equals(btnRecord)) {
+            System.out.println("Click btnRecord");
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/record.fxml"));
+            fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
+            Parent root = fxmlLoader.load();
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setTitle("Historial usuarios");
+            stage.initStyle(StageStyle.UNDECORATED);
+            scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+                if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                    stage.close();
+                }
+            });
+            stage.show();
         }
         homeController.handleButton(event);
     }
@@ -429,6 +453,9 @@ public class SettingController implements Initializable {
             btnAddUser.setDisable(true);
             btnListCheckout.setDisable(true);
             btnListUser.setDisable(true);
+        }
+        if (user.getRole().equals(Rol.MASTER)){
+            btnRecord.setVisible(true);
         }
     }
 }

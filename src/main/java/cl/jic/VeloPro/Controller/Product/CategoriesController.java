@@ -4,10 +4,13 @@ import cl.jic.VeloPro.Model.Entity.Product.BrandProduct;
 import cl.jic.VeloPro.Model.Entity.Product.CategoryProduct;
 import cl.jic.VeloPro.Model.Entity.Product.SubcategoryProduct;
 import cl.jic.VeloPro.Model.Entity.Product.UnitProduct;
+import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Service.Product.Interface.IBrandService;
 import cl.jic.VeloPro.Service.Product.Interface.ICategoryService;
 import cl.jic.VeloPro.Service.Product.Interface.ISubcategoryService;
 import cl.jic.VeloPro.Service.Product.Interface.IUnitService;
+import cl.jic.VeloPro.Service.Record.IRecordService;
+import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.Validation.GraphicsValidator;
 import javafx.application.Platform;
@@ -38,8 +41,10 @@ public class CategoriesController implements Initializable {
     @Autowired private IUnitService unitService;
     @Autowired private ICategoryService categoryService;
     @Autowired private ISubcategoryService subcategoryService;
+    @Autowired private IRecordService recordService;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private NotificationManager notificationManager;
+    @Autowired private Session session;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -59,6 +64,7 @@ public class CategoriesController implements Initializable {
             brandService.save(brand);
             txtBrand.clear();
             notificationManager.successNotification("Registro Exitoso!", brand.getName() + ", Ha sido agregada al sistema.", Pos.CENTER);
+            recordService.registerAction(session.getCurrentUser(), "CREATE", "Crear Marca" + brand.getName());
         }catch (IllegalArgumentException e){
             graphicsValidator.settingAndValidationTextField(txtBrand,true, e.getMessage());
         }
@@ -72,6 +78,7 @@ public class CategoriesController implements Initializable {
             unitService.save(unit);
             txtUnit.clear();
             notificationManager.successNotification("Registro Exitoso!", unit.getNameUnit() + ", Ha sido agregada al sistema.", Pos.CENTER);
+            recordService.registerAction(session.getCurrentUser(), "CREATE", "Crear unidad" + unit.getNameUnit());
         }catch (IllegalArgumentException e){
             graphicsValidator.settingAndValidationTextField(txtUnit,true, e.getMessage());
         }
@@ -85,6 +92,7 @@ public class CategoriesController implements Initializable {
             categoryService.save(category);
             txtCategory.clear();
             notificationManager.successNotification("Registro Exitoso!", category.getName() + ", Ha sido agregada al sistema.", Pos.CENTER);
+            recordService.registerAction(session.getCurrentUser(), "CREATE", "Crear categoría" + category.getName());
             loadComboBox();
         }catch (IllegalArgumentException e){
             graphicsValidator.settingAndValidationTextField(txtCategory,true, e.getMessage());
@@ -100,6 +108,7 @@ public class CategoriesController implements Initializable {
             subcategoryService.save(subcategory,cbCategories.getSelectionModel().getSelectedItem());
             txtSubcategory.clear();
             notificationManager.successNotification("Registro Exitoso!", subcategory.getName() + ", Ha sido agregada al sistema.", Pos.CENTER);
+            recordService.registerAction(session.getCurrentUser(), "CREATE", "Crear Subcategoría" + subcategory.getName());
         }catch (IllegalArgumentException e){
             graphicsValidator.settingAndValidationTextField(txtSubcategory,true, e.getMessage());
         }
