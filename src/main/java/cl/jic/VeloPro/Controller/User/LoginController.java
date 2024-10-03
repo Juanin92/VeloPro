@@ -72,10 +72,11 @@ public class LoginController implements Initializable {
             stage.close();
         }else if (event.getSource().equals(btnLogin)){
             User authenticatedUser;
+            String password = txtUserPass.isVisible() ? txtUserPass.getText() : txtUserPassVisible.getText();
             if (activeToken){
-                authenticatedUser = userService.getAuthUserToken(txtUsername.getText(),txtUserPass.getText());
+                authenticatedUser = userService.getAuthUserToken(txtUsername.getText(),password);
             }else {
-                authenticatedUser = userService.getAuthUser(txtUsername.getText(),txtUserPass.getText());
+                authenticatedUser = userService.getAuthUser(txtUsername.getText(),password);
             }
             if(authenticatedUser != null){
                 session.setCurrentUser(authenticatedUser);

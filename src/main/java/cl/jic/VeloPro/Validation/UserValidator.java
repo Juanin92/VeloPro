@@ -57,7 +57,7 @@ public class UserValidator {
         }
     }
     private void validatePassword(String password){
-        if (password == null || password.trim().isBlank() || password.trim().length() <= 8){
+        if (password == null || password.trim().isBlank() || password.trim().length() <= 7){
             throw new IllegalArgumentException("Ingrese contraseña válido. (Debe tener 8 o más caracteres o números)");
         }
     }

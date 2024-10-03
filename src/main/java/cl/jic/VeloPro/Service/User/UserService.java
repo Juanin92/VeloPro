@@ -36,7 +36,6 @@ public class UserService implements IUserService {
                 throw new IllegalArgumentException("Este nombre de usuario ya existe");
             }
             userRepo.save(user);
-            System.out.println("GUARDO DATOS");
         }
     }
 

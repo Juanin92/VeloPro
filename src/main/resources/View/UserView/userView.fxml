@@ -240,7 +240,7 @@
             </Label>
             <AnchorPane fx:id="paneChangePassword" layoutX="191.0" layoutY="427.0" prefHeight="81.0" prefWidth="670.0" visible="false">
                <children>
-                  <Button fx:id="btnSendPass" contentDisplay="TOP" layoutX="514.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Enviar Código" textFill="WHITE">
+                  <Button fx:id="btnSendPass" contentDisplay="TOP" layoutX="514.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Enviar Código" textFill="WHITE" visible="false">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>

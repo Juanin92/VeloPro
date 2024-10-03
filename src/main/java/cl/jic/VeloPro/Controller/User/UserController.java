@@ -62,6 +62,7 @@ public class UserController implements Initializable {
     private User currentUser;
     private User userSelectedList;
     private boolean statusPanePass = false;
+    private String password;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -80,7 +81,8 @@ public class UserController implements Initializable {
             user.setRut(txtRut.getText());
             user.setEmail(txtEmail.getText());
             user.setUsername(txtUsername.getText());
-            user.setPassword(txtPass.getText());
+            password = txtPass.isVisible() ? txtPass.getText() : txtPassVisible.getText();
+            user.setPassword(password);
             user.setRole(cbRol.getValue());
             userService.addUser(user);
             notificationManager.successNotification("Registro Exitoso!", "Usuario " + user.getName() + " " + user.getSurname() + ", Registrado en el sistema", Pos.CENTER);
@@ -115,9 +117,12 @@ public class UserController implements Initializable {
 
     private void changePassword(){
         try{
-            if (txtCurrentPassword.getText().equals(currentUser.getPassword())){
-                currentUser.setPassword(txtNewPassword.getText());
+            String currentPassword = txtCurrentPassword.isVisible() ? txtCurrentPassword.getText() : txtCurrentPasswordVisible.getText();
+            if (currentPassword.equals(currentUser.getPassword())){
+                password = txtNewPassword.isVisible() ? txtNewPassword.getText() : txtNewPasswordVisible.getText();
+                currentUser.setPassword(password);
             }else {
+                btnSendPass.setVisible(true);
                 btnSendPass.setOnAction(event -> {
                     try{
                         userService.sendEmailCode(currentUser);
@@ -127,9 +132,10 @@ public class UserController implements Initializable {
                         notificationManager.errorNotification("Error de Envio", e.getMessage(), Pos.CENTER);
                     }
                 });
-                if (txtCurrentPassword.getText().equals(currentUser.getPassword())){
-                    if (txtNewPassword.getText().isEmpty() || txtNewPassword.getText().length() >= 7){
-                        currentUser.setPassword(txtNewPassword.getText());
+                if (currentPassword.equals(currentUser.getPassword())){
+                    password = txtNewPassword.isVisible() ? txtNewPassword.getText() : txtNewPasswordVisible.getText();
+                    if (password.isEmpty() || password.length() >= 7){
+                        currentUser.setPassword(password);
                     }else {
                         graphicsValidator.settingAndValidationFieldPassword(txtNewPassword, true, "Ingrese contraseña válido. (Debe tener 8 o más caracteres o números)");
                     }
