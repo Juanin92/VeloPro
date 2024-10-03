@@ -5,6 +5,7 @@ import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.User.IUserService;
 import cl.jic.VeloPro.Session.Session;
+import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Utility.EmailService;
 import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.Validation.GraphicsValidator;
@@ -21,6 +22,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -36,9 +38,8 @@ import java.util.ResourceBundle;
 @Component
 public class LoginController implements Initializable {
 
-    @FXML private Button btnCancelLogin, btnLogin, btnForgetPassword;
-    @FXML private CheckBox chkPassVisible;
-    @FXML private CustomTextField txtPassUserVisible, txtUsername;
+    @FXML private Button btnCancelLogin, btnLogin;
+    @FXML private CustomTextField txtUsername, txtUserPassVisible;
     @FXML private CustomPasswordField txtUserPass;
     @FXML private Label lblUsername, lblPass, lblMessage;
     @FXML private ProgressBar progressBar;
@@ -49,6 +50,7 @@ public class LoginController implements Initializable {
     @Autowired private NotificationManager notificationManager;
     @Autowired private Session session;
     @Autowired private EmailService emailService;
+    @Autowired private ButtonManager buttonManager;
     private boolean activeToken = false;
 
     @Override
@@ -57,8 +59,10 @@ public class LoginController implements Initializable {
             startProgressBar();
         }
         if (url.toString().contains("login.fxml")){
-            handleTextfieldChange(txtUsername, lblUsername);
-            handlePasswordFieldChange(txtUserPass, lblPass);
+            graphicsValidator.handleTextfieldChangeWithLabel(txtUsername, lblUsername);
+            graphicsValidator.handlePasswordFieldChange(txtUserPass, lblPass);
+            graphicsValidator.handleTextfieldChangeWithLabel(txtUserPassVisible, lblPass);
+            setupTogglePasswordVisibility(txtUserPass, txtUserPassVisible);
         }
     }
 
@@ -113,14 +117,23 @@ public class LoginController implements Initializable {
         }
     }
 
-    private void handleTextfieldChange(CustomTextField txtField, Label label){
-        txtField.focusedProperty().addListener((observable,oldValue, newValue) -> label.setVisible(newValue));
-        txtField.textProperty().addListener((observable, oldValue, newValue) -> graphicsValidator.settingAndValidationTextField(txtField, false, ""));
-    }
-
-    private void handlePasswordFieldChange(CustomPasswordField passwordField, Label label) {
-        passwordField.focusedProperty().addListener((observable, oldValue, newValue) -> label.setVisible(newValue));
-        passwordField.textProperty().addListener((observable, oldValue, newValue) -> graphicsValidator.settingAndValidationFieldPassword(passwordField, false, ""));
+    private void setupTogglePasswordVisibility(CustomPasswordField passwordField, CustomTextField passwordVisibleField) {
+        Button toggleVisibility = buttonManager.createButton("iconVisibility.png", "transparent", 15, 15);
+        passwordVisibleField.setVisible(false);
+        HBox parentHBox = (HBox) passwordField.getParent();
+        parentHBox.getChildren().add(toggleVisibility);
+        toggleVisibility.setOnAction(event -> {
+            if (passwordVisibleField.isVisible()) {
+                passwordVisibleField.setVisible(false);
+                passwordField.setVisible(true);
+                passwordField.setText(passwordVisibleField.getText());
+            } else {
+                passwordField.setVisible(false);
+                passwordVisibleField.setVisible(true);
+                passwordVisibleField.setText(passwordField.getText());
+                passwordVisibleField.requestFocus();
+            }
+        });
     }
 
     private void startProgressBar() {
