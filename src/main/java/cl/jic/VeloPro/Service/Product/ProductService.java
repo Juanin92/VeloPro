@@ -1,6 +1,7 @@
 package cl.jic.VeloPro.Service.Product;
 
 import cl.jic.VeloPro.Model.Entity.Product.Product;
+import cl.jic.VeloPro.Model.Enum.StatusProduct;
 import cl.jic.VeloPro.Repository.Product.ProductRepo;
 import cl.jic.VeloPro.Service.Product.Interface.IProductService;
 import cl.jic.VeloPro.Validation.ProductValidator;
@@ -19,6 +20,7 @@ public class ProductService implements IProductService {
     public void save(Product product) {
         validator.validateNewProduct(product);
         product.setStatus(false);
+        product.setStatusProduct(StatusProduct.NODISPONIBLE);
         product.setBuyPrice(0);
         product.setSalePrice(0);
         product.setStock(0);
@@ -29,16 +31,26 @@ public class ProductService implements IProductService {
     public void update(Product product){
         if (product.getStock() > 0){
             product.setStatus(true);
+            product.setStatusProduct(StatusProduct.DISPONIBLE);
             productRepo.save(product);
         }else {
             product.setStatus(false);
+            product.setStatusProduct(StatusProduct.NODISPONIBLE);
             productRepo.save(product);
         }
     }
 
     @Override
+    public void active(Product product) {
+        product.setStatusProduct(StatusProduct.NODISPONIBLE);
+        productRepo.save(product);
+    }
+
+    @Override
     public void delete(Product product) {
         product.setStatus(false);
+        product.setStatusProduct(StatusProduct.DESCONTINUADO);
+        productRepo.save(product);
     }
 
     @Override

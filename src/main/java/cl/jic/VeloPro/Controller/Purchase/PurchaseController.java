@@ -11,6 +11,7 @@ import cl.jic.VeloPro.Model.Entity.Purchase.PurchaseDetail;
 import cl.jic.VeloPro.Model.Entity.Purchase.Supplier;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.MovementsType;
+import cl.jic.VeloPro.Model.Enum.StatusProduct;
 import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.Report.Interfaces.IKardexService;
 import cl.jic.VeloPro.Service.Purchase.Interfaces.IPurchaseDetailService;
@@ -75,7 +76,7 @@ public class PurchaseController implements Initializable {
     @FXML private TableColumn<Product, CategoryProduct> colCategory;
     @FXML private TableColumn<Product, String> colDescriptionPurchase;
     @FXML private TableColumn<Product, Long> colIdProductPurchase;
-    @FXML private TableColumn<Product, Boolean> colStatus;
+    @FXML private TableColumn<Product, StatusProduct> colStatus;
     @FXML private TableColumn<Product, SubcategoryProduct> colSubcategory;
     @FXML private TableColumn<Product, UnitProduct> colUnit;
 
@@ -292,20 +293,26 @@ public class PurchaseController implements Initializable {
         colSubcategory.setCellValueFactory(new PropertyValueFactory<>("subcategoryProduct"));
         colDescriptionPurchase.setCellValueFactory(new PropertyValueFactory<>("description"));
         colUnit.setCellValueFactory(new PropertyValueFactory<>("unit"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colStatus.setCellValueFactory(new PropertyValueFactory<>("statusProduct"));
 
         configurationTableView();
     }
 
     private void configurationTableView() {
-        colStatus.setCellFactory(column -> new TableCell<Product,Boolean>(){
+        colStatus.setCellFactory(column -> new TableCell<Product, StatusProduct>(){
             @Override
-            protected void updateItem(Boolean item,boolean empty){
+            protected void updateItem(StatusProduct item,boolean empty){
                 super.updateItem(item, empty);
                 if (empty || item == null){
                     setText("");
                 }else {
-                    setText(item ? "Disponible" : "No Disponible");
+                    if (item.equals(StatusProduct.DISPONIBLE)){
+                        setStyle("-fx-background-color: #1fff4a;");
+                    }else if (item.equals(StatusProduct.NODISPONIBLE)){
+                        setStyle("-fx-background-color: #1fb4ff;");
+                    }else {
+                        setStyle("-fx-background-color: #ff1f1f;");
+                    }
                     autosize();
                 }
             }

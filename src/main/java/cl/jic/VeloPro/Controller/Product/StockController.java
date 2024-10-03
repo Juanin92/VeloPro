@@ -6,9 +6,12 @@ import cl.jic.VeloPro.Model.Entity.Product.Product;
 import cl.jic.VeloPro.Model.Entity.Product.SubcategoryProduct;
 import cl.jic.VeloPro.Model.Entity.Product.UnitProduct;
 import cl.jic.VeloPro.Model.Entity.User;
+import cl.jic.VeloPro.Model.Enum.MovementsType;
 import cl.jic.VeloPro.Model.Enum.Rol;
+import cl.jic.VeloPro.Model.Enum.StatusProduct;
 import cl.jic.VeloPro.Service.Product.Interface.IProductService;
 import cl.jic.VeloPro.Service.Record.IRecordService;
+import cl.jic.VeloPro.Service.Report.Interfaces.IKardexService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
@@ -29,7 +32,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 import javafx.util.Callback;
 import lombok.Setter;
 import org.controlsfx.control.textfield.CustomTextField;
@@ -53,7 +55,7 @@ public class StockController implements Initializable, IProductList{
     @FXML private TableColumn<Product, String> colDescription;
     @FXML private TableColumn<Product, Long> colId;
     @FXML private TableColumn<Product, Integer> colSalePrice;
-    @FXML private TableColumn<Product, Boolean> colStatus;
+    @FXML private TableColumn<Product, StatusProduct> colStatus;
     @FXML private TableColumn<Product, Integer> colStock;
     @FXML private TableColumn<Product, SubcategoryProduct> colSubcategory;
     @FXML private TableColumn<Product, UnitProduct> colUnit;
@@ -61,14 +63,16 @@ public class StockController implements Initializable, IProductList{
     @FXML private CustomTextField txtSearchProduct;
 
     @Autowired private IProductService productService;
+    @Autowired private IKardexService kardexService;
+    @Autowired private IRecordService recordService;
     @Autowired private ButtonManager buttonManager;
     @Autowired private ShowingStageValidation validateStage;
     @Autowired private Session session;
 
     @Setter private HomeController homeController;
+    private User currentUser;
     private ObservableList<Product> list;
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("es", "CL"));
-    private User currentUser;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -174,7 +178,7 @@ public class StockController implements Initializable, IProductList{
         colBuyPrice.setCellValueFactory(new PropertyValueFactory<>("buyPrice"));
         colSalePrice.setCellValueFactory(new PropertyValueFactory<>("salePrice"));
         colStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colStatus.setCellValueFactory(new PropertyValueFactory<>("statusProduct"));
 
         configurationTableView();
     }
@@ -185,20 +189,31 @@ public class StockController implements Initializable, IProductList{
             @Override
             public TableCell<Product, Void> call(final TableColumn<Product, Void> param) {
                 return new TableCell<Product, Void>() {
-                    private final Button btnEdit = buttonManager.createButton("btnEditIcon.png","yellow", 30, 30);
-                    private final Button btnEliminate = buttonManager.createButton("btnDeleteIcon.png", "red", 30, 30);
+                    private final Button btnEdit = buttonManager.createButton("btnEditIcon.png","yellow", 20, 20);
+                    private final Button btnEliminate = buttonManager.createButton("btnDeleteIcon.png", "red", 20, 20);
+                    private final Button btnActivate = buttonManager.createButton("iconOn.png", "transparent", 20, 20);
                     {
                         btnEliminate.setOnAction((event) -> {
                             Product product = getTableView().getItems().get(getIndex());
                             productService.delete(product);
+                            kardexService.addKardex(product, product.getStock(), "Eliminación Producto", MovementsType.AJUSTE, currentUser);
+                            recordService.registerAction(currentUser, "CHANGE", "Elimino Producto id: "+product.getId());
+                            loadDataStockList();
                         });
                         btnEdit.setOnAction((event) -> {
-                            Product product = getTableView().getItems().get(getIndex());
                             try {
+                                Product product = getTableView().getItems().get(getIndex());
                                 updateProductView(product);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
+                        });
+                        btnActivate.setOnAction(event -> {
+                            Product product = getTableView().getItems().get(getIndex());
+                            productService.active(product);
+                            kardexService.addKardex(product, product.getStock(), "Activación Producto", MovementsType.AJUSTE, currentUser);
+                            recordService.registerAction(currentUser, "CHANGE", "Activo Producto id: "+product.getId());
+                            loadDataStockList();
                         });
                     }
 
@@ -209,16 +224,17 @@ public class StockController implements Initializable, IProductList{
                             setGraphic(null);
                         } else {
                             Product product = getTableView().getItems().get(getIndex());
-                            btnEliminate.setDisable(!product.isStatus());
-                            if (product.getStock() == 0) {
-                                btnEliminate.setDisable(false);
-                                product.setStatus(false);
-                            }else {
-                                btnEliminate.setDisable(true);
-                                product.setStatus(true);
+                            btnEliminate.setVisible(product.getStatusProduct().equals(StatusProduct.NODISPONIBLE));
+                            btnActivate.setVisible(product.getStatusProduct().equals(StatusProduct.DESCONTINUADO));
+                            HBox buttons = new HBox();
+                            if(btnEliminate.isVisible()){
+                                buttons.getChildren().addAll(btnEdit, btnEliminate);
+                            } else if(btnActivate.isVisible()){
+                                buttons.getChildren().addAll(btnActivate);
+                            } else {
+                                buttons.getChildren().addAll(btnEdit);
                             }
-                            HBox buttons = new HBox(btnEdit, btnEliminate);
-                            buttons.setAlignment(Pos.CENTER);
+                            buttons.setAlignment(Pos.CENTER_LEFT);
                             buttons.setSpacing(5);
                             setGraphic(buttons);
                         }
@@ -228,14 +244,20 @@ public class StockController implements Initializable, IProductList{
         };
         colAction.setCellFactory(cellFactory);
 
-        colStatus.setCellFactory(column -> new TableCell<Product,Boolean>(){
+        colStatus.setCellFactory(column -> new TableCell<Product,StatusProduct>(){
             @Override
-            protected void updateItem(Boolean item,boolean empty){
+            protected void updateItem(StatusProduct item,boolean empty){
                 super.updateItem(item, empty);
                 if (empty || item == null){
                     setText("");
                 }else {
-                    setText(item ? "Disponible" : "No Disponible");
+                    if (item.equals(StatusProduct.DISPONIBLE)){
+                        setStyle("-fx-background-color: #1fff4a;");
+                    }else if (item.equals(StatusProduct.NODISPONIBLE)){
+                        setStyle("-fx-background-color: #1fb4ff;");
+                    }else {
+                        setStyle("-fx-background-color: #ff1f1f;");
+                    }
                     autosize();
                 }
             }

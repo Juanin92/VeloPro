@@ -1,6 +1,8 @@
 package cl.jic.VeloPro.Model.Entity.Product;
 
 import cl.jic.VeloPro.Model.Entity.Kardex;
+import cl.jic.VeloPro.Model.Enum.MovementsType;
+import cl.jic.VeloPro.Model.Enum.StatusProduct;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,6 +21,8 @@ public class Product {
     private int buyPrice;
     private int stock;
     private boolean status;
+    @Enumerated(EnumType.STRING)
+    private StatusProduct statusProduct;
 
     @ManyToOne
     @JoinColumn(name = "id_brand", nullable = false)

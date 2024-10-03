@@ -118,8 +118,6 @@ public class ProductController implements Initializable {
                 }
                 notificationManager.successNotification("Actualización Exitosa!", "El producto se ha actualizado en el sistema correctamente.", Pos.CENTER);
                 recordService.registerAction(currentUser, "CHANGE", "Cambio Producto" + selectedProduct.getDescription());
-            }else {
-                System.out.println("Implementar la actualizacion cuando no esta disponible el producto");
             }
         }catch (Exception e){
             handleValidationException(e.getMessage());
@@ -130,9 +128,6 @@ public class ProductController implements Initializable {
         if (selectedProduct != null){
             if (selectedProduct.isStatus()){
                 elementsProductEdit();
-            }else {
-                elementsProductEdit();
-                System.out.println("Integrar la opcion si el producto no esta disponible");
             }
             txtQuantity.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (selectedProduct.getStock() != Integer.parseInt(txtQuantity.getText())){
