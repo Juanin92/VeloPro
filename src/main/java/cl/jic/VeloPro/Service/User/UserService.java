@@ -23,7 +23,6 @@ public class UserService implements IUserService {
     @Override
     public void addUser(User user) {
         User userDB = getUserCreated(user.getRut());
-        System.out.println("USER DB- "+userDB);
         if (userDB != null){
             throw new IllegalArgumentException("Usuario Existente: Ya hay existe el usuario");
         } else {
@@ -32,7 +31,6 @@ public class UserService implements IUserService {
             user.setDate(LocalDate.now());
             user.setName(user.getName().substring(0, 1).toUpperCase() + user.getName().substring(1));
             user.setSurname(user.getSurname().substring(0, 1).toUpperCase() + user.getSurname().substring(1));
-            System.out.println("USER INGRESADO: "+user);
             User user2 = getUser(user.getUsername());
             if (user2 != null && user2.getUsername().equalsIgnoreCase(user.getUsername())) {
                 throw new IllegalArgumentException("Este nombre de usuario ya existe");

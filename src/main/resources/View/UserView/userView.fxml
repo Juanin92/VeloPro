@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -12,6 +13,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.textfield.CustomPasswordField?>
@@ -42,7 +44,7 @@
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
-            <AnchorPane fx:id="paneUpdateList" layoutX="21.0" layoutY="432.0" prefHeight="181.0" prefWidth="851.0" visible="false">
+            <AnchorPane fx:id="paneUpdateList" layoutX="21.0" layoutY="432.0" prefHeight="181.0" prefWidth="751.0" visible="false">
                <children>
                   <CustomTextField fx:id="txtNameUpdate" alignment="CENTER" layoutX="25.0" layoutY="24.0" promptText="Ingrese Nombre" style="-fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;">
                      <cursor>
@@ -74,22 +76,7 @@
                         <Cursor fx:constant="TEXT" />
                      </cursor>
                   </CustomPasswordField>
-                  <Button fx:id="btnActivate" layoutX="672.0" layoutY="89.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                     <graphic>
-                        <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../Images/Icons/iconOn.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <effect>
-                        <Glow />
-                     </effect>
-                  </Button>
-                  <Button fx:id="btnListUpdate" layoutX="582.0" layoutY="89.0" mnemonicParsing="false" onAction="#updateUser" style="-fx-background-color: transparent;">
+                  <Button fx:id="btnListUpdate" layoutX="658.0" layoutY="89.0" mnemonicParsing="false" onAction="#updateUser" style="-fx-background-color: transparent;">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -103,6 +90,21 @@
                   </Button>
                </children>
             </AnchorPane>
+            <Button fx:id="btnActivate" layoutX="799.0" layoutY="454.0" mnemonicParsing="false" style="-fx-background-color: transparent;" visible="false">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <graphic>
+                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../Images/Icons/iconOn.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <effect>
+                  <Glow />
+               </effect>
+            </Button>
          </children>
       </AnchorPane>
       <AnchorPane fx:id="paneAddUser" prefHeight="625.0" prefWidth="873.0" visible="false" StackPane.alignment="CENTER">
@@ -112,14 +114,6 @@
                   <Font name="System Bold" size="38.0" />
                </font>
             </Label>
-            <CustomPasswordField fx:id="txtPass" alignment="CENTER" layoutX="346.0" layoutY="439.0" prefHeight="37.0" prefWidth="250.0" promptText="Ingrese contraseña" style="-fx-background-color: transparent; -fx-border-color: transparent  transparent white; -fx-text-fill: white;">
-               <font>
-                  <Font size="16.0" />
-               </font>
-               <cursor>
-                  <Cursor fx:constant="TEXT" />
-               </cursor>
-            </CustomPasswordField>
             <CustomTextField fx:id="txtName" alignment="CENTER" layoutX="203.0" layoutY="234.0" prefHeight="37.0" prefWidth="260.0" promptText="Ingrese Nombre" style="-fx-background-color: transparent; -fx-border-color: transparent  transparent white; -fx-text-fill: white;">
                <font>
                   <Font size="16.0" />
@@ -222,11 +216,6 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label fx:id="lblPass" layoutX="438.0" layoutY="476.0" text="Contraseña" textFill="WHITE" visible="false">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-            </Label>
             <Button fx:id="btnUpdate" layoutX="334.0" layoutY="522.0" mnemonicParsing="false" onAction="#updateUser" style="-fx-background-color: transparent;" visible="false">
                <cursor>
                   <Cursor fx:constant="HAND" />
@@ -251,17 +240,7 @@
             </Label>
             <AnchorPane fx:id="paneChangePassword" layoutX="191.0" layoutY="427.0" prefHeight="81.0" prefWidth="670.0" visible="false">
                <children>
-                  <CustomPasswordField fx:id="txtCurrentPassword" alignment="CENTER" layoutX="14.0" layoutY="9.0" prefHeight="25.0" prefWidth="208.0" promptText="Contraseña Actual" style="-fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </CustomPasswordField>
-                  <CustomPasswordField fx:id="txtNewPassword" alignment="CENTER" layoutX="283.0" layoutY="9.0" prefHeight="25.0" prefWidth="208.0" promptText="Contraseña nueva" style="-fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </CustomPasswordField>
-                  <Button fx:id="btnSendPass" contentDisplay="TOP" layoutX="559.0" layoutY="6.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Enviar Código" textFill="WHITE">
+                  <Button fx:id="btnSendPass" contentDisplay="TOP" layoutX="514.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Enviar Código" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -273,23 +252,89 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Label fx:id="lblCurrentPassword" layoutX="61.0" layoutY="44.0" text="Contraseña Actual" textFill="WHITE" visible="false">
+                  <Label fx:id="lblCurrentPassword" layoutX="60.0" layoutY="58.0" text="Contraseña Actual" textFill="WHITE" visible="false">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblNewPassword" layoutX="339.0" layoutY="44.0" text="Contraseña Nueva" textFill="WHITE" visible="false">
+                  <Label fx:id="lblNewPassword" layoutX="328.0" layoutY="58.0" text="Contraseña Nueva" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
+                  <HBox fx:id="paneCurrentPass" alignment="BOTTOM_LEFT" layoutX="7.0" layoutY="6.0" prefHeight="48.0" prefWidth="234.0">
+                     <children>
+                        <CustomPasswordField fx:id="txtCurrentPassword" alignment="CENTER" prefHeight="25.0" prefWidth="208.0" promptText="Contraseña Actual" style="-fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="TEXT" />
+                           </cursor>
+                        </CustomPasswordField>
+                     </children>
+                  </HBox>
+                  <HBox fx:id="paneNewPass" alignment="BOTTOM_LEFT" layoutX="279.0" layoutY="6.0" prefHeight="48.0" prefWidth="227.0">
+                     <children>
+                        <CustomPasswordField fx:id="txtNewPassword" alignment="CENTER" prefHeight="25.0" prefWidth="208.0" promptText="Contraseña Nueva" style="-fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="TEXT" />
+                           </cursor>
+                        </CustomPasswordField>
+                     </children>
+                  </HBox>
+                  <CustomTextField fx:id="txtCurrentPasswordVisible" alignment="CENTER" layoutX="8.0" layoutY="16.0" prefHeight="37.0" prefWidth="208.0" promptText="Contraseña Actual" style="-fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;" visible="false">
+                     <cursor>
+                        <Cursor fx:constant="TEXT" />
+                     </cursor>
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </CustomTextField>
+                  <CustomTextField fx:id="txtNewPasswordVisible" alignment="CENTER" layoutX="280.0" layoutY="16.0" promptText="Contraseña Nueva" style="-fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;" visible="false">
+                     <cursor>
+                        <Cursor fx:constant="TEXT" />
+                     </cursor>
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </CustomTextField>
                </children>
             </AnchorPane>
-            <CustomTextField fx:id="txtPassVisible" layoutX="345.0" layoutY="439.0" prefHeight="25.0" prefWidth="250.0" style="-fx-background-color: transparent; -fx-border-color: transparent  transparent white; -fx-text-fill: white;" visible="false">
+            <CustomTextField fx:id="txtPassVisible" alignment="CENTER" layoutX="346.0" layoutY="449.0" prefHeight="37.0" prefWidth="250.0" promptText="Ingrese contraseña" style="-fx-background-color: transparent; -fx-border-color: transparent  transparent white; -fx-text-fill: white;" visible="false">
                <font>
                   <Font size="16.0" />
                </font>
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
             </CustomTextField>
+            <HBox fx:id="paneAddUserPass" alignment="BOTTOM_LEFT" layoutX="338.0" layoutY="427.0" prefHeight="55.0" prefWidth="315.0" visible="false">
+               <children>
+                  <CustomPasswordField fx:id="txtPass" alignment="CENTER" prefHeight="37.0" prefWidth="250.0" promptText="Ingrese contraseña" style="-fx-background-color: transparent; -fx-border-color: transparent  transparent white; -fx-text-fill: white;">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="TEXT" />
+                     </cursor>
+                     <HBox.margin>
+                        <Insets left="10.0" top="15.0" />
+                     </HBox.margin>
+                  </CustomPasswordField>
+               </children>
+               <padding>
+                  <Insets left="-2.0" top="6.0" />
+               </padding>
+            </HBox>
+            <Label fx:id="lblPass" layoutX="439.0" layoutY="482.0" text="Contraseña" textFill="WHITE" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </children>

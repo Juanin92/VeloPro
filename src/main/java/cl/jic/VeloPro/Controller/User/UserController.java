@@ -17,6 +17,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 import lombok.Setter;
 import org.controlsfx.control.textfield.CustomPasswordField;
@@ -31,8 +33,9 @@ import java.util.ResourceBundle;
 @Component
 public class UserController implements Initializable {
 
-    @FXML private CustomTextField txtEmail, txtName, txtRut, txtSurname, txtUsername, txtPassVisible;
+    @FXML private CustomTextField txtEmail, txtName, txtRut, txtSurname, txtUsername;
     @FXML private CustomTextField txtEmailUpdate, txtNameUpdate, txtRutUpdate, txtSurnameUpdate, txtUsernameUpdate;
+    @FXML private CustomTextField txtPassVisible, txtCurrentPasswordVisible, txtNewPasswordVisible;
     @FXML private CustomPasswordField txtPass, txtPassUpdate, txtNewPassword, txtCurrentPassword;
     @FXML private Button btnAdd, btnUpdate, btnActivate, btnListUpdate, btnSendPass;
     @FXML private Label lblName, lblSurname, lblRut, lblEmail, lblPass, lblUsername, lblUpdate, lblAdd, lblCurrentPassword, lblNewPassword;
@@ -49,6 +52,7 @@ public class UserController implements Initializable {
     @FXML private TableView<User> tableUser;
     @FXML private CheckBox cxChangePass;
     @FXML private AnchorPane paneAddUser, paneListUser, paneChangePassword, paneUpdateList;
+    @FXML private HBox paneAddUserPass, paneNewPass, paneCurrentPass;
 
     @Autowired private IUserService userService;
     @Autowired private IRecordService recordService;
@@ -60,7 +64,6 @@ public class UserController implements Initializable {
     private User currentUser;
     private User userSelectedList;
     private boolean statusPanePass = false;
-    private boolean passwordVisible = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -147,8 +150,12 @@ public class UserController implements Initializable {
                 statusPanePass = true;
                 cxChangePass.setVisible(false);
                 paneChangePassword.setVisible(true);
+                paneCurrentPass.setVisible(true);
+                paneNewPass.setVisible(true);
             } else {
                 paneChangePassword.setVisible(false);
+                paneCurrentPass.setVisible(false);
+                paneNewPass.setVisible(false);
             }
         }));
     }
@@ -176,12 +183,10 @@ public class UserController implements Initializable {
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        if (currentUser.getRole().equals(Rol.MASTER)) {
-            tableUser.getSelectionModel().selectedItemProperty().addListener((observableValue, user, newValue) -> {
-                userSelectedList = newValue;
-                showAndLoadaElementsTable();
-            });
-        }
+        tableUser.getSelectionModel().selectedItemProperty().addListener((observableValue, user, newValue) -> {
+            userSelectedList = newValue;
+            showAndLoadaElementsTable();
+        });
         configurationTableView();
     }
 
@@ -243,6 +248,7 @@ public class UserController implements Initializable {
         txtRut.clear();
         txtPass.clear();
         txtUsername.clear();
+        txtPassVisible.clear();
         if (statusPanePass){
             cxChangePass.setVisible(true);
         }
@@ -256,66 +262,76 @@ public class UserController implements Initializable {
         graphicsValidator.handleTextfieldChangeWithLabel(txtSurname, lblSurname);
         graphicsValidator.handleTextfieldChangeWithLabel(txtEmail, lblEmail);
         graphicsValidator.handleTextfieldChangeWithLabel(txtUsername, lblUsername);
+        graphicsValidator.handleTextfieldChangeWithLabel(txtPassVisible, lblPass);
         graphicsValidator.handlePasswordFieldChange(txtPass, lblPass);
+        graphicsValidator.handleTextfieldChangeWithLabel(txtCurrentPasswordVisible, lblCurrentPassword);
         graphicsValidator.handlePasswordFieldChange(txtCurrentPassword, lblCurrentPassword);
+        graphicsValidator.handleTextfieldChangeWithLabel(txtNewPasswordVisible, lblNewPassword);
         graphicsValidator.handlePasswordFieldChange(txtNewPassword, lblNewPassword);
 
         for (Rol rol : Rol.values()) {
             cbRol.getItems().add(rol);
         }
-
-        Button toggleVisibility = buttonManager.createButton("iconVisibility.png","transparent", 15, 15);
-        txtPass.setRight(toggleVisibility);
-        toggleVisibility.setOnAction(event -> togglePasswordVisibility(toggleVisibility));
+        setupTogglePasswordVisibility(txtPass, txtPassVisible);
+        setupTogglePasswordVisibility(txtCurrentPassword, txtCurrentPasswordVisible);
+        setupTogglePasswordVisibility(txtNewPassword, txtNewPasswordVisible);
     }
 
-    private void togglePasswordVisibility(Button toggleVisibility) {
-        if (passwordVisible) {
-            txtPassVisible.setVisible(false);
-            txtPass.setRight(toggleVisibility);
-            txtPass.setVisible(true);
-
-            txtPass.setText(txtPassVisible.getText());
-        } else {
-            txtPassVisible.setVisible(true);
-            txtPass.setVisible(false);
-            txtPassVisible.setRight(toggleVisibility);
-            txtPassVisible.setText(txtPass.getText());
-        }
-        passwordVisible = !passwordVisible;
+    private void setupTogglePasswordVisibility(CustomPasswordField passwordField, CustomTextField passwordVisibleField) {
+        Button toggleVisibility = buttonManager.createButton("iconVisibility.png", "transparent", 15, 15);
+        passwordVisibleField.setVisible(false);
+        HBox parentHBox = (HBox) passwordField.getParent();
+        parentHBox.getChildren().add(toggleVisibility);
+        toggleVisibility.setOnAction(event -> {
+            if (passwordVisibleField.isVisible()) {
+                passwordVisibleField.setVisible(false);
+                passwordField.setVisible(true);
+                passwordField.setText(passwordVisibleField.getText());
+            } else {
+                passwordField.setVisible(false);
+                passwordVisibleField.setVisible(true);
+                passwordVisibleField.setText(passwordField.getText());
+                passwordVisibleField.requestFocus();
+            }
+        });
     }
 
     private void showAndLoadaElementsTable(){
-        paneUpdateList.setVisible(true);
-        txtNameUpdate.setText(userSelectedList.getName());
-        txtSurnameUpdate.setText(userSelectedList.getSurname());
-        txtRutUpdate.setText(userSelectedList.getRut());
-        txtEmailUpdate.setText(userSelectedList.getEmail());
-        txtUsernameUpdate.setText(userSelectedList.getUsername());
-        txtPassUpdate.setText(userSelectedList.getPassword());
-        if (!userSelectedList.isStatus()){
-            btnActivate.setOnAction(event -> userService.activateUser(userSelectedList));
-        }else {
-            btnActivate.setDisable(true);
-        }
-        btnListUpdate.setOnAction(event -> {
-            try{
-                if (txtPassUpdate.getText().equals(userSelectedList.getPassword())){
-                    userSelectedList.setPassword(userSelectedList.getPassword());
-                }else {
-                    userSelectedList.setPassword(txtPassUpdate.getText());
+        if (currentUser.getRole().equals(Rol.MASTER)){
+            paneUpdateList.setVisible(true);
+            txtNameUpdate.setText(userSelectedList.getName());
+            txtSurnameUpdate.setText(userSelectedList.getSurname());
+            txtRutUpdate.setText(userSelectedList.getRut());
+            txtEmailUpdate.setText(userSelectedList.getEmail());
+            txtUsernameUpdate.setText(userSelectedList.getUsername());
+            txtPassUpdate.setText(userSelectedList.getPassword());
+            btnListUpdate.setOnAction(event -> {
+                try{
+                    if (txtPassUpdate.getText().equals(userSelectedList.getPassword())){
+                        userSelectedList.setPassword(userSelectedList.getPassword());
+                    }else {
+                        userSelectedList.setPassword(txtPassUpdate.getText());
+                    }
+                    userSelectedList.setName(txtNameUpdate.getText());
+                    userSelectedList.setSurname(txtSurnameUpdate.getText());
+                    userSelectedList.setRut(txtRutUpdate.getText());
+                    userSelectedList.setEmail(txtEmailUpdate.getText());
+                    userSelectedList.setUsername(txtUsernameUpdate.getText());
+                    userService.updateUser(userSelectedList);
+                    notificationManager.successNotification("Actualización Correcta!", "Actualización realizada correctamente", Pos.CENTER);
+                    recordService.registerAction(currentUser, "CHANGE", "Cambio para usuario: " + userSelectedList.getName());
+                }catch (Exception e){
+                    handleValidationExceptionList(e.getMessage());
                 }
-                userSelectedList.setName(txtNameUpdate.getText());
-                userSelectedList.setSurname(txtSurnameUpdate.getText());
-                userSelectedList.setRut(txtRutUpdate.getText());
-                userSelectedList.setEmail(txtEmailUpdate.getText());
-                userSelectedList.setUsername(txtUsernameUpdate.getText());
-                userService.updateUser(userSelectedList);
-                notificationManager.successNotification("Actualización Correcta!", "Actualización realizada correctamente", Pos.CENTER);
-            }catch (Exception e){
-                handleValidationExceptionList(e.getMessage());
-            }
-        });
+            });
+        }
+        if (!userSelectedList.isStatus()){
+            btnActivate.setVisible(true);
+            btnActivate.setOnAction(event -> userService.activateUser(userSelectedList));
+            recordService.registerAction(currentUser, "CHANGE", "Activar usurario: " + userSelectedList.getRut());
+        }else {
+            btnActivate.setVisible(false);
+        }
         tableUser.refresh();
     }
 
@@ -371,6 +387,7 @@ public class UserController implements Initializable {
     public void activeUserView() {
         paneListUser.setVisible(false);
         paneAddUser.setVisible(true);
+        paneAddUserPass.setVisible(true);
         lblAdd.setVisible(true);
         lblUpdate.setVisible(false);
         cbRol.setDisable(false);
@@ -391,6 +408,7 @@ public class UserController implements Initializable {
     public void activeUserUpdateView() {
         paneListUser.setVisible(false);
         paneAddUser.setVisible(true);
+        paneAddUserPass.setVisible(false);
         lblAdd.setVisible(false);
         lblUpdate.setVisible(true);
         cbRol.setDisable(true);
