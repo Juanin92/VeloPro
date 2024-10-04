@@ -5,6 +5,7 @@ import cl.jic.VeloPro.Repository.UserRepo;
 import cl.jic.VeloPro.Security.TokenSecurity;
 import cl.jic.VeloPro.Utility.EmailService;
 import cl.jic.VeloPro.Validation.UserValidator;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -114,5 +115,22 @@ public class UserService implements IUserService {
     private User getUserCreated(String rut){
         Optional<User> user = userRepo.findByRut(rut);
         return user.orElse(null);
+    }
+
+    @PostConstruct
+    private void createMasterUser(){
+        long userCount = userRepo.count();
+        if (userCount == 0) {
+            User user = new User();
+            user.setDate(LocalDate.now());
+            user.setName("ADMIN");
+            user.setSurname("ADMIN");
+            user.setUsername("ADMIN");
+            user.setRut("12345678-9");
+            user.setEmail("admin@admin.com");
+            user.setPassword("ADMIN" + LocalDate.now().getYear());
+            user.setStatus(true);
+            userRepo.save(user);
+        }
     }
 }
