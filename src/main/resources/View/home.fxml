@@ -14,7 +14,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="principalView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="1282.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.HomeController">
+<StackPane fx:id="principalView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="1282.0" styleClass="principalView" stylesheets="@../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.HomeController">
    <children>
       <HBox prefHeight="625.0" prefWidth="1282.0">
          <children>
@@ -107,6 +107,18 @@
                               <AnchorPane fx:id="paneBtnExit" layoutY="397.0" prefHeight="53.0" prefWidth="163.0" style="-fx-background-color: #090e11;">
                                  <children>
                                     <Button fx:id="btnExit" layoutX="43.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-color: transparent; -fx-text-fill: white;" text="Salir">
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane fx:id="paneBtnRecord" layoutY="490.0" prefHeight="53.0" prefWidth="163.0" style="-fx-background-color: #090e11;">
+                                 <children>
+                                    <Button fx:id="btnRecord" layoutX="22.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-color: transparent; -fx-text-fill: white;" text="Historial" visible="false">
                                        <font>
                                           <Font size="24.0" />
                                        </font>

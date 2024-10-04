@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -9,11 +10,11 @@
 <?import org.controlsfx.control.textfield.CustomPasswordField?>
 <?import org.controlsfx.control.textfield.CustomTextField?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="950.0" styleClass="popView" stylesheets="@../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.RecordController">
+<StackPane fx:id="recordView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1123.0" styleClass="principalView" stylesheets="@../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.RecordController">
    <children>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+      <AnchorPane prefHeight="650.0" prefWidth="1123.0">
          <children>
-            <TableView fx:id="tableRecord" layoutX="31.0" layoutY="65.0" prefHeight="379.0" prefWidth="897.0" stylesheets="@../CSS/tableView.css" visible="false">
+            <TableView fx:id="tableRecord" layoutX="31.0" layoutY="65.0" prefHeight="542.0" prefWidth="1059.0" stylesheets="@../CSS/tableView.css" visible="false">
               <columns>
                 <TableColumn fx:id="colUser" prefWidth="75.0" text="Usuario" />
                 <TableColumn prefWidth="75.0" text="Fecha">
@@ -30,15 +31,21 @@
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
-            <CustomTextField fx:id="txtSearch" layoutX="38.0" layoutY="12.0" onAction="#setupSearchFilter" prefHeight="39.0" prefWidth="327.0" visible="false" />
-            <AnchorPane fx:id="paneConfirmUser" layoutX="172.0" layoutY="111.0" prefHeight="200.0" prefWidth="389.0">
+            <CustomTextField fx:id="txtSearch" layoutX="38.0" layoutY="12.0" onAction="#setupSearchFilter" prefHeight="39.0" prefWidth="327.0" visible="false">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor></CustomTextField>
+            <AnchorPane fx:id="paneConfirmUser" layoutX="267.0" layoutY="213.0" prefHeight="200.0" prefWidth="389.0">
                <children>
                   <Label layoutX="86.0" layoutY="22.0" text="Ingrese Contraseña" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <CustomPasswordField fx:id="txtPassword" layoutX="100.0" layoutY="88.0" prefHeight="39.0" prefWidth="179.0" />
+                  <CustomPasswordField fx:id="txtPassword" layoutX="97.0" layoutY="87.0" prefHeight="39.0" prefWidth="179.0">
+                     <cursor>
+                        <Cursor fx:constant="TEXT" />
+                     </cursor></CustomPasswordField>
                </children>
             </AnchorPane>
          </children>

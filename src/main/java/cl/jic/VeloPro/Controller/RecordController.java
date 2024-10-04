@@ -5,6 +5,7 @@ import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
 import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Session.Session;
+import cl.jic.VeloPro.VeloProApplication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,7 +16,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
+import javafx.scene.layout.StackPane;
+import lombok.Setter;
 import org.controlsfx.control.textfield.CustomPasswordField;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,7 @@ public class RecordController implements Initializable {
 
     @Autowired private IRecordService recordService;
     @Autowired private Session session;
+    @Setter private StackPane homeView;
     private ObservableList<Record> list;
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
@@ -61,8 +64,8 @@ public class RecordController implements Initializable {
                         tableRecord.setVisible(true);
                         txtSearch.setVisible(true);
                     } else {
-                        Stage stage = (Stage) txtPassword.getScene().getWindow();
-                        stage.close();
+                        HomeController homeController = VeloProApplication.getContext().getBean(HomeController.class);
+                        homeController.redirectToHome();
                     }
                 }
             });

@@ -43,7 +43,7 @@ import java.util.ResourceBundle;
 @Component
 public class SettingController implements Initializable {
 
-    @FXML private Button btnAddUser, btnListCheckout, btnListUser, btnUpdateUser, btnRecord;
+    @FXML private Button btnAddUser, btnListCheckout, btnListUser, btnUpdateUser;
     @FXML private AnchorPane paneListCheckout;
     @FXML private StackPane paneSettingView;
     @FXML private TableView<CashRegister> cashRegisterTable;
@@ -122,22 +122,6 @@ public class SettingController implements Initializable {
             paneListCheckout.setVisible(false);
             buttonManager.selectedButtonPane(btnUpdateUser,buttonSelected);
             buttonSelected = btnUpdateUser;
-        } else if (event.getSource().equals(btnRecord)) {
-            System.out.println("Click btnRecord");
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/record.fxml"));
-            fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
-            Parent root = fxmlLoader.load();
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            stage.setScene(scene);
-            stage.setTitle("Historial usuarios");
-            stage.initStyle(StageStyle.UNDECORATED);
-            scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
-                if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                    stage.close();
-                }
-            });
-            stage.show();
         }
         homeController.handleButton(event);
     }
@@ -453,9 +437,6 @@ public class SettingController implements Initializable {
             btnAddUser.setDisable(true);
             btnListCheckout.setDisable(true);
             btnListUser.setDisable(true);
-        }
-        if (user.getRole().equals(Rol.MASTER)){
-            btnRecord.setVisible(true);
         }
     }
 }

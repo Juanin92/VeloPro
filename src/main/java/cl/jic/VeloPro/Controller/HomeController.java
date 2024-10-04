@@ -39,10 +39,10 @@ import java.util.ResourceBundle;
 @Component
 public class HomeController implements Initializable {
 
-    @FXML private Button btnCostumer, btnExit, btnReport, btnSale, btnSetting, btnStock, btnLogo;
+    @FXML private Button btnCostumer, btnExit, btnReport, btnSale, btnSetting, btnStock, btnLogo, btnRecord;
     @FXML private Label lblTimeLocal, lblDateLocal;
     @FXML private StackPane homeView;
-    @FXML private AnchorPane paneHome, paneBtnStock, paneBtnSale, paneBtnSetting, paneBtnCostumer, paneBtnReport;
+    @FXML private AnchorPane paneHome, paneBtnStock, paneBtnSale, paneBtnSetting, paneBtnCostumer, paneBtnReport, paneBtnRecord;
 
     @Autowired private IRecordService recordService;
     @Autowired private Session session;
@@ -133,6 +133,16 @@ public class HomeController implements Initializable {
             }
             homeView.getChildren().add(paneHome);
             changeColorMenu(null,btnLogo);
+        }else if (event.getSource().equals(btnRecord)) {
+            if (!homeView.getChildren().contains(homeView.lookup("#recordView"))) {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/record.fxml"));
+                fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
+                Parent root = fxmlLoader.load();
+                RecordController recordController = fxmlLoader.getController();
+                recordController.setHomeView(homeView);
+                homeView.getChildren().setAll(root);
+            }
+            changeColorMenu(paneBtnRecord,btnRecord);
         }else if (event.getSource().equals(btnExit)) {
             handleClosingRegisterView();
         }
@@ -208,6 +218,8 @@ public class HomeController implements Initializable {
         } else if (user.getRole().equals(Rol.GUEST)){
             btnSetting.setDisable(true);
             btnReport.setDisable(true);
+        } else if (user.getRole().equals(Rol.MASTER)) {
+            btnRecord.setVisible(true);
         }
     }
 
@@ -243,23 +255,31 @@ public class HomeController implements Initializable {
     }
 
     private void changeColorMenu(AnchorPane clickedPane, Button clickedBtn) {
-        for (AnchorPane pane : new AnchorPane[]{paneBtnSale, paneBtnStock, paneBtnCostumer, paneBtnReport, paneBtnSetting}) {
+        for (AnchorPane pane : new AnchorPane[]{paneBtnSale, paneBtnStock, paneBtnCostumer, paneBtnReport, paneBtnSetting, paneBtnRecord}) {
             if (pane != clickedPane) {
                 pane.setStyle("-fx-background-color: #090e11;");
             }
         }
-        for (Button btn : new Button[]{btnSale, btnStock, btnCostumer, btnReport, btnExit, btnSetting}) {
+        for (Button btn : new Button[]{btnSale, btnStock, btnCostumer, btnReport, btnExit, btnSetting, btnRecord}) {
             if (btn != clickedBtn) {
                 btn.setStyle("-fx-text-fill: white; -fx-background-color: transparent;");
             }
         }
         if (clickedBtn == btnLogo) {
-            for (AnchorPane pane : new AnchorPane[]{paneBtnSale, paneBtnStock, paneBtnCostumer, paneBtnReport, paneBtnSetting}) {
+            for (AnchorPane pane : new AnchorPane[]{paneBtnSale, paneBtnStock, paneBtnCostumer, paneBtnReport, paneBtnSetting, paneBtnRecord}) {
                 pane.setStyle("-fx-background-color: #090e11;");
             }
         } else {
             clickedPane.setStyle("-fx-background-color: #3A6073;");
             clickedBtn.setStyle("-fx-text-fill: white; -fx-background-color: transparent;");
         }
+    }
+
+    public void redirectToHome() {
+        if (homeView.getChildren() != null) {
+            homeView.getChildren().clear();
+        }
+        homeView.getChildren().add(paneHome);
+        changeColorMenu(null, btnLogo);
     }
 }
