@@ -44,7 +44,6 @@ public class RecordController implements Initializable {
 
     @Autowired private IRecordService recordService;
     @Autowired private Session session;
-    @Setter private StackPane homeView;
     private ObservableList<Record> list;
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 

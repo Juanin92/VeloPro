@@ -138,8 +138,6 @@ public class HomeController implements Initializable {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/record.fxml"));
                 fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
                 Parent root = fxmlLoader.load();
-                RecordController recordController = fxmlLoader.getController();
-                recordController.setHomeView(homeView);
                 homeView.getChildren().setAll(root);
             }
             changeColorMenu(paneBtnRecord,btnRecord);

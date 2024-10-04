@@ -17,18 +17,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import lombok.Setter;
 import org.controlsfx.control.textfield.CustomTextField;
-import org.eclipse.angus.mail.imap.protocol.IMAPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -208,7 +203,6 @@ public class SettingController implements Initializable {
                 public void commitEdit(Integer newValue) {
                     super.commitEdit(newValue);
                     int index = getTableRow().getIndex();
-                    int oldValue = list.get(index).getAmountOpening();
                     if (newValue > 0) {
                         list = getTableView().getItems();
                         list.get(index).setAmountOpening(newValue);
@@ -283,7 +277,6 @@ public class SettingController implements Initializable {
                 public void commitEdit(Integer newValue) {
                     super.commitEdit(newValue);
                     int index = getTableRow().getIndex();
-                    int oldValue = list.get(index).getAmountClosingCash();
                     if (newValue > 0) {
                         list = getTableView().getItems();
                         list.get(index).setAmountClosingCash(newValue);
@@ -360,7 +353,6 @@ public class SettingController implements Initializable {
                 public void commitEdit(Integer newValue) {
                     super.commitEdit(newValue);
                     int index = getTableRow().getIndex();
-                    int oldValue = list.get(index).getAmountClosingPos();
                     if (newValue > 0) {
                         list = getTableView().getItems();
                         list.get(index).setAmountClosingPos(newValue);
