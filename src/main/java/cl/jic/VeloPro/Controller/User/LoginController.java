@@ -31,7 +31,6 @@ import org.controlsfx.control.textfield.CustomTextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -63,40 +62,48 @@ public class LoginController implements Initializable {
             graphicsValidator.handlePasswordFieldChange(txtUserPass, lblPass);
             graphicsValidator.handleTextfieldChangeWithLabel(txtUserPassVisible, lblPass);
             setupTogglePasswordVisibility(txtUserPass, txtUserPassVisible);
+            txtUsername.textProperty().addListener((observable, oldValue, newValue) -> lblMessage.setVisible(false));
+            txtUserPass.textProperty().addListener((observable, oldValue, newValue) -> lblMessage.setVisible(false));
+            txtUserPassVisible.textProperty().addListener((observable, oldValue, newValue) -> lblMessage.setVisible(false));
         }
     }
 
-    @FXML private void handleButton(ActionEvent event) throws IOException {
+    @FXML private void handleButton(ActionEvent event) {
         if (event.getSource().equals(btnCancelLogin)){
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
         }else if (event.getSource().equals(btnLogin)){
-            User authenticatedUser;
-            String password = txtUserPass.isVisible() ? txtUserPass.getText() : txtUserPassVisible.getText();
-            if (activeToken){
-                authenticatedUser = userService.getAuthUserToken(txtUsername.getText(),password);
-            }else {
-                authenticatedUser = userService.getAuthUser(txtUsername.getText(),password);
-            }
-            if(authenticatedUser != null){
-                session.setCurrentUser(authenticatedUser);
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/home.fxml"));
-                fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
-                Parent root = fxmlLoader.load();
-                HomeController homeController = fxmlLoader.getController();
-                homeController.setActiveToken(activeToken);
+            try {
+                User authenticatedUser;
+                String password = txtUserPass.isVisible() ? txtUserPass.getText() : txtUserPassVisible.getText();
+                if (activeToken) {
+                    authenticatedUser = userService.getAuthUserToken(txtUsername.getText(), password);
+                } else {
+                    authenticatedUser = userService.getAuthUser(txtUsername.getText(), password);
+                }
+                if (authenticatedUser != null) {
+                    session.setCurrentUser(authenticatedUser);
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/home.fxml"));
+                    fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
+                    Parent root = fxmlLoader.load();
+                    HomeController homeController = fxmlLoader.getController();
+                    homeController.setActiveToken(activeToken);
 
-                Scene scene = new Scene(root);
-                Stage stage = new Stage();
-                stage.setScene(scene);
-                stage.setTitle("Home - Principal");
-                stage.setWidth(Screen.getPrimary().getBounds().getWidth());
-                stage.setHeight(Screen.getPrimary().getBounds().getHeight());
-                stage.show();
-                Stage loginView = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                loginView.close();
-                recordService.registerEntry(authenticatedUser);
-            }else {
+                    Scene scene = new Scene(root);
+                    Stage stage = new Stage();
+                    stage.setScene(scene);
+                    stage.setTitle("Home - Principal");
+                    stage.setWidth(Screen.getPrimary().getBounds().getWidth());
+                    stage.setHeight(Screen.getPrimary().getBounds().getHeight());
+                    stage.show();
+                    Stage loginView = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    loginView.close();
+                    recordService.registerEntry(authenticatedUser);
+                } else {
+                    lblMessage.setVisible(true);
+                }
+            }catch (Exception ex){
+                lblMessage.setText(ex.getMessage());
                 lblMessage.setVisible(true);
             }
         }
