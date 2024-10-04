@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +24,13 @@ public class ExcelGenerator {
     @Autowired private NotificationManager notificationManager;
 
     public void createSaleFile(List<Sale> list, String sheetName) throws IOException {
-        String directoryPath = "C:\\Users\\juano\\Desktop\\excels\\";
+        String userHome = System.getProperty("user.home");
+        String directoryPath = userHome + File.separator + "Documents" + File.separator + "excels" + File.separator;
+
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            boolean created = directory.mkdirs();
+        }
 
         TextInputDialog dialog = new TextInputDialog("Ventas");
         dialog.setTitle("Nombre del Archivo");

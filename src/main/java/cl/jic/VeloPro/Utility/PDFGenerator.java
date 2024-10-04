@@ -6,7 +6,6 @@ import cl.jic.VeloPro.Model.Enum.PaymentMethod;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.util.Duration;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -15,7 +14,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 import org.apache.pdfbox.util.Matrix;
-import org.controlsfx.control.Notifications;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -26,107 +25,22 @@ import java.util.Optional;
 
 @Service
 public class PDFGenerator {
+    @Autowired NotificationManager notificationManager;
     private static final String phone = "+569 12345678";
     private static final String address = "Calle Falsa 1234";
     private static final String email = "soporte@gmail.com";
 
-//    public static void generateSaleReceiptPDF(Sale sale, List<DetailSaleDTO> dtoList) {
-//        String directoryPath = "C:\\Users\\juano\\Desktop\\Boletas PDF\\";
-//        String fileName = sale.getDocument() + ".pdf";
-//        String filePath = directoryPath + fileName;
-//        try (PDDocument document = PDDocument.load(new File("C:\\Users\\juano\\Desktop\\Boletas PDF\\Plantilla\\PlantillaBoleta.pdf"))) {
-//            PDPage page = new PDPage();
-//            document.addPage(page);
-//
-//            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-//                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-//                contentStream.beginText();
-//                contentStream.newLineAtOffset(50, 750);
-//                contentStream.showText("Boleta de Venta");
-//                contentStream.endText();
-//
-//                contentStream.beginText();
-//                contentStream.newLineAtOffset(50, 730);
-//                contentStream.showText("N° Documento: " + sale.getDocument());
-//                contentStream.endText();
-//
-//                contentStream.beginText();
-//                contentStream.newLineAtOffset(50, 710);
-//                contentStream.showText("Fecha: " + sale.getDate());
-//                contentStream.endText();
-//
-//                contentStream.beginText();
-//                contentStream.newLineAtOffset(50, 690);
-//                contentStream.showText("Forma de Pago: " + sale.getPaymentMethod());
-//                contentStream.endText();
-//
-//                contentStream.beginText();
-//                contentStream.newLineAtOffset(50, 670);
-//                contentStream.showText("Total: $" + sale.getTotalSale());
-//                contentStream.endText();
-//
-//                contentStream.beginText();
-//                contentStream.newLineAtOffset(50, 650);
-//                contentStream.showText("Impuesto: $" + sale.getTax());
-//                contentStream.endText();
-//
-//                if (sale.getDiscount() > 0) {
-//                    contentStream.beginText();
-//                    contentStream.newLineAtOffset(50, 630);
-//                    contentStream.showText("Descuento: $" + sale.getDiscount());
-//                    contentStream.endText();
-//                }
-//                if (sale.getPaymentMethod().equals(PaymentMethod.PRESTAMO)){
-//                    contentStream.beginText();
-//                    contentStream.newLineAtOffset(50, 630);
-//                    contentStream.showText("Monto adeudado: $" + sale.getTotalSale());
-//                    contentStream.endText();
-//
-//                    contentStream.beginText();
-//                    contentStream.newLineAtOffset(50, 610);
-//                    contentStream.showText("Cliente: " + sale.getCostumer().getName());
-//                    contentStream.endText();
-//                }
-//
-//                if (sale.getComment() != null && !sale.getComment().isEmpty()) {
-//                    contentStream.beginText();
-//                    contentStream.newLineAtOffset(50, 590);
-//                    contentStream.showText("Comentario: " + sale.getComment());
-//                    contentStream.endText();
-//                }
-//
-//                contentStream.beginText();
-//                contentStream.newLineAtOffset(50, 570);
-//                contentStream.showText("Detalles de la Venta:");
-//                contentStream.endText();
-//
-//                contentStream.beginText();
-//                contentStream.newLineAtOffset(50, 590);
-//                contentStream.showText("Descripción          Cantidad       Subtotal");
-//                contentStream.endText();
-//
-//                int yPosition = 570;
-//                for (DetailSaleDTO dto : dtoList) {
-//                    contentStream.beginText();
-//                    contentStream.newLineAtOffset(50, yPosition);
-//                    contentStream.showText(dto.getDescription() + "          " + dto.getQuantity() + "          $" + dto.getTotal());
-//                    contentStream.endText();
-//                    yPosition -= 20;
-//                }
-//            }
-//
-//            document.save(filePath);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public static void generateSaleReceiptPDF(Sale sale, List<DetailSaleDTO> dtoList) {
-        String directoryPath = "C:\\Users\\juano\\Desktop\\Boletas PDF\\";
+        String userHome = System.getProperty("user.home");
+        String directoryPath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator;
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            boolean created = directory.mkdirs();
+        }
         String fileName = sale.getDocument() + ".pdf";
         String filePath = directoryPath + fileName;
 
-        try (PDDocument document = PDDocument.load(new File("C:\\Users\\juano\\Desktop\\Boletas PDF\\Plantilla\\PlantillaBoleta.pdf"))) {
+        try (PDDocument document = PDDocument.load(new File(  "C:\\Users\\juano\\Desktop\\VeloPro\\src\\main\\resources\\PDFTemplate\\PlantillaBoleta.pdf"))) {
             // Obtener el formulario interactivo (AcroForm) de la plantilla
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
 
@@ -199,7 +113,7 @@ public class PDFGenerator {
             }
             document.save(filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("No se ha podido crear el archivo");
         }
     }
 
@@ -220,14 +134,7 @@ public class PDFGenerator {
                     pb.start();
 
                 } catch (IOException e) {
-                    Notifications.create()
-                            .title("Error!")
-                            .text("No se ha podido abrir el archivo")
-                            .darkStyle()
-                            .position(Pos.TOP_CENTER)
-                            .hideAfter(Duration.seconds(3))
-                            .showError();
-                    e.printStackTrace();
+                    notificationManager.errorNotification("Error!", "No se ha podido abrir el archivo", Pos.TOP_CENTER);
                 }
             }
         }
@@ -241,7 +148,7 @@ public class PDFGenerator {
             addWatermark(document, page);
             document.save(pdfFilePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("No se pudo agregar marca de agua a la boleta");
         }
     }
 
