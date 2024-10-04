@@ -24,23 +24,8 @@ public class ExcelGenerator {
     @Autowired private NotificationManager notificationManager;
 
     public void createSaleFile(List<Sale> list, String sheetName) throws IOException {
-        String userHome = System.getProperty("user.home");
-        String directoryPath = userHome + File.separator + "Documents" + File.separator + "excels" + File.separator;
-
-        File directory = new File(directoryPath);
-        if (!directory.exists()) {
-            boolean created = directory.mkdirs();
-        }
-
-        TextInputDialog dialog = new TextInputDialog("Ventas");
-        dialog.setTitle("Nombre del Archivo");
-        dialog.setHeaderText("Ingrese el nombre del archivo");
-        dialog.setContentText("Nombre:");
-        ButtonType buttonTypeOk = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
-        ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().setAll(buttonTypeOk, buttonTypeCancel);
-
-        Optional<String> result = dialog.showAndWait();
+        String directoryPath = createDirectoryIfNotExists("Ventas");
+        Optional<String> result = getFileNameFromDialog("ventas");
         if (result.isPresent()) {
             String fileName = result.get();
             String excelPath = directoryPath + fileName + ".xls";
@@ -102,7 +87,6 @@ public class ExcelGenerator {
                     notificationManager.successNotification("Archivo creado", "El archivo se ha guardado correctamente en: " + excelPath, Pos.TOP_CENTER);
                 });
             } catch (IOException e) {
-                e.printStackTrace();
                     Platform.runLater(() -> {
                         notificationManager.errorNotification("Error", "Ha ocurrido un error al crear el archivo."+ e.getMessage(), Pos.TOP_CENTER);
                     });
@@ -111,16 +95,8 @@ public class ExcelGenerator {
     }
 
     public void createKardexFile(List<Kardex> list, String sheetName) throws IOException {
-        String directoryPath = "C:\\Users\\juano\\Desktop\\excels\\";
-
-        TextInputDialog dialog = new TextInputDialog("Kardex");
-        dialog.setTitle("Nombre del Archivo");
-        dialog.setHeaderText("Ingrese el nombre del archivo");
-        dialog.setContentText("Nombre:");
-        ButtonType buttonTypeOk = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
-        ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().setAll(buttonTypeOk, buttonTypeCancel);
-        Optional<String> result = dialog.showAndWait();
+        String directoryPath = createDirectoryIfNotExists("kardex");
+        Optional<String> result = getFileNameFromDialog("Kardex");
         if (result.isPresent()) {
             String fileName = result.get();
             String excelPath = directoryPath + fileName + ".xls";
@@ -183,11 +159,31 @@ public class ExcelGenerator {
                     notificationManager.successNotification("Archivo creado", "El archivo se ha guardado correctamente en: " + excelPath, Pos.TOP_CENTER);
                 });
             } catch (IOException e) {
-                e.printStackTrace();
                 Platform.runLater(() -> {
                     notificationManager.errorNotification("Error", "Ha ocurrido un error al crear el archivo."+ e.getMessage(), Pos.TOP_CENTER);
                 });
             }
         }
+    }
+
+    private String createDirectoryIfNotExists(String folderName) {
+        String userHome = System.getProperty("user.home");
+        String directoryPath = userHome + File.separator + "Documents" + File.separator + folderName + File.separator;
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            boolean created = directory.mkdirs();
+        }
+        return directoryPath;
+    }
+
+    private Optional<String> getFileNameFromDialog(String defaultFileName) {
+        TextInputDialog dialog = new TextInputDialog(defaultFileName);
+        dialog.setTitle("Nombre del Archivo");
+        dialog.setHeaderText("Ingrese el nombre del archivo");
+        dialog.setContentText("Nombre:");
+        ButtonType buttonTypeOk = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().setAll(buttonTypeOk, buttonTypeCancel);
+        return dialog.showAndWait();
     }
 }
