@@ -5,19 +5,34 @@ import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
 import cl.jic.VeloPro.Model.Entity.User;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Properties;
 
 @Service
 public class EmailService {
 
-    @Autowired private JavaMailSender mailSender;
+    private JavaMailSenderImpl getJavaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("smtp.gmail.com");
+        mailSender.setPort(587);
+
+        mailSender.setUsername("barbara.juanito.go@gmail.com");
+        mailSender.setPassword("esav ullx zzuv ybfs");
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "true");
+
+        return mailSender;
+    }
 
     public void sendEmailDebtDelay(Costumer costumer, TicketHistory ticket){
         String to = costumer.getEmail();
@@ -25,6 +40,7 @@ public class EmailService {
         String text = "Hola " + costumer.getName() + ",\nTe recordamos que tu boleta " + ticket.getDocument()
                 + " ha vencido. Con fecha de compra " + ticket.getDate() + ".\nPor favor, póngase en contacto con nosotros para el pago.";
 
+        JavaMailSenderImpl mailSender = getJavaMailSender();
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
@@ -41,6 +57,7 @@ public class EmailService {
             return;
         } else {
             try {
+                JavaMailSenderImpl mailSender = getJavaMailSender();
                 MimeMessage message = mailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
@@ -70,6 +87,7 @@ public class EmailService {
             String text = "Hola " + user.getName() + ",\n Te enviamos tu código para un cambio de contraseña: " + code
                     + ".\nPor favor, ingresa este código en el campo de contraseña actual y crea una nueva en el campo de contraseña nueva";
 
+            JavaMailSenderImpl mailSender = getJavaMailSender();
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
             message.setSubject(subject);

@@ -205,8 +205,8 @@ public class SaleController implements Initializable {
             String pdfFilePath = "Boleta_" + sale.getDocument() + ".pdf";
             PDFGenerator.generateSaleReceiptPDF(sale, dtoList);
 
-            String pdfFilePath2 = "C:\\Users\\juano\\Desktop\\Boletas PDF\\" + sale.getDocument() + ".pdf";
-            String filePath = "C:\\Users\\juano\\Desktop\\Boletas PDF\\"+ sale.getDocument() + ".pdf";
+            String userHome = System.getProperty("user.home");
+            String filePath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator + sale.getDocument() + ".pdf";
             File pdfFile = new File(filePath);
 
             if (active.equals(PaymentMethod.PRESTAMO) || active.equals(PaymentMethod.MIXTO)){
