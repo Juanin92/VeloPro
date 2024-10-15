@@ -107,9 +107,11 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void updatePassword(User user, String password) {
-        validator.validateChangePassword(user, password);
-        user.setPassword(password);
+    public void sendEmailUpdatePassword(User user) {
+        String code = token.recoverPassword();
+        emailService.sendCodePass(user, code);
+        user.setPassword(code);
+        userRepo.save(user);
     }
 
     private User getUserCreated(String rut){

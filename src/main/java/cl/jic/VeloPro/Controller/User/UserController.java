@@ -115,36 +115,35 @@ public class UserController implements Initializable {
         }
     }
 
-    private void changePassword(){
-        try{
+    private void changePassword() {
+        try {
             String currentPassword = txtCurrentPassword.isVisible() ? txtCurrentPassword.getText() : txtCurrentPasswordVisible.getText();
-            if (currentPassword.equals(currentUser.getPassword())){
-                password = txtNewPassword.isVisible() ? txtNewPassword.getText() : txtNewPasswordVisible.getText();
-                currentUser.setPassword(password);
-            }else {
+            if (currentPassword.equals(currentUser.getPassword()) || currentPassword.equals(currentUser.getToken())) {
+                String newPassword = txtNewPassword.isVisible() ? txtNewPassword.getText() : txtNewPasswordVisible.getText();
+                validateAndSetNewPassword(newPassword);
+            } else {
                 btnSendPass.setVisible(true);
                 btnSendPass.setOnAction(event -> {
-                    try{
-                        userService.sendEmailCode(currentUser);
-                        notificationManager.successNotification("Envio Exitoso", "Se ha enviado a su correo el código, Ingrese en el campo contraseña actual", Pos.CENTER);
+                    try {
+                        userService.sendEmailUpdatePassword(currentUser);
+                        notificationManager.successNotification("Envio Exitoso", "Se ha enviado a su correo el código, Ingrese en el campo 'Contraseña Actual'", Pos.CENTER);
                         recordService.registerAction(currentUser, "CHANGE", "Cambio Password " + currentUser.getRut());
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         notificationManager.errorNotification("Error de Envio", e.getMessage(), Pos.CENTER);
                     }
                 });
-                if (currentPassword.equals(currentUser.getPassword())){
-                    password = txtNewPassword.isVisible() ? txtNewPassword.getText() : txtNewPasswordVisible.getText();
-                    if (password.isEmpty() || password.length() >= 7){
-                        currentUser.setPassword(password);
-                    }else {
-                        graphicsValidator.settingAndValidationFieldPassword(txtNewPassword, true, "Ingrese contraseña válido. (Debe tener 8 o más caracteres o números)");
-                    }
-                }else {
-                    graphicsValidator.settingAndValidationFieldPassword(txtCurrentPassword, true, "Código no es el enviado.");
-                }
+                throw new Exception("Contraseña actual incorrecta");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             graphicsValidator.settingAndValidationFieldPassword(txtCurrentPassword, true, "Contraseña no coincide con el actual registro, Envie un código a su email");
+        }
+    }
+
+    private void validateAndSetNewPassword(String newPassword) {
+        if (newPassword.length() <= 7) {
+            graphicsValidator.settingAndValidationFieldPassword(txtNewPassword, true, "Ingrese una contraseña válida. (Debe tener 8 o más caracteres)");
+        } else {
+            currentUser.setPassword(newPassword);
         }
     }
 

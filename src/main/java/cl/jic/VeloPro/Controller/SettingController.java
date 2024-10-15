@@ -70,7 +70,6 @@ public class SettingController implements Initializable {
         currentUser = session.getCurrentUser();
         managedUserView(currentUser);
         loadDataCashRegisterList();
-        validateToken(activeToken);
         recordService.registerAction(currentUser, "VIEW", "Registro Caja");
     }
 
@@ -104,7 +103,7 @@ public class SettingController implements Initializable {
             paneListCheckout.setVisible(true);
             buttonManager.selectedButtonPane(btnListCheckout,buttonSelected);
             buttonSelected = btnListCheckout;
-        } else if (event.getSource().equals(btnUpdateUser) || activeToken) {
+        } else if (event.getSource().equals(btnUpdateUser)) {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/UserView/userView.fxml"));
             fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
             Parent root = fxmlLoader.load();
@@ -119,14 +118,6 @@ public class SettingController implements Initializable {
             buttonSelected = btnUpdateUser;
         }
         homeController.handleButton(event);
-    }
-
-    private void validateToken(boolean active){
-        if (active){
-            btnListUser.setDisable(true);
-            btnAddUser.setDisable(true);
-            btnListCheckout.setDisable(true);
-        }
     }
 
     public void loadDataCashRegisterList() {
@@ -425,10 +416,10 @@ public class SettingController implements Initializable {
     }
 
    private void managedUserView(User user){
-        if(user.getRole().equals(Rol.SELLER)){
-            btnAddUser.setDisable(true);
-            btnListCheckout.setDisable(true);
-            btnListUser.setDisable(true);
+        if(user.getRole().equals(Rol.SELLER) || user.getRole().equals(Rol.WAREHOUSE)){
+            btnAddUser.setVisible(false);
+            btnListCheckout.setVisible(false);
+            btnListUser.setVisible(false);
         }
     }
 }

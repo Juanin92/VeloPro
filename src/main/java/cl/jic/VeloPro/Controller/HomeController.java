@@ -58,7 +58,6 @@ public class HomeController implements Initializable {
         backgroundSetup();
         managedUserView(currentUser);
         showCashRegisterOpeningForm();
-        validateToken(activeToken);
         homeView.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.windowProperty().addListener((observableWindow, oldWindow, newWindow) -> {
@@ -116,7 +115,7 @@ public class HomeController implements Initializable {
                 homeView.getChildren().setAll(root);
             }
             changeColorMenu(paneBtnReport,btnReport);
-        } else if (event.getSource().equals(btnSetting) || activeToken) {
+        } else if (event.getSource().equals(btnSetting)) {
             if (!homeView.getChildren().contains(homeView.lookup("#settingView"))) {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/setting.fxml"));
                 fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
@@ -210,7 +209,6 @@ public class HomeController implements Initializable {
         if(user.getRole().equals(Rol.SELLER)){
             btnReport.setDisable(true);
         } else if (user.getRole().equals(Rol.WAREHOUSE)){
-            btnSetting.setDisable(true);
             btnSale.setDisable(true);
             btnCostumer.setDisable(true);
         } else if (user.getRole().equals(Rol.GUEST)){
@@ -218,16 +216,6 @@ public class HomeController implements Initializable {
             btnReport.setDisable(true);
         } else if (user.getRole().equals(Rol.MASTER)) {
             btnRecord.setVisible(true);
-        }
-    }
-
-    private void validateToken(boolean active){
-        if (active){
-            btnSale.setDisable(true);
-            btnStock.setDisable(true);
-            btnCostumer.setDisable(true);
-            btnReport.setDisable(true);
-            btnExit.setDisable(true);
         }
     }
 

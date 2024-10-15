@@ -15,5 +15,5 @@ public interface IUserService {
     User getAuthUserToken(String username, String token);
     User getUser(String username);
     void sendEmailCode(User user);
-    void updatePassword(User user, String password);
+    void sendEmailUpdatePassword(User user);
 }

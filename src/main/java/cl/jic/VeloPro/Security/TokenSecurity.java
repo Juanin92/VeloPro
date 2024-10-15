@@ -23,9 +23,9 @@ public class TokenSecurity {
 
     private String generateRandomToken() {
         RandomStringGenerator generator = new RandomStringGenerator.Builder()
-                .withinRange('0', '9')
+                .withinRange('0', 'z')
                 .filteredBy(CharacterPredicates.DIGITS,CharacterPredicates.LETTERS)
                 .build();
-        return generator.generate(4);
+        return generator.generate(8);
     }
 }

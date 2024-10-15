@@ -21,10 +21,6 @@ public class UserValidator {
         validateUsername(user.getUsername());
         validatePassword(user.getPassword());
     }
-    public void validateChangePassword(User user, String password){
-        validatePasswordCurrent(user, password);
-        validatePassword(password);
-    }
 
     private void validateRole(Rol role){
         if (role == null){
@@ -59,11 +55,6 @@ public class UserValidator {
     private void validatePassword(String password){
         if (password == null || password.trim().isBlank() || password.trim().length() <= 7){
             throw new IllegalArgumentException("Ingrese contraseña válido. (Debe tener 8 o más caracteres o números)");
-        }
-    }
-    private void validatePasswordCurrent (User user, String currentPassword){
-        if (!user.getPassword().equals(currentPassword)){
-            throw new IllegalArgumentException("La contraseña actual no coincide.");
         }
     }
 }
