@@ -230,11 +230,11 @@ public class CostumerController implements Initializable, ICostumerList {
                             setGraphic(null);
                         } else {
                             Costumer costumer = getTableView().getItems().get(getIndex());
-                            btnEliminate.setVisible(costumer.getDebt() > 0);
-                            btnEliminate.setVisible(costumer.isAccount());
+                            if (costumer.getDebt() > 0 || !costumer.isAccount() || currentUser.getRole().equals(Rol.GUEST)){
+                                btnEliminate.setVisible(false);
+                            }
                             btnEliminate.setDisable(currentUser.getRole().equals(Rol.SELLER));
                             btnEdit.setVisible(!currentUser.getRole().equals(Rol.GUEST));
-                            btnEliminate.setVisible(!currentUser.getRole().equals(Rol.GUEST));
                             btnPay.setVisible(costumer.getDebt() > 0);
 
                             HBox buttons = new HBox(btnPay, btnEdit, btnEliminate);

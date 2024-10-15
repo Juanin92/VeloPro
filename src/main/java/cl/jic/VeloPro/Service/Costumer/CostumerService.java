@@ -39,7 +39,7 @@ public class CostumerService implements ICostumerService {
     @Override
     public void updateCostumer(Costumer costumer) {
         Costumer costumerDB = getCostumerCreated(costumer.getName(), costumer.getSurname());
-        if (costumerDB != null){
+        if (costumerDB != null && !costumerDB.getId().equals(costumer.getId())){
             throw new IllegalArgumentException("Cliente Existente: Hay registro de este cliente.");
         }else {
             if (costumer.getEmail() == null || costumer.getEmail().isEmpty()) {
