@@ -1,5 +1,6 @@
 package cl.jic.VeloPro.Service.Costumer;
 
+import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
 import cl.jic.VeloPro.Model.Entity.Costumer.PaymentCostumer;
 import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
 import cl.jic.VeloPro.Repository.Costumer.PaymentCostumerRepo;
@@ -29,6 +30,18 @@ public class PaymentCostumerService implements IPaymentCostumerService {
     }
 
     @Override
+    public void addAdjustPayments(int amount, TicketHistory ticket, Costumer costumer) {
+        if (amount > 0) {
+            PaymentCostumer paymentCostumer = new PaymentCostumer();
+            paymentCostumer.setCostumer(costumer);
+            paymentCostumer.setDocument(ticket);
+            paymentCostumer.setAmount(amount);
+            paymentCostumer.setComment("Ajuste");
+            addPayments(paymentCostumer);
+        }
+    }
+
+    @Override
     public List<PaymentCostumer> getAll() {
         return paymentCostumerRepo.findAll();
     }
@@ -40,14 +53,9 @@ public class PaymentCostumerService implements IPaymentCostumerService {
 
     @Override
     public int calculateDebtTicket(TicketHistory ticket) {
-        List<PaymentCostumer> pagosDelTicket = paymentCostumerRepo.findByDocument(ticket);
-        return pagosDelTicket.stream()
+        List<PaymentCostumer> paymentTickets = paymentCostumerRepo.findByDocument(ticket);
+        return paymentTickets.stream()
                 .mapToInt(PaymentCostumer::getAmount)
                 .sum();
-    }
-
-    @Override
-    public void deletePayments(PaymentCostumer costumer) {
-        paymentCostumerRepo.delete(costumer);
     }
 }

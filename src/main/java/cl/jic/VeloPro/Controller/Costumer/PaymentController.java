@@ -9,18 +9,20 @@ import cl.jic.VeloPro.Service.Costumer.Interface.IPaymentCostumerService;
 import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
 import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Session.Session;
+import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.Validation.GraphicsValidator;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import lombok.Setter;
+import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,15 +36,15 @@ import java.util.stream.Collectors;
 public class PaymentController implements Initializable {
 
     @FXML private Label lblDebtCostumer, lblPayment, lblTotalDebt;
+    @FXML private Button btnSavePayment;
     @FXML private CustomTextField txtPayment;
     @FXML private TableColumn<PaymentCostumer, Integer> colAmount;
     @FXML private TableColumn<PaymentCostumer, String> colComment;
     @FXML private TableColumn<PaymentCostumer, LocalDate> colDate;
     @FXML private TableColumn<PaymentCostumer, TicketHistory> colDocument;
     @FXML private TableView<PaymentCostumer> listPaymentCostumer;
-    @FXML private ComboBox<TicketHistory> cbTicket;
     @FXML private ComboBox<String> cbComment;
-    @FXML private Button btnSavePayment;
+    @FXML private CheckListView<TicketHistory> cxListViewTicket;
 
     @Autowired private ICostumerService costumerService;
     @Autowired private IPaymentCostumerService paymentCostumerService;
@@ -50,11 +52,13 @@ public class PaymentController implements Initializable {
     @Autowired private ICostumerList ICostumerList;
     @Autowired private IRecordService recordService;
     @Autowired private GraphicsValidator graphicsValidator;
+    @Autowired private NotificationManager notificationManager;
     @Autowired private Session session;
     @Setter private Costumer currentCostumer;
 
     ObservableList<PaymentCostumer> paymentList;
-    List<TicketHistory> selectedTickets;
+    ObservableList<TicketHistory> selectedTicket;
+    List<TicketHistory> allTickets;
     private User currentUser;
     private int totalPayment;
     private int debt;
@@ -62,69 +66,68 @@ public class PaymentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         currentUser = session.getCurrentUser();
-        Platform.runLater(this::loadCombo);
+        Platform.runLater(this::loadData);
         Platform.runLater(this::loadDataPaymentList);
         Platform.runLater(this::calculateTotalPayment);
     }
 
     @FXML
-    public void paymentDebtCostumer(){
+    public void validateDebt() {
         try {
-            costumerService.paymentDebt(currentCostumer, txtPayment.getText());
-            PaymentCostumer paymentCostumer = new PaymentCostumer();
-            paymentCostumer.setCostumer(currentCostumer);
-            paymentCostumer.setAmount(Integer.parseInt(txtPayment.getText()));
-            paymentCostumer.setDocument(cbTicket.getValue());
-            paymentCostumer.setComment(cbComment.getValue());
-            paymentCostumerService.addPayments(paymentCostumer);
-
-            int selectedIndex = cbTicket.getSelectionModel().getSelectedIndex();
-            if (selectedIndex + 1 < cbTicket.getItems().size()) {
-                validateDebt(cbTicket.getItems().get(selectedIndex + 1), Integer.parseInt(txtPayment.getText()));
+            int totalSelectedTickets = 0;
+            int amount = Integer.parseInt(txtPayment.getText());
+            if (selectedTicket.isEmpty()) {
+                notificationManager.warningNotification("Advertencia", "Seleccione una o varias boletas", Pos.CENTER);
             } else {
-                validateDebt(cbTicket.getValue(), Integer.parseInt(txtPayment.getText()));
+                for (TicketHistory ticket : selectedTicket) {
+                    totalSelectedTickets += ticket.getTotal();
+                }
+                if (selectedTicket.size() > 1) {
+                    if (amount == (totalSelectedTickets)) {
+                        for (TicketHistory ticket : selectedTicket) {
+                            paymentDebtCostumer(ticket, cbComment.getValue());
+                            ticketHistoryService.updateStatus(ticket);
+                        }
+                    } else {
+                        handleValidationException("El monto no es correcto para el pago de la deuda.");
+                    }
+                } else {
+                    if (amount == (totalSelectedTickets - totalPayment)) {
+                        paymentDebtCostumer(selectedTicket.getFirst(), cbComment.getValue());
+                        ticketHistoryService.updateStatus(selectedTicket.getFirst());
+                    } else if (amount < (totalSelectedTickets - totalPayment)) {
+                        paymentCostumerService.addAdjustPayments(amount, selectedTicket.getFirst(), currentCostumer);
+                        costumerService.paymentDebt(currentCostumer, txtPayment.getText());
+                    }else {
+                       handleValidationException("El monto supera el valor de la deuda.");
+                    }
+                }
+                loadData();
+                loadDataPaymentList();
+                cleanInfo();
             }
-            loadDataPaymentList();
-            calculateTotalPayment();
-            ICostumerList.loadDataCostumerList();
-            ICostumerList.updateTotalDebt();
-            loadCombo();
-            recordService.registerAction(currentUser,"PAYMENT", "Pago Cliente " + currentCostumer.getName() + " " + currentCostumer.getSurname() + ", Cantidad: " + Integer.parseInt(txtPayment.getText()));
-        } catch (NumberFormatException e){
+        }catch (NumberFormatException ex){
             handleValidationException("Ingrese solo números.");
-        } catch (IllegalArgumentException e) {
+        }catch (IllegalArgumentException e){
             handleValidationException("Seleccione una forma de pago");
             handleValidationException(e.getMessage());
         }
     }
 
-    private void validateDebt(TicketHistory ticketHistory, int amount) {
-        for (TicketHistory ticket : selectedTickets) {
-            if (selectedTickets.size() > 1){
-                if (ticket.getTotal() <=  amount){
-                    ticketHistoryService.updateStatus(ticket);
-                    addAdjustPayment(amount - ticket.getTotal(), ticketHistory);
-                    break;
-                }
-            } else {
-                if (ticket.getTotal() <= (totalPayment + amount)){
-                    ticketHistoryService.updateStatus(ticket);
-                    addAdjustPayment(amount - ticket.getTotal(), ticketHistory);
-                    break;
-                }
-            }
-        }
-    }
+    private void paymentDebtCostumer(TicketHistory ticket, String comment){
+        PaymentCostumer paymentCostumer = new PaymentCostumer();
+        paymentCostumer.setCostumer(currentCostumer);
+        paymentCostumer.setAmount(Integer.parseInt(txtPayment.getText()));
+        paymentCostumer.setDocument(ticket);
+        paymentCostumer.setComment(comment);
+        paymentCostumerService.addPayments(paymentCostumer);
+        costumerService.paymentDebt(currentCostumer, txtPayment.getText());
 
-    private void addAdjustPayment(int amount, TicketHistory ticketHistory) {
-        if (amount > 0) {
-            PaymentCostumer paymentCostumer = new PaymentCostumer();
-            paymentCostumer.setCostumer(currentCostumer);
-            paymentCostumer.setDocument(ticketHistory);
-            paymentCostumer.setAmount(amount);
-            paymentCostumer.setComment("Ajuste");
-            paymentCostumerService.addPayments(paymentCostumer);
-        }
+        ICostumerList.loadDataCostumerList();
+        ICostumerList.updateTotalDebtLabel();
+        notificationManager.successNotification("Éxito!", "Se ha agregado el abono al cliente - N° Doc: " + ticket.getDocument(), Pos.CENTER);
+        recordService.registerAction(currentUser, "PAYMENT", "Pago Cliente " + currentCostumer.getName()
+                + " " + currentCostumer.getSurname() + ", Cantidad: " + Integer.parseInt(txtPayment.getText()));
     }
 
     private void calculateTotalPayment() {
@@ -132,14 +135,18 @@ public class PaymentController implements Initializable {
         for (PaymentCostumer payment : paymentList) {
             totalPayment += payment.getAmount();
         }
+        if(selectedTicket.isEmpty()){
+            lblDebtCostumer.setText(String.format("$%,d", 0));
+        }else {
+            lblDebtCostumer.setText(String.format("$%,d", debt - totalPayment));
+        }
         lblPayment.setText(String.format("$%,d", totalPayment));
-        lblDebtCostumer.setText(String.format("$%,d", debt - totalPayment));
     }
 
     public void loadDataPaymentList(){
         List<PaymentCostumer> filteredPayments = paymentCostumerService.getCostumerSelected(currentCostumer.getId())
                 .stream()
-                .filter(payment -> selectedTickets.stream()
+                .filter(payment -> allTickets.stream()
                         .anyMatch(ticket -> Objects.equals(ticket.getId(), payment.getDocument().getId())))
                 .sorted(Comparator.comparing(PaymentCostumer::getDate))
                 .collect(Collectors.toList());
@@ -147,19 +154,19 @@ public class PaymentController implements Initializable {
         paymentList = FXCollections.observableArrayList(filteredPayments);
         listPaymentCostumer.setItems(paymentList);
 
-        colDate.setCellValueFactory(new PropertyValueFactory<PaymentCostumer,LocalDate>("date"));
-        colAmount.setCellValueFactory(new PropertyValueFactory<PaymentCostumer,Integer>("amount"));
-        colDocument.setCellValueFactory(new PropertyValueFactory<PaymentCostumer, TicketHistory>("document"));
-        colComment.setCellValueFactory(new PropertyValueFactory<PaymentCostumer,String>("comment"));
+        colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        colAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        colDocument.setCellValueFactory(new PropertyValueFactory<>("document"));
+        colComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
 
         configurationTableView();
         calculateTotalPayment();
     }
 
     private void configurationTableView() {
-        colAmount.setCellFactory(column -> new TableCell<PaymentCostumer,Integer>(){
+        colAmount.setCellFactory(column -> new TableCell<>() {
             @Override
-            protected void updateItem(Integer item,boolean empty){
+            protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -167,7 +174,7 @@ public class PaymentController implements Initializable {
                     NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("es", "CL"));
                     setText(currencyFormat.format(item));
                     autosize();
-                    if (item > 0){
+                    if (item > 0) {
                         setTextFill(Color.RED);
                     }
                 }
@@ -175,25 +182,38 @@ public class PaymentController implements Initializable {
         });
     }
 
-    private void loadCombo(){
+    private void loadData(){
+        int selectedDebt = 0;
         debt = 0;
+        cxListViewTicket.getItems().clear();
         List<TicketHistory> tickets = ticketHistoryService.getByCostumerId(currentCostumer.getId())
                 .stream()
                 .sorted(Comparator.comparing(TicketHistory::getTotal))
                 .toList();
-
         for (TicketHistory ticket : tickets){
             if (!ticket.isStatus()){
-                cbTicket.getItems().add((ticket));
-                debt += ticket.getTotal();
-                lblTotalDebt.setText(String.format("$%,d", debt));
+                cxListViewTicket.getItems().add(ticket);
+                selectedDebt += ticket.getTotal();
+                lblTotalDebt.setText(String.format("$%,d", selectedDebt));
             }
         }
-        cbTicket.getSelectionModel().select(0);
-        selectedTickets = cbTicket.getItems();
-
+        cxListViewTicket.getCheckModel().getCheckedItems().addListener((ListChangeListener<TicketHistory>) change -> {
+            while (change.next()) {
+                change.getAddedSubList().forEach(ticket -> debt += ticket.getTotal());
+                change.getRemoved().forEach(ticket -> debt -= ticket.getTotal());
+            }
+            lblDebtCostumer.setText(String.format("$%,d", (debt - totalPayment)));
+        });
+        allTickets = cxListViewTicket.getItems();
         cbComment.getItems().addAll("Efectivo", "Tarjeta", "Otro");
+        selectedTicket = cxListViewTicket.getCheckModel().getCheckedItems();
+    }
+
+    private void cleanInfo(){
         txtPayment.clear();
+        cxListViewTicket.refresh();
+        cxListViewTicket.getCheckModel().clearChecks();
+        lblDebtCostumer.setText("0");
     }
 
     private void handleValidationException(String errorMessage){
@@ -204,6 +224,7 @@ public class PaymentController implements Initializable {
             case "Ingrese solo números.":
             case "El monto no puede ser menor a 0.":
             case "El monto supera el valor de la deuda.":
+            case "El monto no es correcto para el pago de la deuda.":
                 graphicsValidator.settingAndValidationTextField(txtPayment,true, errorMessage);
                 break;
         }

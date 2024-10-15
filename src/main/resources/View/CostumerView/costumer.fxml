@@ -10,6 +10,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
 <StackPane fx:id="costumerView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1123.0" styleClass="principalView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.Costumer.CostumerController">
@@ -21,10 +22,10 @@
                   <TableColumn fx:id="colId" editable="false" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" text="Cod" />
                 <TableColumn fx:id="colName" maxWidth="150.0" minWidth="120.0" prefWidth="120.0" sortable="false" text="Nombre" />
                 <TableColumn fx:id="colSurname" maxWidth="150.0" minWidth="120.0" prefWidth="120.0" sortable="false" text="Apellido" />
-                  <TableColumn fx:id="colEmail" maxWidth="180.0" minWidth="180.0" prefWidth="180.0" sortable="false" text="Email" />
-                  <TableColumn fx:id="colPhone" editable="false" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" sortable="false" text="Telefono" />
-                  <TableColumn fx:id="colDebt" maxWidth="-Infinity" minWidth="80.0" prefWidth="-1.0" text="Deuda" />
-                  <TableColumn fx:id="colStatus" maxWidth="80.0" minWidth="80.0" text="Estado" />
+                  <TableColumn fx:id="colEmail" maxWidth="196.66665649414062" minWidth="180.0" prefWidth="196.66665649414062" sortable="false" text="Email" />
+                  <TableColumn fx:id="colPhone" editable="false" maxWidth="120.0" minWidth="103.3333740234375" prefWidth="103.3333740234375" sortable="false" text="Telefono" />
+                  <TableColumn fx:id="colDebt" maxWidth="110.0" minWidth="80.0" prefWidth="110.0" text="Deuda" />
+                  <TableColumn fx:id="colStatus" maxWidth="80.0" minWidth="50.0" prefWidth="50.0" text="Estado" />
                   <TableColumn fx:id="colAccount" maxWidth="80.0" minWidth="80.0" text="Cuenta" />
                   <TableColumn fx:id="colAction" editable="false" maxWidth="180.0" minWidth="180.0" prefWidth="180.0" sortable="false" text="Accion" />
               </columns>
@@ -63,9 +64,33 @@
                   <Font size="40.0" />
                </font>
             </Label>
-            <Label fx:id="lblTotalDebt" layoutX="634.0" layoutY="41.0" text="\$0000" textFill="WHITE">
+            <Label fx:id="lblTotalDebt" layoutX="634.0" layoutY="41.0" text="\$0000" textFill="#fb0000">
                <font>
                   <Font size="32.0" />
+               </font>
+            </Label>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1fff4a" height="27.0" layoutX="521.0" layoutY="115.0" stroke="BLACK" strokeType="INSIDE" width="27.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1fb4ff" height="27.0" layoutX="664.0" layoutY="115.0" stroke="BLACK" strokeType="INSIDE" width="27.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ff1f1f" height="27.0" layoutX="591.0" layoutY="115.0" stroke="BLACK" strokeType="INSIDE" width="27.0" />
+            <Label layoutX="514.0" layoutY="143.0" text="Pagada" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="576.0" layoutY="143.0" text="Pendiente" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="659.0" layoutY="143.0" text="Parcial" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1a1aff" height="27.0" layoutX="743.0" layoutY="115.0" stroke="BLACK" strokeType="INSIDE" width="27.0" />
+            <Label layoutX="734.0" layoutY="143.0" text="Vencida" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
                </font>
             </Label>
          </children>

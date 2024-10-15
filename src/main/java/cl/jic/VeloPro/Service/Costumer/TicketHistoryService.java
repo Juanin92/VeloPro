@@ -39,11 +39,6 @@ public class TicketHistoryService implements ITicketHistoryService {
     }
 
     @Override
-    public void deleteTickets(TicketHistory ticket) {
-        ticketHistoryRepo.delete(ticket);
-    }
-
-    @Override
     public boolean validateDate(TicketHistory ticket) {
         LocalDate now = LocalDate.now();
         LocalDate ticketDate = ticket.getDate();

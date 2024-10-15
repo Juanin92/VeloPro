@@ -79,10 +79,9 @@ public class CostumerController implements Initializable, ICostumerList {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         currentUser = session.getCurrentUser();
         btnAddCostumer.setDisable(currentUser.getRole().equals(Rol.GUEST));
-        configurationTableView();
         setupSearchFilter();
         loadDataCostumerList();
-        updateTotalDebt();
+        updateTotalDebtLabel();
     }
 
     @FXML
@@ -182,16 +181,8 @@ public class CostumerController implements Initializable, ICostumerList {
 
         for (Costumer costumer : list){
             validateTicketCostumer(costumer);
+            costumerService.statusAssign(costumer);
         }
-
-        costumerList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                currentCostumer = newValue;
-                validateTicketCostumer(currentCostumer);
-                costumerService.statusAssign(currentCostumer);
-            }
-        });
-
         configurationTableView();
     }
 
@@ -239,18 +230,12 @@ public class CostumerController implements Initializable, ICostumerList {
                             setGraphic(null);
                         } else {
                             Costumer costumer = getTableView().getItems().get(getIndex());
-                            if (costumer.getDebt() > 0){
-                                btnEliminate.setDisable(true);
-                                btnPay.setDisable(false);
-                            } else {
-                                btnEliminate.setDisable(false);
-                                btnPay.setDisable(true);
-                            }
+                            btnEliminate.setVisible(costumer.getDebt() > 0);
                             btnEliminate.setVisible(costumer.isAccount());
                             btnEliminate.setDisable(currentUser.getRole().equals(Rol.SELLER));
                             btnEdit.setVisible(!currentUser.getRole().equals(Rol.GUEST));
                             btnEliminate.setVisible(!currentUser.getRole().equals(Rol.GUEST));
-                            btnPay.setVisible(costumer.isAccount());
+                            btnPay.setVisible(costumer.getDebt() > 0);
 
                             HBox buttons = new HBox(btnPay, btnEdit, btnEliminate);
                             buttons.setAlignment(Pos.CENTER);
@@ -331,19 +316,14 @@ public class CostumerController implements Initializable, ICostumerList {
                     setStyle("-fx-background-color: transparent;");
                 } else {
                     if (item == PaymentStatus.PAGADA) {
-                        setTextFill(Color.BLACK);
                         setStyle("-fx-background-color: green;");
                     } else if (item == PaymentStatus.PENDIENTE) {
-                        setTextFill(Color.BLACK);
                         setStyle("-fx-background-color: red;");
                     } else if (item == PaymentStatus.PARCIAL) {
-                        setTextFill(Color.BLACK);
                         setStyle("-fx-background-color: yellow;");
                     } else if (item == PaymentStatus.VENCIDA) {
-                        setTextFill(Color.BLACK);
                         setStyle("-fx-background-color: #1a1aff;");
                     }
-                    setText(item.toString());
                     autosize();
                 }
             }
@@ -372,11 +352,10 @@ public class CostumerController implements Initializable, ICostumerList {
         });
     }
 
-    public void updateTotalDebt() {
+    public void updateTotalDebtLabel() {
         int totalDebts = costumerList.getItems().stream()
                 .mapToInt(Costumer::getDebt)
                 .sum();
         lblTotalDebt.setText(String.format("$%,d", totalDebts));
-        lblTotalDebt.setStyle("-fx-text-fill: red;");
     }
 }

@@ -1,26 +1,12 @@
 package cl.jic.VeloPro.Service.Costumer;
 
 import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
-import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
-import cl.jic.VeloPro.Model.Entity.Sale.Sale;
 import cl.jic.VeloPro.Model.Enum.PaymentStatus;
 import cl.jic.VeloPro.Repository.Costumer.CostumerRepo;
-import cl.jic.VeloPro.Repository.Costumer.TicketHistoryRepo;
-import cl.jic.VeloPro.Repository.Sale.SaleRepo;
 import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
-import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.Validation.CostumerValidator;
-import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +14,6 @@ import java.util.Optional;
 public class CostumerService implements ICostumerService {
 
     @Autowired private CostumerRepo costumerRepo;
-    @Autowired private TicketHistoryRepo ticketHistoryRepo;
     @Autowired private CostumerValidator validator;
 
     @Override
