@@ -112,11 +112,7 @@ public class PurchaseController implements Initializable{
             stage.setScene(scene);
             stage.setTitle("Agregar Productos");
             stage.initStyle(StageStyle.UNDECORATED);
-            scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
-                if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                    stage.close();
-                }
-            });
+            buttonManager.selectedButtonStage(btnSearchProduct, scene, stage);
             stage.show();
         }  else if (event.getSource().equals(btnClean)){
             cleanField();

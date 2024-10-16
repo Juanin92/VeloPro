@@ -1,6 +1,7 @@
 package cl.jic.VeloPro.Controller.Sale;
 
 import cl.jic.VeloPro.Controller.HomeController;
+import cl.jic.VeloPro.Controller.Product.ProductListController;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.MovementsType;
 import cl.jic.VeloPro.Model.Enum.Rol;
@@ -23,7 +24,6 @@ import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleService;
 import cl.jic.VeloPro.Validation.GraphicsValidator;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
 import cl.jic.VeloPro.VeloProApplication;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -39,7 +39,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -74,15 +73,7 @@ public class SaleController implements Initializable {
     @FXML private Label lblCash, lblChange, lblChangeFixed, lblCostumer, lblDate, lblNumberSale;
     @FXML private Label lblTotal, lblTypePay, lblUser, lblDiscount, lblDiscountFixed;
     @FXML private Label lblRemainFixed, lblLoanFixed;
-    @FXML private TableColumn<Product, BrandProduct> colBrandSale;
-    @FXML private TableColumn<Product, CategoryProduct> colCategorySales;
-    @FXML private TableColumn<Product, String> colDescriptionSale;
-    @FXML private TableColumn<Product, Long> colIdProductSale;
-    @FXML private TableColumn<Product, SubcategoryProduct> colSubcategory;
-    @FXML private TableColumn<Product, UnitProduct> colUnitSale;
-    @FXML private TableColumn<Product, Integer> colStock;
-    @FXML private TableView<Product> listSearchProduct;
-    @FXML private CustomTextField txtSearchFastProduct, txtAmountCash, txtDiscount;
+    @FXML private CustomTextField txtAmountCash, txtDiscount;
     @FXML private CheckBox cbDiscount;
     @FXML private AnchorPane saleTypePane, paneDiscount, paneAmount, paneLabels;
     @FXML private ComboBox<Costumer> cbCostumer;
@@ -107,7 +98,6 @@ public class SaleController implements Initializable {
     @Setter private boolean isViewSelected = true;
     private Costumer selectedCostumer;
     private User currentUser;
-    private ObservableList<Product> productsList;
     private final ObservableList<DetailSaleDTO> dtoList = FXCollections.observableArrayList();
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("es", "CL"));
     private int total;
@@ -122,10 +112,6 @@ public class SaleController implements Initializable {
         currentUser = session.getCurrentUser();
         btnLoan.setVisible(!currentUser.getRole().equals(Rol.GUEST));
         btnMixed.setVisible(!currentUser.getRole().equals(Rol.GUEST));
-        if (url.toString().contains("listProductSale.fxml")){
-            Platform.runLater(this::loadDataProductSearchList);
-            setupSearchFilterProduct();
-        }
         graphicsValidator.handleTextfieldChange(txtAmountCash);
         loadData();
         loadCostumer();
@@ -135,20 +121,19 @@ public class SaleController implements Initializable {
     private void handleButton(ActionEvent event) throws IOException {
         if (event.getSource().equals(btnProduct)){
             if (stageValidation.validateStage("Agregar Productos")) return;
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/Sales/listProductSale.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/LogisticView/listProduct.fxml"));
             fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
             Parent root = fxmlLoader.load();
+            ProductListController controller = fxmlLoader.getController();
+            controller.setView("sale");
+            controller.loadData();
 
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
             stage.setTitle("Agregar Productos");
             stage.initStyle(StageStyle.UNDECORATED);
-            scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
-                if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                    stage.close();
-                }
-            });
+            buttonManager.selectedButtonStage(btnProduct, scene, stage);
             stage.show();
             isViewSelected = false;
         } else if (event.getSource().equals(btnCancelPay)) {
@@ -202,12 +187,9 @@ public class SaleController implements Initializable {
             configurePaymentMethod(sale);
             saleService.addSale(sale);
 
-            String pdfFilePath = "Boleta_" + sale.getDocument() + ".pdf";
             PDFGenerator.generateSaleReceiptPDF(sale, dtoList);
-
             String userHome = System.getProperty("user.home");
             String filePath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator + sale.getDocument() + ".pdf";
-            File pdfFile = new File(filePath);
 
             if (active.equals(PaymentMethod.PRESTAMO) || active.equals(PaymentMethod.MIXTO)){
                 costumerService.addSaleToCostumer(selectedCostumer);
@@ -264,8 +246,7 @@ public class SaleController implements Initializable {
         }
     }
 
-    private void createDto(Product product){
-        DetailSaleDTO dto = saleDetailService.createDTO(product);
+    public void createDto(DetailSaleDTO dto){
         boolean exists = dtoList.stream().anyMatch(existingDto -> existingDto.getId().equals(dto.getId()));
         if (!exists) {
             dtoList.add(dto);
@@ -406,27 +387,6 @@ public class SaleController implements Initializable {
         });
     }
 
-    public void loadDataProductSearchList(){
-        productsList = FXCollections.observableArrayList(productService.getAll());
-        productsList.removeIf(product -> !product.isStatus() || product.getSalePrice() == 0);
-        listSearchProduct.setItems(productsList);
-        listSearchProduct.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
-        listSearchProduct.getSelectionModel().selectedItemProperty().addListener((observableValue, product, newValue) -> {
-            createDto(newValue);
-        });
-
-        colIdProductSale.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colBrandSale.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        colCategorySales.setCellValueFactory(new PropertyValueFactory<>("category"));
-        colSubcategory.setCellValueFactory(new PropertyValueFactory<>("subcategoryProduct"));
-        colDescriptionSale.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colUnitSale.setCellValueFactory(new PropertyValueFactory<>("unit"));
-        colStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
-
-        configurationTableView();
-    }
-
     private void deleteProductFromDetailSale(Long idProduct){
         Optional<DetailSaleDTO> optionalDto = dtoList.stream()
                 .filter(dto -> Objects.equals(dto.getId(), idProduct))
@@ -452,7 +412,7 @@ public class SaleController implements Initializable {
     }
 
     private void configurationTableView() {
-        colPrice.setCellFactory(column -> new TableCell<DetailSaleDTO, Integer>() {
+        colPrice.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
@@ -464,7 +424,7 @@ public class SaleController implements Initializable {
                 }
             }
         });
-        colTotal.setCellFactory(column -> new TableCell<DetailSaleDTO, Integer>() {
+        colTotal.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
@@ -478,7 +438,7 @@ public class SaleController implements Initializable {
         });
         colQuantity.setCellFactory(column -> {
             CustomTextField textField = new CustomTextField();
-            return new TableCell<DetailSaleDTO, Integer>() {
+            return new TableCell<>() {
                 @Override
                 public void updateItem(Integer item, boolean empty) {
                     super.updateItem(item, empty);
@@ -566,7 +526,7 @@ public class SaleController implements Initializable {
 
             @Override
             public TableCell<DetailSaleDTO, Void> call(final TableColumn<DetailSaleDTO, Void> param) {
-                return new TableCell<DetailSaleDTO, Void>() {
+                return new TableCell<>() {
                     private final Button btnDelete = buttonManager.createButton("btnDeleteIcon.png", "red", 10, 10);
                     {
                         btnDelete.setOnAction((event) -> {
@@ -592,27 +552,6 @@ public class SaleController implements Initializable {
             }
         };
         colAction.setCellFactory(cellFactory);
-    }
-
-    @FXML
-    private void setupSearchFilterProduct() {
-        txtSearchFastProduct .textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
-                listSearchProduct.setItems(productsList);
-                listSearchProduct.refresh();
-            } else {
-                String lowerCaseFilter = newValue.toLowerCase();
-                ObservableList<Product> filteredList = FXCollections.observableArrayList();
-                for (Product product : productsList) {
-                    String brandName = product.getBrand().getName().toLowerCase();
-                    if (product.getDescription().toLowerCase().contains(lowerCaseFilter) ||
-                            brandName.contains(lowerCaseFilter)) {
-                        filteredList.add(product);
-                    }
-                }
-                listSearchProduct.setItems(filteredList);
-            }
-        });
     }
 
     private void loadData() {
@@ -648,7 +587,7 @@ public class SaleController implements Initializable {
                     lblDiscount.setVisible(false);
                     txtDiscount.setText("");
                     lblDiscount.setText("0");
-                    lblTotal.setText(String.valueOf(currencyFormat.format(total)));
+                    lblTotal.setText(currencyFormat.format(total));
                     lblCash.setText("0");
                     lblChange.setText("0");
                 }

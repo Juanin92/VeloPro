@@ -1,6 +1,7 @@
 package cl.jic.VeloPro.Controller.Product;
 
 import cl.jic.VeloPro.Controller.Purchase.PurchaseController;
+import cl.jic.VeloPro.Controller.Sale.SaleController;
 import cl.jic.VeloPro.Model.DTO.DetailPurchaseDTO;
 import cl.jic.VeloPro.Model.DTO.DetailSaleDTO;
 import cl.jic.VeloPro.Model.Entity.Product.CategoryProduct;
@@ -14,19 +15,17 @@ import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
 import cl.jic.VeloPro.VeloProApplication;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -38,7 +37,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 
 @Component
 public class ProductListController implements Initializable {
@@ -62,13 +60,13 @@ public class ProductListController implements Initializable {
     @Autowired private NotificationManager notificationManager;
     @Autowired private ButtonManager buttonManager;
     @Autowired private PurchaseController purchaseController;
+    @Autowired private SaleController saleController;
 
     @Setter private String view;
     private ObservableList<Product> productsList;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        loadDataProductSearchList();
         setupSearchFilterProduct();
     }
 
@@ -106,9 +104,11 @@ public class ProductListController implements Initializable {
 
     public void loadDataProductSearchList(){
         productsList = FXCollections.observableArrayList(productService.getAll());
+        if (view.equals("sale")) {
+            productsList.removeIf(product -> !product.isStatus() || product.getSalePrice() == 0);
+        }
         listSearchProduct.setItems(productsList);
         listSearchProduct.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
         listSearchProduct.getSelectionModel().selectedItemProperty().addListener((observableValue, product, newValue) -> {
             if (view.equals("purchase")){
                 createDtoPurchase(newValue);
@@ -146,10 +146,11 @@ public class ProductListController implements Initializable {
 
     private void createDtoSale(Product product){
         DetailSaleDTO dto = saleDetailService.createDTO(product);
+        saleController.createDto(dto);
     }
 
     private void configurationTableView() {
-        colStatus.setCellFactory(column -> new TableCell<Product, StatusProduct>(){
+        colStatus.setCellFactory(column -> new TableCell<>(){
             @Override
             protected void updateItem(StatusProduct item,boolean empty){
                 super.updateItem(item, empty);
@@ -194,5 +195,6 @@ public class ProductListController implements Initializable {
         purchasePane.setVisible(view.equals("purchase"));
         colStatus.setVisible(view.equals("purchase"));
         colStock.setVisible(view.equals("sale"));
+        loadDataProductSearchList();
     }
 }
