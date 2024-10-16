@@ -193,7 +193,7 @@ public class PurchaseController implements Initializable{
         });
     }
 
-    public void loadDataDetailPurchaseList(ObservableList<DetailPurchaseDTO> dto){
+    public void loadDataDetailPurchaseList(){
         colId.setCellValueFactory(new PropertyValueFactory<>("idProduct"));
         colBrand.setCellValueFactory(new PropertyValueFactory<>("brand"));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -211,35 +211,16 @@ public class PurchaseController implements Initializable{
             if (!exists) {
                 dtoList.add(dto);
                 purchaseProductTable.setItems(dtoList);
-                loadDataDetailPurchaseList(dtoList);
+                loadDataDetailPurchaseList();
                 lblProductQuantity.setText(String.valueOf(quantityProductPurchaseList += 1));
             } else {
                 notificationManager.informationNotification("Ya ha seleccionado este producto.", "", Pos.CENTER);
             }
         }
-//        if (product != null){
-//            DetailPurchaseDTO dto = new DetailPurchaseDTO();
-//            dto.setIdProduct(product.getId());
-//            dto.setBrand(product.getBrand().getName());
-//            dto.setDescription(product.getDescription());
-//            dto.setPrice(0);
-//            dto.setTax(0);
-//            dto.setTotal(0);
-//            dto.setQuantity(0);
-//            boolean exists = dtoList.stream().anyMatch(existingDto -> existingDto.getIdProduct().equals(dto.getIdProduct()));
-//            if (!exists) {
-//                dtoList.add(dto);
-//                purchaseProductTable.setItems(dtoList);
-//                loadDataDetailPurchaseList(dtoList);
-//                lblProductQuantity.setText(String.valueOf(quantityProductPurchaseList += 1));
-//            }else {
-//                notificationManager.informationNotification("Ya ha seleccionado este producto.", "", Pos.CENTER);
-//            }
-//        }
     }
 
     private void configurationTableView() {
-        colTotal.setCellFactory(column -> new TableCell<DetailPurchaseDTO, Integer>() {
+        colTotal.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
@@ -251,7 +232,7 @@ public class PurchaseController implements Initializable{
                 }
             }
         });
-        colTax.setCellFactory(column -> new TableCell<DetailPurchaseDTO, Integer>() {
+        colTax.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
@@ -265,7 +246,7 @@ public class PurchaseController implements Initializable{
         });
         colPrice.setCellFactory(column -> {
             CustomTextField textField = new CustomTextField();
-            return new TableCell<DetailPurchaseDTO, Integer>() {
+            return new TableCell<>() {
                 @Override
                 public void updateItem(Integer item, boolean empty) {
                     super.updateItem(item, empty);
@@ -360,7 +341,7 @@ public class PurchaseController implements Initializable{
 
         colQuantity.setCellFactory(column -> {
             CustomTextField textField = new CustomTextField();
-            return new TableCell<DetailPurchaseDTO, Integer>() {
+            return new TableCell<>() {
                 @Override
                 public void updateItem(Integer item, boolean empty)     {
                     super.updateItem(item, empty);
@@ -395,11 +376,6 @@ public class PurchaseController implements Initializable{
                                 commitEdit(newValue);
                             }
                         });
-//                        textField.textProperty().addListener((obs, oldValue, newValue) -> {
-//                            if (!newValue.equals(getItem().toString())) {
-//                                commitEdit(Integer.parseInt(textField.getText()));
-//                            }
-//                        });
                         textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
                             if (!newVal) {
                                 int newValue = textfieldValue(textField.getText());
@@ -459,13 +435,13 @@ public class PurchaseController implements Initializable{
 
             @Override
             public TableCell<DetailPurchaseDTO, Void> call(final TableColumn<DetailPurchaseDTO, Void> param) {
-                return new TableCell<DetailPurchaseDTO, Void>() {
+                return new TableCell<>() {
                     private final Button btnDelete = buttonManager.createButton("btnDeleteIcon.png", "red", 10, 10);
                     {
                         btnDelete.setOnAction((event) -> {
                             DetailPurchaseDTO dto = getTableView().getItems().get(getIndex());
                             deleteProductFromDetailPurchase(dto.getIdProduct());
-                            loadDataDetailPurchaseList(dtoList);
+                            loadDataDetailPurchaseList();
                             updateTotalPurchase();
                         });
                     }
