@@ -126,35 +126,18 @@ public class PurchaseController implements Initializable{
             if (!dtoList.isEmpty()){
                 if (validateStockAndPrice()){
                     int total = Integer.parseInt(txtTotal.getText());
+                    totalPricePurchaseList = purchaseService.totalPricePurchase(dtoList);
                     if (totalPricePurchaseList == total){
-                        Purchase purchase = new Purchase();
                         LocalDate selectedDate = dtDate.getValue();
-                        purchase.setDate(selectedDate);
-                        purchase.setSupplier(cbSupplier.getValue());
                         RadioButton selectedRadioButton = (RadioButton) radioGroup.getSelectedToggle();
-                        if (selectedRadioButton != null) {
-                            purchase.setDocumentType(selectedRadioButton.getText());
-                        }
-                        purchase.setDocument(txtDocument.getText());
-                        purchase.setIva((int) taxValue);
-                        purchase.setPurchaseTotal(Integer.parseInt(txtTotal.getText()));
-                        purchaseService.save(purchase);
+                        Purchase purchase = purchaseService.save(selectedDate, cbSupplier.getValue(),
+                                selectedRadioButton.getText(), txtDocument.getText(), (int) taxValue, Integer.parseInt(txtTotal.getText()));
 
                         for (DetailPurchaseDTO dto : dtoList) {
-                            PurchaseDetail purchaseDetail = new PurchaseDetail();
-                            purchaseDetail.setPrice(dto.getPrice());
-                            purchaseDetail.setQuantity(dto.getQuantity());
-                            purchaseDetail.setTax(dto.getTax());
-                            purchaseDetail.setTotal(dto.getTotal());
-                            purchaseDetail.setProduct(productService.getProductById(dto.getIdProduct()));
-                            purchaseDetail.setPurchase(purchase);
-                            purchaseDetailService.save(purchaseDetail);
-
+                            purchaseDetailService.save(dto, purchase, productService.getProductById(dto.getIdProduct()));
                             Product product = productService.getProductById(dto.getIdProduct());
                             if (product != null) {
-                                product.setBuyPrice(dto.getPrice());
-                                product.setStock(product.getStock() + dto.getQuantity());
-                                productService.update(product);
+                                productService.updateStock(product, dto.getPrice(), dto.getQuantity());
                                 productList.loadDataStockList();
                                 kardexService.addKardex(product, dto.getQuantity(), "Compra", MovementsType.ENTRADA, currentUser);
                             }
@@ -177,16 +160,11 @@ public class PurchaseController implements Initializable{
     }
 
     private void deleteProductFromDetailPurchase(Long idProduct){
-        Optional<DetailPurchaseDTO> optionalDto = dtoList.stream()
-                .filter(dto -> Objects.equals(dto.getIdProduct(), idProduct))
-                .findFirst();
-
-        optionalDto.ifPresent(dto -> {
-            dtoList.remove(dto);
+        if(purchaseDetailService.deleteProduct(idProduct,dtoList)){
             quantityProductPurchaseList -= 1;
             lblProductQuantity.setText(String.valueOf(quantityProductPurchaseList));
             updateTotalPurchase();
-        });
+        }
     }
 
     public void loadDataDetailPurchaseList(){
@@ -300,7 +278,6 @@ public class PurchaseController implements Initializable{
                     super.commitEdit(newValue);
                     int index = getTableRow().getIndex();
                     int oldValue = dtoList.get(index).getPrice();
-                    totalPricePurchaseList -= oldValue;
                     if(newValue > 0){
                         dtoList = getTableView().getItems();
                         dtoList.get(index).setPrice(newValue);
@@ -475,14 +452,10 @@ public class PurchaseController implements Initializable{
         rbInvoice.setToggleGroup(radioGroup);
         rbReceipt.setToggleGroup(radioGroup);
 
-        List<Supplier> suppliers= supplierService.getAll();
-        cbSupplier.getItems().setAll(suppliers);
-
+        cbSupplier.getItems().setAll(supplierService.getAll());
         lblProductQuantity.setText(String.valueOf(quantityProductPurchaseList = 0));
         lblTotalPurchase.setText(String.valueOf(totalPricePurchaseList = 0));
-
-        Long numberPurchase = purchaseService.totalPurchase();
-        lblNumberPurchase.setText("N° " + numberPurchase);
+        lblNumberPurchase.setText("N° " + purchaseService.totalPurchase());
     }
 
     private boolean validateStockAndPrice(){
@@ -499,10 +472,7 @@ public class PurchaseController implements Initializable{
     }
 
     private void updateTotalPurchase() {
-        totalPricePurchaseList = dtoList.stream()
-                .mapToInt(DetailPurchaseDTO::getTotal)
-                .sum();
-        lblTotalPurchase.setText(currencyFormat.format(totalPricePurchaseList));
+        lblTotalPurchase.setText(currencyFormat.format(purchaseService.totalPricePurchase(dtoList)));
     }
 
     private void handleValidationException(String errorMessage){

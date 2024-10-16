@@ -47,6 +47,13 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public void updateStock(Product product, int price, int quantity) {
+        product.setBuyPrice(price);
+        product.setStock(product.getStock() + quantity);
+        update(product);
+    }
+
+    @Override
     public void delete(Product product) {
         product.setStatus(false);
         product.setStatusProduct(StatusProduct.DESCONTINUADO);

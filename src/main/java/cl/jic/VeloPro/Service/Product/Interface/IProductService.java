@@ -12,4 +12,5 @@ public interface IProductService {
     void delete(Product product);
     void update(Product product);
     void active(Product product);
+    void updateStock(Product product, int price, int quantity);
 }

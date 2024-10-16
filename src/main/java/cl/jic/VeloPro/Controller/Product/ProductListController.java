@@ -10,12 +10,12 @@ import cl.jic.VeloPro.Model.Entity.Product.SubcategoryProduct;
 import cl.jic.VeloPro.Model.Entity.Product.UnitProduct;
 import cl.jic.VeloPro.Model.Enum.StatusProduct;
 import cl.jic.VeloPro.Service.Product.Interface.IProductService;
+import cl.jic.VeloPro.Service.Purchase.Interfaces.IPurchaseDetailService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleDetailService;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
 import cl.jic.VeloPro.VeloProApplication;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -56,6 +56,7 @@ public class ProductListController implements Initializable {
 
     @Autowired private IProductService productService;
     @Autowired private ISaleDetailService saleDetailService;
+    @Autowired private IPurchaseDetailService purchaseDetailService;
     @Autowired private ShowingStageValidation stageValidation;
     @Autowired private NotificationManager notificationManager;
     @Autowired private ButtonManager buttonManager;
@@ -131,17 +132,8 @@ public class ProductListController implements Initializable {
     }
 
     private void createDtoPurchase(Product product){
-        if (product != null){
-            DetailPurchaseDTO dto = new DetailPurchaseDTO();
-            dto.setIdProduct(product.getId());
-            dto.setBrand(product.getBrand().getName());
-            dto.setDescription(product.getDescription());
-            dto.setPrice(0);
-            dto.setTax(0);
-            dto.setTotal(0);
-            dto.setQuantity(0);
-            purchaseController.createDto(dto);
-        }
+        DetailPurchaseDTO dto = purchaseDetailService.createDTO(product);
+        purchaseController.createDto(dto);
     }
 
     private void createDtoSale(Product product){
