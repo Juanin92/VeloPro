@@ -663,9 +663,10 @@ public class SaleController implements Initializable {
         saleTable.getItems().clear();
         saleTable.refresh();
         loadData();
-        selectedButton = btnPay;
-        handleButtonDisable(selectedButton);
+        selectedButton = null;
+        handleButtonDisable(btnPay);
 
+        cbCostumer.getSelectionModel().clearSelection();
         paneDiscount.setVisible(false);
         lblTotal.setText(currencyFormat.format(0));
         discount = 0;

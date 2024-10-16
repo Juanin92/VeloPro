@@ -1,17 +1,14 @@
 package cl.jic.VeloPro.Controller.Purchase;
 
 import cl.jic.VeloPro.Controller.Product.IProductList;
+import cl.jic.VeloPro.Controller.Product.ProductListController;
 import cl.jic.VeloPro.Model.DTO.DetailPurchaseDTO;
-import cl.jic.VeloPro.Model.Entity.Product.CategoryProduct;
 import cl.jic.VeloPro.Model.Entity.Product.Product;
-import cl.jic.VeloPro.Model.Entity.Product.SubcategoryProduct;
-import cl.jic.VeloPro.Model.Entity.Product.UnitProduct;
 import cl.jic.VeloPro.Model.Entity.Purchase.Purchase;
 import cl.jic.VeloPro.Model.Entity.Purchase.PurchaseDetail;
 import cl.jic.VeloPro.Model.Entity.Purchase.Supplier;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.MovementsType;
-import cl.jic.VeloPro.Model.Enum.StatusProduct;
 import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.Report.Interfaces.IKardexService;
 import cl.jic.VeloPro.Service.Purchase.Interfaces.IPurchaseDetailService;
@@ -24,7 +21,6 @@ import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.Validation.GraphicsValidator;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
 import cl.jic.VeloPro.VeloProApplication;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -53,9 +49,9 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Component
-public class PurchaseController implements Initializable {
+public class PurchaseController implements Initializable{
 
-    @FXML private Button btnClean, btnSearchProduct, btnAddProduct, btnAddCategories;
+    @FXML private Button btnClean, btnSearchProduct;
     @FXML private ComboBox<Supplier> cbSupplier;
     @FXML private TableView<DetailPurchaseDTO> purchaseProductTable;
     @FXML private TableColumn<DetailPurchaseDTO, Void> colAction;
@@ -70,15 +66,7 @@ public class PurchaseController implements Initializable {
     @FXML private Label lblNumberPurchase, lblProductQuantity, lblTotalPurchase, lblTotalDoc, lblDocument;
     @FXML private RadioButton rbInvoice, rbReceipt;
     @FXML private ToggleGroup radioGroup;
-    @FXML private CustomTextField txtDocument, txtIva, txtTotal, txtSearchFastProduct;
-    @FXML private TableView<Product> listSearchProduct;
-    @FXML private TableColumn<Product, String> colBrandPurchase;
-    @FXML private TableColumn<Product, CategoryProduct> colCategory;
-    @FXML private TableColumn<Product, String> colDescriptionPurchase;
-    @FXML private TableColumn<Product, Long> colIdProductPurchase;
-    @FXML private TableColumn<Product, StatusProduct> colStatus;
-    @FXML private TableColumn<Product, SubcategoryProduct> colSubcategory;
-    @FXML private TableColumn<Product, UnitProduct> colUnit;
+    @FXML private CustomTextField txtDocument, txtIva, txtTotal;
 
     @Autowired private IProductService productService;
     @Autowired private IPurchaseService purchaseService;
@@ -93,7 +81,6 @@ public class PurchaseController implements Initializable {
     @Autowired private ShowingStageValidation stageValidation;
     @Autowired private Session session;
 
-    private ObservableList<Product> productsList;
     private ObservableList<DetailPurchaseDTO> dtoList = FXCollections.observableArrayList();
     private int quantityProductPurchaseList = 0;
     private int totalPricePurchaseList = 0;
@@ -107,10 +94,6 @@ public class PurchaseController implements Initializable {
         currentUser = session.getCurrentUser();
         dtoList.clear();
         loadData();
-        if (url.toString().contains("listProduct.fxml")){
-            Platform.runLater(this::loadDataProductSearchList);
-            setupSearchFilterProduct();
-        }
     }
 
     @FXML
@@ -120,6 +103,9 @@ public class PurchaseController implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/LogisticView/listProduct.fxml"));
             fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
             Parent root = fxmlLoader.load();
+            ProductListController controller = fxmlLoader.getController();
+            controller.setView("purchase");
+            controller.loadData();
 
             Scene scene = new Scene(root);
             Stage stage = new Stage();
@@ -135,40 +121,6 @@ public class PurchaseController implements Initializable {
         }  else if (event.getSource().equals(btnClean)){
             cleanField();
             cleanListDto();
-        } else if (event.getSource().equals(btnAddCategories)) {
-            if (stageValidation.validateStage("Crear Categorías")) return;
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/LogisticView/categories.fxml"));
-            fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
-            Parent root = fxmlLoader.load();
-
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            stage.setScene(scene);
-            stage.setTitle("Crear Categorías");
-            stage.initStyle(StageStyle.UNDECORATED);
-            scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
-                if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                    stage.close();
-                }
-            });
-            stage.show();
-        } else if (event.getSource().equals(btnAddProduct)) {
-            if (stageValidation.validateStage("Agregar Productos")) return;
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/LogisticView/products.fxml"));
-            fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
-            Parent root = fxmlLoader.load();
-
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            stage.setScene(scene);
-            stage.setTitle("Agregar Productos");
-            stage.initStyle(StageStyle.UNDECORATED);
-            scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
-                if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                    stage.close();
-                }
-            });
-            stage.show();
         }
     }
 
@@ -242,9 +194,6 @@ public class PurchaseController implements Initializable {
     }
 
     public void loadDataDetailPurchaseList(ObservableList<DetailPurchaseDTO> dto){
-        ObservableList<DetailPurchaseDTO> detailPurchaseList = FXCollections.observableArrayList(dto);
-        purchaseProductTable.setItems(detailPurchaseList);
-
         colId.setCellValueFactory(new PropertyValueFactory<>("idProduct"));
         colBrand.setCellValueFactory(new PropertyValueFactory<>("brand"));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -256,67 +205,40 @@ public class PurchaseController implements Initializable {
         configurationTableView();
     }
 
-    private void createDto(Product product){
-        if (product != null){
-            DetailPurchaseDTO dto = new DetailPurchaseDTO();
-            dto.setIdProduct(product.getId());
-            dto.setBrand(product.getBrand().getName());
-            dto.setDescription(product.getDescription());
-            dto.setPrice(0);
-            dto.setTax(0);
-            dto.setTotal(0);
-            dto.setQuantity(0);
+    public void createDto(DetailPurchaseDTO dto){
+        if (dto != null) {
             boolean exists = dtoList.stream().anyMatch(existingDto -> existingDto.getIdProduct().equals(dto.getIdProduct()));
             if (!exists) {
                 dtoList.add(dto);
                 purchaseProductTable.setItems(dtoList);
                 loadDataDetailPurchaseList(dtoList);
                 lblProductQuantity.setText(String.valueOf(quantityProductPurchaseList += 1));
-            }else {
+            } else {
                 notificationManager.informationNotification("Ya ha seleccionado este producto.", "", Pos.CENTER);
             }
         }
-    }
-
-    public void loadDataProductSearchList(){
-        productsList = FXCollections.observableArrayList(productService.getAll());
-        listSearchProduct.setItems(productsList);
-        listSearchProduct.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
-        listSearchProduct.getSelectionModel().selectedItemProperty().addListener((observableValue, product, newValue) -> {
-            createDto(newValue);
-        });
-
-        colIdProductPurchase.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colBrandPurchase.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
-        colSubcategory.setCellValueFactory(new PropertyValueFactory<>("subcategoryProduct"));
-        colDescriptionPurchase.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colUnit.setCellValueFactory(new PropertyValueFactory<>("unit"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("statusProduct"));
-
-        configurationTableView();
+//        if (product != null){
+//            DetailPurchaseDTO dto = new DetailPurchaseDTO();
+//            dto.setIdProduct(product.getId());
+//            dto.setBrand(product.getBrand().getName());
+//            dto.setDescription(product.getDescription());
+//            dto.setPrice(0);
+//            dto.setTax(0);
+//            dto.setTotal(0);
+//            dto.setQuantity(0);
+//            boolean exists = dtoList.stream().anyMatch(existingDto -> existingDto.getIdProduct().equals(dto.getIdProduct()));
+//            if (!exists) {
+//                dtoList.add(dto);
+//                purchaseProductTable.setItems(dtoList);
+//                loadDataDetailPurchaseList(dtoList);
+//                lblProductQuantity.setText(String.valueOf(quantityProductPurchaseList += 1));
+//            }else {
+//                notificationManager.informationNotification("Ya ha seleccionado este producto.", "", Pos.CENTER);
+//            }
+//        }
     }
 
     private void configurationTableView() {
-        colStatus.setCellFactory(column -> new TableCell<Product, StatusProduct>(){
-            @Override
-            protected void updateItem(StatusProduct item,boolean empty){
-                super.updateItem(item, empty);
-                if (empty || item == null){
-                    setText("");
-                }else {
-                    if (item.equals(StatusProduct.DISPONIBLE)){
-                        setStyle("-fx-background-color: #1fff4a;");
-                    }else if (item.equals(StatusProduct.NODISPONIBLE)){
-                        setStyle("-fx-background-color: #1fb4ff;");
-                    }else {
-                        setStyle("-fx-background-color: #ff1f1f;");
-                    }
-                    autosize();
-                }
-            }
-        });
         colTotal.setCellFactory(column -> new TableCell<DetailPurchaseDTO, Integer>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
@@ -374,13 +296,15 @@ public class PurchaseController implements Initializable {
                         textField.setText(getItem() != 0 ? getItem().toString() : "");
                         textField.setOnKeyPressed(keyEvent -> {
                             if (keyEvent.getCode() == KeyCode.ENTER) {
-                                commitEdit(Integer.parseInt(textField.getText()));
+                                int newValue = textfieldValue(textField.getText());
+                                commitEdit(newValue);
                                 purchaseProductTable.refresh();
                             }
                         });
                         textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
                             if (!newVal) {
-                                commitEdit(Integer.parseInt(textField.getText()));
+                                int newValue = textfieldValue(textField.getText());
+                                commitEdit(newValue);
                             }
                         });
                         getGraphic().requestFocus();
@@ -409,13 +333,23 @@ public class PurchaseController implements Initializable {
                         int newTotal = (newValue + tax) * quantity;
                         dtoList.get(index).setTotal(newTotal);
                     }else{
-                        graphicsValidator.settingAndValidationTextField(textField,true, "");
                         cancelEdit();
                     }
                     setText(currencyFormat.format(newValue));
                     setGraphic(null);
                     getTableView().refresh();
                     updateTotalPurchase();
+                }
+
+                private int textfieldValue(String text) {
+                    if (text == null || text.isEmpty()) {
+                        return 0;
+                    }
+                    try {
+                        return Integer.parseInt(text);
+                    } catch (NumberFormatException e) {
+                        return 0;
+                    }
                 }
 
                 private String getString() {
@@ -457,17 +391,19 @@ public class PurchaseController implements Initializable {
                         textField.setText(getItem() != 0 ? getItem().toString() : "");
                         textField.setOnKeyPressed(keyEvent -> {
                             if (keyEvent.getCode() == KeyCode.ENTER) {
-                                commitEdit(Integer.parseInt(textField.getText()));
+                                int newValue = textfieldValue(textField.getText());
+                                commitEdit(newValue);
                             }
                         });
-                        textField.textProperty().addListener((obs, oldValue, newValue) -> {
-                            if (!newValue.equals(getItem().toString())) {
-                                commitEdit(Integer.parseInt(textField.getText()));
-                            }
-                        });
+//                        textField.textProperty().addListener((obs, oldValue, newValue) -> {
+//                            if (!newValue.equals(getItem().toString())) {
+//                                commitEdit(Integer.parseInt(textField.getText()));
+//                            }
+//                        });
                         textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
                             if (!newVal) {
-                                commitEdit(Integer.parseInt(textField.getText()));
+                                int newValue = textfieldValue(textField.getText());
+                                commitEdit(newValue);
                             }
                         });
                         getGraphic().requestFocus();
@@ -496,15 +432,24 @@ public class PurchaseController implements Initializable {
                             dtoList.get(index).setTotal(newTotal);
                             getTableView().refresh();
                         }else{
-                            graphicsValidator.settingAndValidationTextField(textField,true, "");
                             cancelEdit();
                         }
                         setText(String.valueOf(newValue));
                         setGraphic(null);
                         updateTotalPurchase();
                     }catch (NumberFormatException ex){
-                        graphicsValidator.settingAndValidationTextField(textField, true, "");
                         cancelEdit();
+                    }
+                }
+
+                private int textfieldValue(String text) {
+                    if (text == null || text.isEmpty()) {
+                        return 1;
+                    }
+                    try {
+                        return Integer.parseInt(text);
+                    } catch (NumberFormatException e) {
+                        return 1;
                     }
                 }
             };
@@ -541,27 +486,6 @@ public class PurchaseController implements Initializable {
             }
         };
         colAction.setCellFactory(cellFactory);
-    }
-
-    @FXML
-    private void setupSearchFilterProduct() {
-        txtSearchFastProduct .textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
-                listSearchProduct.setItems(productsList);
-                listSearchProduct.refresh();
-            } else {
-                String lowerCaseFilter = newValue.toLowerCase();
-                ObservableList<Product> filteredList = FXCollections.observableArrayList();
-                for (Product product : productsList) {
-                    String brandName = product.getBrand().getName().toLowerCase();
-                    if (product.getDescription().toLowerCase().contains(lowerCaseFilter) ||
-                            brandName.contains(lowerCaseFilter)) {
-                        filteredList.add(product);
-                    }
-                }
-                listSearchProduct.setItems(filteredList);
-            }
-        });
     }
 
     private void loadData(){
