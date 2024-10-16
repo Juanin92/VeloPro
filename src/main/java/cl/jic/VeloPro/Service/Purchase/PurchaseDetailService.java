@@ -19,11 +19,6 @@ public class PurchaseDetailService implements IPurchaseDetailService {
 
     @Autowired private PurchaseDetailRepo purchaseDetailRepo;
 
-//    @Override
-//    public void save(PurchaseDetail purchaseDetail) {
-//        purchaseDetailRepo.save(purchaseDetail);
-//    }
-
     @Override
     public void save(DetailPurchaseDTO dto, Purchase purchase, Product product) {
         PurchaseDetail purchaseDetail = new PurchaseDetail();
