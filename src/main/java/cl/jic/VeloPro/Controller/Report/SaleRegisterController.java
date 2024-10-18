@@ -20,6 +20,7 @@ import javafx.util.Callback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.NumberFormat;
@@ -119,12 +120,14 @@ public class SaleRegisterController implements Initializable {
                     {
                         btnPrint.setOnAction((event) -> {
                             Sale sale = getTableView().getItems().get(getIndex());
-                            String filePath = "C:\\Users\\juano\\Desktop\\Boletas PDF\\"+ sale.getDocument() + ".pdf";
+                            String userHome = System.getProperty("user.home");
+                            String filePath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator + sale.getDocument() + ".pdf";
                             pdfGenerator.openPDF(filePath);
                         });
                         btnVoid.setOnAction(event -> {
                             Sale sale = getTableView().getItems().get(getIndex());
-                            String filePath = "C:\\Users\\juano\\Desktop\\Boletas PDF\\"+ sale.getDocument() + ".pdf";
+                            String userHome = System.getProperty("user.home");
+                            String filePath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator + sale.getDocument() + ".pdf";
                             pdfGenerator.addWatermarkToPDF(filePath);
                             saleService.saleRegisterVoid(sale);
                             saleTable.refresh();
