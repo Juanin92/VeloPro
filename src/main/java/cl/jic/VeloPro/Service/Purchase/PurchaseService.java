@@ -19,9 +19,9 @@ public class PurchaseService implements IPurchaseService {
     @Autowired private PurchaseValidator validator;
 
 //    @Override
-//    public void save(Purchase purchase) {
+//    public void createDetailPurchase(Purchase purchase) {
 //        validator.validate(purchase);
-//        purchaseRepo.save(purchase);
+//        purchaseRepo.createDetailPurchase(purchase);
 //    }
 
     @Override

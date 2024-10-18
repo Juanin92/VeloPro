@@ -1,7 +1,6 @@
 package cl.jic.VeloPro.Service.Purchase;
 
 import cl.jic.VeloPro.Model.DTO.DetailPurchaseDTO;
-import cl.jic.VeloPro.Model.DTO.DetailSaleDTO;
 import cl.jic.VeloPro.Model.Entity.Product.Product;
 import cl.jic.VeloPro.Model.Entity.Purchase.Purchase;
 import cl.jic.VeloPro.Model.Entity.Purchase.PurchaseDetail;
@@ -20,7 +19,7 @@ public class PurchaseDetailService implements IPurchaseDetailService {
     @Autowired private PurchaseDetailRepo purchaseDetailRepo;
 
     @Override
-    public void save(DetailPurchaseDTO dto, Purchase purchase, Product product) {
+    public void createDetailPurchase(DetailPurchaseDTO dto, Purchase purchase, Product product) {
         PurchaseDetail purchaseDetail = new PurchaseDetail();
         purchaseDetail.setPrice(dto.getPrice());
         purchaseDetail.setQuantity(dto.getQuantity());

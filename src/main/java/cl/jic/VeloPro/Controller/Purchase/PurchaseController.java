@@ -5,7 +5,6 @@ import cl.jic.VeloPro.Controller.Product.ProductListController;
 import cl.jic.VeloPro.Model.DTO.DetailPurchaseDTO;
 import cl.jic.VeloPro.Model.Entity.Product.Product;
 import cl.jic.VeloPro.Model.Entity.Purchase.Purchase;
-import cl.jic.VeloPro.Model.Entity.Purchase.PurchaseDetail;
 import cl.jic.VeloPro.Model.Entity.Purchase.Supplier;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.MovementsType;
@@ -33,7 +32,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -134,10 +132,10 @@ public class PurchaseController implements Initializable{
                                 selectedRadioButton.getText(), txtDocument.getText(), (int) taxValue, Integer.parseInt(txtTotal.getText()));
 
                         for (DetailPurchaseDTO dto : dtoList) {
-                            purchaseDetailService.save(dto, purchase, productService.getProductById(dto.getIdProduct()));
                             Product product = productService.getProductById(dto.getIdProduct());
+                            purchaseDetailService.createDetailPurchase(dto, purchase, product);
                             if (product != null) {
-                                productService.updateStock(product, dto.getPrice(), dto.getQuantity());
+                                productService.updateStockPurchase(product, dto.getPrice(), dto.getQuantity());
                                 productList.loadDataStockList();
                                 kardexService.addKardex(product, dto.getQuantity(), "Compra", MovementsType.ENTRADA, currentUser);
                             }

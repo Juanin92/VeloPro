@@ -14,7 +14,6 @@ import cl.jic.VeloPro.Model.DTO.DetailSaleDTO;
 import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
 import cl.jic.VeloPro.Model.Entity.Product.*;
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
-import cl.jic.VeloPro.Model.Entity.Sale.SaleDetail;
 import cl.jic.VeloPro.Model.Enum.PaymentMethod;
 import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
 import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
@@ -172,19 +171,16 @@ public class SaleController implements Initializable {
     @FXML
     private void addSale(){
         try{
-            lblNumberSale.setText(String.valueOf(numberSale));
-            Sale sale = new Sale();
-            sale.setDiscount(discount);
-            sale.setTotalSale(total - discount);
+            int discountAmount = txtDiscount.getText().isEmpty() ? 0 : Integer.parseInt(txtDiscount.getText());
+            int cashAmount = txtAmountCash.getText().isEmpty() ? 0 : Integer.parseInt(txtAmountCash.getText());
+            Sale sale = saleService.addSale(discount, total, dtoList, discountAmount,
+                    cbDiscount.isSelected(), selectedCostumer, numberSale, cashAmount, active);
 
-            int totalTax;
-            if (cbDiscount.isSelected()){
-                totalTax = saleService.calculateTaxDiscount(dtoList, Integer.parseInt(txtDiscount.getText()));
-            }else {
-                totalTax = saleService.calculateTax(dtoList);
+            if (active == PaymentMethod.DEBITO || active == PaymentMethod.CREDITO) {
+                handleDialogs( sale,"Comprobante", "Transacción");
+            } else if (active == PaymentMethod.TRANSFERENCIA) {
+                handleDialogs( sale,"Transferencia", "Transferencia");
             }
-            sale.setTax(totalTax);
-            configurePaymentMethod(sale);
             saleService.addSale(sale);
 
             PDFGenerator.generateSaleReceiptPDF(sale, dtoList);
@@ -199,25 +195,14 @@ public class SaleController implements Initializable {
                     notificationManager.warningNotification("Error en el envío del correo", e.getMessage() + " " + selectedCostumer.getName(), Pos.CENTER);
                 }
             }
-
             for (DetailSaleDTO dto : dtoList) {
-                SaleDetail saleDetail = new SaleDetail();
-                saleDetail.setTotal(dto.getTotal());
-                saleDetail.setTax(dto.getTax());
-                saleDetail.setPrice(dto.getSalePrice());
-                saleDetail.setQuantity(dto.getQuantity());
-                saleDetail.setProduct(productService.getProductById(dto.getId()));
-                saleDetail.setSale(sale);
-                saleDetailService.save(saleDetail);
-
                 Product product = productService.getProductById(dto.getId());
+                saleDetailService.createSaleDetails(dto, sale, product);
                 if (product != null) {
-                    product.setStock(product.getStock() - dto.getQuantity());
-                    productService.update(product);
+                    productService.updateStockSale(product, dto.getQuantity());
                     kardexService.addKardex(product, dto.getQuantity(), "Venta", MovementsType.SALIDA, currentUser);
                 }
             }
-
             notificationManager.successNotification("Venta Exitosa!", "La venta " + lblNumberSale.getText() + " se ha efectuado correctamente.", Pos.TOP_CENTER);
             recordService.registerAction(currentUser, "CREATE", "Crea Venta " + sale.getDocument());
             pdfGenerator.openPDF(filePath);
@@ -334,43 +319,6 @@ public class SaleController implements Initializable {
         lblTotal.setText(currencyFormat.format(total - discount));
     }
 
-    private void configurePaymentMethod(Sale sale) throws Exception {
-        switch (active) {
-            case PRESTAMO:
-                sale.setPaymentMethod(PaymentMethod.PRESTAMO);
-                sale.setCostumer(selectedCostumer);
-                selectedCostumer.setTotalDebt(selectedCostumer.getDebt() + total);
-                ticketHistoryService.AddTicketToCostumer(selectedCostumer, numberSale, total, LocalDate.now());
-                break;
-            case MIXTO:
-                sale.setPaymentMethod(PaymentMethod.MIXTO);
-                sale.setCostumer(selectedCostumer);
-                sale.setComment("Abono inicial: $" + comment);
-                selectedCostumer.setTotalDebt(selectedCostumer.getDebt() + total);
-                ticketHistoryService.AddTicketToCostumer(selectedCostumer, numberSale, total, LocalDate.now());
-                break;
-            case DEBITO:
-                sale.setPaymentMethod(PaymentMethod.DEBITO);
-                sale.setCostumer(null);
-                handleDialogs(sale, "comprobante", "Transacción");
-                break;
-            case CREDITO:
-                sale.setPaymentMethod(PaymentMethod.CREDITO);
-                sale.setCostumer(null);
-                handleDialogs(sale, "comprobante", "Transacción");
-                break;
-            case TRANSFERENCIA:
-                sale.setPaymentMethod(PaymentMethod.TRANSFERENCIA);
-                sale.setCostumer(null);
-                handleDialogs(sale, "transferencia", "Transferencia");
-                break;
-            case EFECTIVO:
-                sale.setPaymentMethod(PaymentMethod.EFECTIVO);
-                sale.setCostumer(null);
-                break;
-        }
-    }
-
     private void loadCostumer(){
         List<Costumer> costumerList = costumerService.getAll();
         ObservableList<Costumer> costumers = FXCollections.observableArrayList(costumerList);
@@ -387,28 +335,16 @@ public class SaleController implements Initializable {
         });
     }
 
-    private void deleteProductFromDetailSale(Long idProduct){
-        Optional<DetailSaleDTO> optionalDto = dtoList.stream()
-                .filter(dto -> Objects.equals(dto.getId(), idProduct))
-                .findFirst();
-
-        optionalDto.ifPresent(dto -> {
-            int price = dto.getTotal();
-            total -= price;
-            if (total < 0){
-                total = 0;
-            }
-
-            lblTotal.setText(currencyFormat.format(total));
-            dtoList.remove(dto);
-            if (dtoList.isEmpty()){
-                saleTable.getItems().clear();
-                saleTable.refresh();
-                resetAfterSale();
-                saleTypePane.setDisable(true);
-            }
-            calculateTotal();
-        });
+    private void deleteProductFromDetailSale(Long idProduct) {
+        total = saleDetailService.deleteProduct(dtoList, idProduct, total);
+        lblTotal.setText(currencyFormat.format(total));
+        if (dtoList.isEmpty()) {
+            saleTable.getItems().clear();
+            saleTable.refresh();
+            resetAfterSale();
+            saleTypePane.setDisable(true);
+        }
+        calculateTotal();
     }
 
     private void configurationTableView() {
@@ -579,8 +515,6 @@ public class SaleController implements Initializable {
                             calculateDiscount();
                         }
                     });
-                    lblCash.setText("0");
-                    lblChange.setText("0");
                 } else {
                     txtDiscount.setVisible(false);
                     lblDiscountFixed.setVisible(false);
@@ -588,9 +522,9 @@ public class SaleController implements Initializable {
                     txtDiscount.setText("");
                     lblDiscount.setText("0");
                     lblTotal.setText(currencyFormat.format(total));
-                    lblCash.setText("0");
-                    lblChange.setText("0");
                 }
+                lblCash.setText("0");
+                lblChange.setText("0");
             });
         } catch (Exception e) {
             throw new IllegalArgumentException("Se produjo un error al cargar la información");
