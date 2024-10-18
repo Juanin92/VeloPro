@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Reflection?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="popView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.User.LocalDataController">
+   <children>
+      <AnchorPane prefHeight="400.0" prefWidth="600.0" StackPane.alignment="CENTER">
+         <children>
+            <Label layoutX="48.0" layoutY="24.0" text="Información Importante" textFill="WHITE">
+               <font>
+                  <Font size="48.0" />
+               </font>
+            </Label>
+            <Label layoutX="95.0" layoutY="128.0" text="Nombre:" textFill="WHITE">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label layoutX="95.0" layoutY="170.0" text="Teléfono:" textFill="WHITE">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label layoutX="95.0" layoutY="210.0" text="Email:" textFill="WHITE">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label layoutX="95.0" layoutY="249.0" text="Acceso:" textFill="WHITE">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label layoutX="95.0" layoutY="291.0" text="Dirección:" textFill="WHITE">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <CustomTextField fx:id="txtName" layoutX="214.0" layoutY="125.0" prefHeight="36.0" prefWidth="271.0" promptText="Ingrese nombre de la empresa">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </CustomTextField>
+            <CustomTextField fx:id="txtPhone" layoutX="214.0" layoutY="167.0" prefHeight="36.0" prefWidth="271.0" text="+569 ">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </CustomTextField>
+            <CustomTextField fx:id="txtEmail" layoutX="214.0" layoutY="207.0" prefHeight="36.0" prefWidth="271.0" promptText="ejemplo@gmail.com">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </CustomTextField>
+            <CustomTextField fx:id="txtAccessApp" layoutX="214.0" layoutY="246.0" prefHeight="36.0" prefWidth="271.0">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </CustomTextField>
+            <CustomTextField fx:id="txtAddress" layoutX="214.0" layoutY="288.0" prefHeight="36.0" prefWidth="271.0">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </CustomTextField>
+            <Button fx:id="btnUpdate" layoutX="300.0" layoutY="328.0" mnemonicParsing="false" onAction="#manegeData" prefHeight="55.0" prefWidth="67.0" style="-fx-background-color: transparent;">
+               <effect>
+                  <Reflection />
+               </effect>
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../Images/Icons/iconSave.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Label fx:id="lblPhone" layoutX="496.0" layoutY="177.0" textFill="#f60404">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblEmail" layoutX="496.0" layoutY="217.0" textFill="#f60404">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

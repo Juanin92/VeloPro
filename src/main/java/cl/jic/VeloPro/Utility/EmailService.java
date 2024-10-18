@@ -2,28 +2,35 @@ package cl.jic.VeloPro.Utility;
 
 import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
 import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
+import cl.jic.VeloPro.Model.Entity.LocalData;
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
 import cl.jic.VeloPro.Model.Entity.User;
+import cl.jic.VeloPro.Service.User.ILocalDataService;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
 @Service
 public class EmailService {
 
+    @Autowired private ILocalDataService localDataService;
+
     private JavaMailSenderImpl getJavaMailSender() {
+        List<LocalData> list = localDataService.getData();
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
-        mailSender.setUsername("barbara.juanito.go@gmail.com");
-        mailSender.setPassword("esav ullx zzuv ybfs");
+        mailSender.setUsername(list.getFirst().getEmail());
+        mailSender.setPassword(list.getFirst().getEmailSecurityApp());
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

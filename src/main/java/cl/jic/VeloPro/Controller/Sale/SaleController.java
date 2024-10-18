@@ -183,7 +183,7 @@ public class SaleController implements Initializable {
             }
             saleService.addSale(sale);
 
-            PDFGenerator.generateSaleReceiptPDF(sale, dtoList);
+            pdfGenerator.generateSaleReceiptPDF(sale, dtoList);
             String userHome = System.getProperty("user.home");
             String filePath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator + sale.getDocument() + ".pdf";
 

@@ -1,21 +1,17 @@
 package cl.jic.VeloPro.Utility;
 
 import cl.jic.VeloPro.Model.DTO.DetailSaleDTO;
+import cl.jic.VeloPro.Model.Entity.LocalData;
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
 import cl.jic.VeloPro.Model.Enum.PaymentMethod;
+import cl.jic.VeloPro.Service.User.ILocalDataService;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceCharacteristicsDictionary;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
@@ -31,12 +27,22 @@ import java.util.Optional;
 
 @Service
 public class PDFGenerator {
-    @Autowired NotificationManager notificationManager;
-    private static final String phone = "+569 12345678";
-    private static final String address = "Calle Falsa 1234";
-    private static final String email = "soporte@gmail.com";
 
-    public static void generateSaleReceiptPDF(Sale sale, List<DetailSaleDTO> dtoList) {
+    @Autowired private ILocalDataService localDataService;
+    @Autowired private NotificationManager notificationManager;
+    private static  String phone;
+    private static  String address;
+    private static  String email;
+
+    private void getData(){
+        List<LocalData> list = localDataService.getData();
+        phone = list.getFirst().getPhone();
+        address = list.getFirst().getAddress();
+        email = list.getFirst().getEmail();
+    }
+
+    public void generateSaleReceiptPDF(Sale sale, List<DetailSaleDTO> dtoList) {
+        getData();
         String userHome = System.getProperty("user.home");
         String directoryPath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator;
         File directory = new File(directoryPath);

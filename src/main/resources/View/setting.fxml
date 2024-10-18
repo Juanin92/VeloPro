@@ -48,7 +48,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="btnListCheckout" contentDisplay="TOP" layoutX="34.0" layoutY="469.0" mnemonicParsing="false" onAction="#handleButton" prefHeight="128.0" prefWidth="126.0" styleClass="custom-button-report" stylesheets="@../CSS/button.css" text="Registro" textAlignment="CENTER" textFill="WHITE">
+                  <Button fx:id="btnListCheckout" contentDisplay="TOP" layoutX="34.0" layoutY="454.0" mnemonicParsing="false" onAction="#handleButton" prefHeight="128.0" prefWidth="126.0" styleClass="custom-button-report" stylesheets="@../CSS/button.css" text="Registro" textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -74,6 +74,18 @@
                         <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../Images/Icons/iconUsers.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="btnLocalData" layoutX="77.0" layoutY="591.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-color: transparent;">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../Images/Icons/btnEditIcon.png" />
                            </image>
                         </ImageView>
                      </graphic>

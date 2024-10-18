@@ -9,6 +9,7 @@ import cl.jic.VeloPro.Service.Sale.Interfaces.ICashRegisterService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Validation.GraphicsValidator;
+import cl.jic.VeloPro.Validation.ShowingStageValidation;
 import cl.jic.VeloPro.VeloProApplication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,11 +18,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.Setter;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +42,7 @@ import java.util.ResourceBundle;
 @Component
 public class SettingController implements Initializable {
 
-    @FXML private Button btnAddUser, btnListCheckout, btnListUser, btnUpdateUser;
+    @FXML private Button btnAddUser, btnListCheckout, btnListUser, btnUpdateUser, btnLocalData;
     @FXML private AnchorPane paneListCheckout;
     @FXML private StackPane paneSettingView;
     @FXML private TableView<CashRegister> cashRegisterTable;
@@ -56,6 +60,7 @@ public class SettingController implements Initializable {
     @Autowired private Session session;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private ButtonManager buttonManager;
+    @Autowired private ShowingStageValidation stageValidation;
 
     @Setter HomeController homeController;
     @Setter boolean activeToken;
@@ -116,6 +121,18 @@ public class SettingController implements Initializable {
             paneListCheckout.setVisible(false);
             buttonManager.selectedButtonPane(btnUpdateUser,buttonSelected);
             buttonSelected = btnUpdateUser;
+        } else if (event.getSource().equals(btnLocalData)) {
+            if (stageValidation.validateStage("Editar Info")) return;
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/UserView/data.fxml"));
+            fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
+            Parent root = fxmlLoader.load();
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setTitle("Editar Info");
+            stage.initStyle(StageStyle.UNDECORATED);
+            buttonManager.selectedButtonStage(btnLocalData, scene, stage);
+            stage.show();
         }
         homeController.handleButton(event);
     }

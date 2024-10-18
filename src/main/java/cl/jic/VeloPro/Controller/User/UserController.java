@@ -62,7 +62,6 @@ public class UserController implements Initializable {
     private User currentUser;
     private User userSelectedList;
     private boolean statusPanePass = false;
-    private String password;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -81,7 +80,7 @@ public class UserController implements Initializable {
             user.setRut(txtRut.getText());
             user.setEmail(txtEmail.getText());
             user.setUsername(txtUsername.getText());
-            password = txtPass.isVisible() ? txtPass.getText() : txtPassVisible.getText();
+            String password = txtPass.isVisible() ? txtPass.getText() : txtPassVisible.getText();
             user.setPassword(password);
             user.setRole(cbRol.getValue());
             userService.addUser(user);
