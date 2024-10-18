@@ -1,7 +1,9 @@
 package cl.jic.VeloPro.Controller.Report;
 
+import cl.jic.VeloPro.Model.DTO.DetailSaleDTO;
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
 import cl.jic.VeloPro.Service.Record.IRecordService;
+import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleDetailService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -44,6 +47,7 @@ public class SaleRegisterController implements Initializable {
 
     @Autowired private ISaleService saleService;
     @Autowired private IRecordService recordService;
+    @Autowired private ISaleDetailService saleDetailService;
     @Autowired private PDFGenerator pdfGenerator;
     @Autowired private ExcelGenerator excelGenerator;
     @Autowired private ButtonManager buttonManager;
@@ -120,9 +124,8 @@ public class SaleRegisterController implements Initializable {
                     {
                         btnPrint.setOnAction((event) -> {
                             Sale sale = getTableView().getItems().get(getIndex());
-                            String userHome = System.getProperty("user.home");
-                            String filePath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator + sale.getDocument() + ".pdf";
-                            pdfGenerator.openPDF(filePath);
+                            List<DetailSaleDTO> dtoList = saleDetailService.findDetailSalesBySaleId(sale.getId());
+                            pdfGenerator.openPDF(sale, dtoList);
                         });
                         btnVoid.setOnAction(event -> {
                             Sale sale = getTableView().getItems().get(getIndex());

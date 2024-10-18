@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SaleDetailService implements ISaleDetailService {
@@ -67,5 +68,21 @@ public class SaleDetailService implements ISaleDetailService {
         }
 
         return Math.max(total, 0);
+    }
+
+    @Override
+    public List<DetailSaleDTO> findDetailSalesBySaleId(Long id) {
+        List<SaleDetail> detailSales = saleDetailRepo.findBySaleId(id);
+        return detailSales.stream()
+                .map(this::convertToDetailSaleDTO)
+                .collect(Collectors.toList());
+    }
+
+    public DetailSaleDTO convertToDetailSaleDTO(SaleDetail saleDetail) {
+        DetailSaleDTO dto = new DetailSaleDTO();
+        dto.setQuantity(saleDetail.getQuantity());
+        dto.setDescription(saleDetail.getProduct().getDescription());
+        dto.setTotal(saleDetail.getTotal());
+        return dto;
     }
 }

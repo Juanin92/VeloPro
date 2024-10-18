@@ -12,4 +12,5 @@ public interface ISaleDetailService {
     List<SaleDetail> getAll();
     DetailSaleDTO createDTO(Product product);
     int deleteProduct(List<DetailSaleDTO> dtoList, Long id, int total);
+    List<DetailSaleDTO> findDetailSalesBySaleId(Long id);
 }

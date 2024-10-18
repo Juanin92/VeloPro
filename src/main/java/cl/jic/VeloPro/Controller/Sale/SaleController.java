@@ -205,7 +205,7 @@ public class SaleController implements Initializable {
             }
             notificationManager.successNotification("Venta Exitosa!", "La venta " + lblNumberSale.getText() + " se ha efectuado correctamente.", Pos.TOP_CENTER);
             recordService.registerAction(currentUser, "CREATE", "Crea Venta " + sale.getDocument());
-            pdfGenerator.openPDF(filePath);
+            pdfGenerator.openPDF(sale,dtoList);
             resetAfterSale();
         }catch (Exception e){
             notificationManager.errorNotification("Error!", "Se ha producido un error en la venta " + lblNumberSale.getText() + "\n" + e.getMessage(), Pos.CENTER);

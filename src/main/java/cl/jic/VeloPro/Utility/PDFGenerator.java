@@ -6,10 +6,16 @@ import cl.jic.VeloPro.Model.Enum.PaymentMethod;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceCharacteristicsDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
@@ -54,8 +60,8 @@ public class PDFGenerator {
 
                 PDField docField = acroForm.getField("Text7");
                 docField.setValue(sale.getDocument());
-                if (docField instanceof PDVariableText) {
-                    ((PDVariableText) docField).setDefaultAppearance("/Helv 24 Tf 0 g");
+                if (docField instanceof PDVariableText textField) {
+                    textField.setDefaultAppearance("/Helv 24 Tf 0 g");
                 }
 
                 PDField dateField = acroForm.getField("Text2");
@@ -65,30 +71,27 @@ public class PDFGenerator {
                 paymentMethodField.setValue(sale.getPaymentMethod().toString());
 
                 PDField totalSaleField = acroForm.getField("Text4");
-                totalSaleField.setValue("$" + sale.getTotalSale());
+                totalSaleField.setValue(String.format("$%,d", sale.getTotalSale()));
 
                 PDField taxField = acroForm.getField("Text5");
-                taxField.setValue("$" + sale.getTax());
+                taxField.setValue(String.format("$%,d", sale.getTax()));
 
                 if (sale.getDiscount() > 0) {
                     PDField discountField = acroForm.getField("Text15");
-                    discountField.setValue("$" + sale.getDiscount());
+                    discountField.setValue(String.format("$%,d", sale.getDiscount()));
                 }
-
                 if (sale.getPaymentMethod().equals(PaymentMethod.PRESTAMO)) {
                     PDField debtField = acroForm.getField("Text6");
-                    debtField.setValue("$" + sale.getTotalSale());
+                    debtField.setValue(String.format("$%,d", sale.getTotalSale()));
 
                     PDField customerField = acroForm.getField("Text1");
                     customerField.setValue(sale.getCostumer().getName());
                 }
-
                 PDField totalSaleTable = acroForm.getField("Text11");
-                totalSaleTable.setValue("$" + sale.getTotalSale());
+                totalSaleTable.setValue(String.format("$%,d", sale.getTotalSale()));
 
                 int rowIndex = 0;
                 int maxRows = 12;
-
                 for (DetailSaleDTO dto : dtoList) {
                     if (rowIndex >= maxRows) break;
                     String quantityFieldName = "Text" + (16 + rowIndex * 3);
@@ -106,7 +109,7 @@ public class PDFGenerator {
                         descriptionField.setValue(dto.getDescription());
                     }
                     if (priceField != null) {
-                        priceField.setValue("$" + dto.getTotal());
+                        priceField.setValue(String.format("$%,d", dto.getTotal()));
                     }
                     rowIndex++;
                 }
@@ -117,25 +120,26 @@ public class PDFGenerator {
         }
     }
 
-    public void openPDF(String pdfPath) {
+    public void openPDF(Sale sale, List<DetailSaleDTO> dtoList) {
+        String userHome = System.getProperty("user.home");
+        String filePath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator + sale.getDocument() + ".pdf";
+        File pdfFile = new File(filePath);
+        if (!pdfFile.exists() || pdfFile.length() == 0) {
+            generateSaleReceiptPDF(sale, dtoList);
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmar impresión");
         alert.setHeaderText("¿Desea imprimir el PDF?");
         alert.setContentText("Se abrirá el PDF en su aplicación de impresión predeterminada.");
-
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
-            File pdfFile = new File(pdfPath);
-            if (pdfFile.exists() && pdfFile.length() > 0) {
-                try {
-                    String chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-
-                    ProcessBuilder pb = new ProcessBuilder(chromePath, pdfFile.getAbsolutePath());
-                    pb.start();
-
-                } catch (IOException e) {
-                    notificationManager.errorNotification("Error!", "No se ha podido abrir el archivo", Pos.TOP_CENTER);
-                }
+            try {
+                String chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+                ProcessBuilder pb = new ProcessBuilder(chromePath, pdfFile.getAbsolutePath());
+                pb.start();
+            } catch (IOException e) {
+                notificationManager.errorNotification("Error!", "No se ha podido abrir el archivo", Pos.TOP_CENTER);
             }
         }
     }
