@@ -12,7 +12,6 @@ public class LocalDataService implements ILocalDataService{
 
     @Autowired private LocalDataRepo localDataRepo;
 
-
     @Override
     public void saveData(String name, String phone, String email, String access, String address) {
         LocalData localData =  new LocalData();

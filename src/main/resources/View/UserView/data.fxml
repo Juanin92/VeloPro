@@ -100,16 +100,6 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Label fx:id="lblPhone" layoutX="496.0" layoutY="177.0" textFill="#f60404">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <Label fx:id="lblEmail" layoutX="496.0" layoutY="217.0" textFill="#f60404">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
          </children>
       </AnchorPane>
    </children>

@@ -437,6 +437,7 @@ public class SettingController implements Initializable {
             btnAddUser.setVisible(false);
             btnListCheckout.setVisible(false);
             btnListUser.setVisible(false);
+            btnLocalData.setVisible(false);
         }
     }
 }

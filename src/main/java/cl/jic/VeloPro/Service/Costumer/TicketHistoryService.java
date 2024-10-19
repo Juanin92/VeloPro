@@ -2,8 +2,11 @@ package cl.jic.VeloPro.Service.Costumer;
 
 import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
 import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
+import cl.jic.VeloPro.Model.Enum.PaymentStatus;
 import cl.jic.VeloPro.Repository.Costumer.TicketHistoryRepo;
+import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
 import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
+import cl.jic.VeloPro.Utility.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,9 @@ import java.util.List;
 public class TicketHistoryService implements ITicketHistoryService {
 
     @Autowired private TicketHistoryRepo ticketHistoryRepo;
+    @Autowired private ICostumerService costumerService;
+    @Autowired private EmailService emailService;
+    private LocalDate lastValidationDate;
 
     @Override
     public void AddTicketToCostumer(Costumer costumer, Long number, int total, LocalDate date) {
@@ -39,11 +45,29 @@ public class TicketHistoryService implements ITicketHistoryService {
     }
 
     @Override
+    public void valideTicketByCostumer(Costumer costumer) {
+        LocalDate today = LocalDate.now();
+        if (lastValidationDate == null || !lastValidationDate.equals(today)) {
+            List<TicketHistory> tickets = getByCostumerId(costumer.getId());
+            for (TicketHistory ticket : tickets) {
+                if (!ticket.isStatus() && validateDate(ticket)) {
+                    costumer.setStatus(PaymentStatus.VENCIDA);
+                    costumerService.updateTotalDebt(costumer);
+                    emailService.sendEmailDebtDelay(costumer, ticket);
+                }
+            }
+            lastValidationDate = today;
+        }
+    }
+
     public boolean validateDate(TicketHistory ticket) {
         LocalDate now = LocalDate.now();
         LocalDate ticketDate = ticket.getDate();
         LocalDate notificationDate = ticket.getNotificationsDate();
 
+        if (ticket.isStatus()){
+            return false;
+        }
         if (ChronoUnit.DAYS.between(ticketDate, now) > 30 &&
                 (notificationDate == null || ChronoUnit.DAYS.between(notificationDate, now) > 15)) {
             ticket.setNotificationsDate(now);

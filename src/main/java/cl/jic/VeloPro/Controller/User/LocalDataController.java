@@ -1,6 +1,5 @@
 package cl.jic.VeloPro.Controller.User;
 
-import cl.jic.VeloPro.Controller.Report.ReportController;
 import cl.jic.VeloPro.Model.Entity.LocalData;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Service.Record.IRecordService;
@@ -11,12 +10,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -25,7 +22,6 @@ import java.util.ResourceBundle;
 public class LocalDataController implements Initializable {
 
     @FXML private Button btnUpdate;
-    @FXML private Label lblEmail, lblPhone;
     @FXML private CustomTextField txtAccessApp, txtAddress, txtEmail, txtName, txtPhone;
 
     @Autowired private ILocalDataService localDataService;

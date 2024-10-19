@@ -12,6 +12,6 @@ public interface ITicketHistoryService{
     void AddTicketToCostumer(Costumer costumer, Long number, int total, LocalDate date);
     List<TicketHistory> getAll();
     List<TicketHistory> getByCostumerId(Long id);
-    boolean validateDate(TicketHistory ticket);
+    void valideTicketByCostumer(Costumer costumer);
     void updateStatus(TicketHistory  ticket);
 }

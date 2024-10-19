@@ -8,7 +8,6 @@ import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Utility.EmailService;
 import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
-import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
 import cl.jic.VeloPro.Model.Enum.PaymentStatus;
 import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
 import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
@@ -34,13 +33,11 @@ import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
 import java.text.NumberFormat;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -72,7 +69,6 @@ public class CostumerController implements Initializable, ICostumerList {
 
     private Stage costumerRegister;
     private ObservableList<Costumer> list;
-    private Costumer currentCostumer;
     private User currentUser;
 
     @Override
@@ -147,25 +143,6 @@ public class CostumerController implements Initializable, ICostumerList {
         costumerRegister.show();
     }
 
-    private void validateTicketCostumer(Costumer costumer){
-        List<TicketHistory> tickets = ticketHistoryService.getByCostumerId(costumer.getId());
-        for (TicketHistory ticket : tickets){
-            if (ticketHistoryService.validateDate(ticket)){
-                costumer.setStatus(PaymentStatus.VENCIDA);
-                costumerService.updateTotalDebt(costumer);
-                emailService.sendEmailDebtDelay(costumer,ticket);
-            }
-        }
-    }
-
-    @Scheduled(cron = "0 0 0 * * ?") // Ejecutar a las 00:00 todos los días
-    public void validateAllTickets() {
-        List<Costumer> customers = costumerService.getAll();
-        for (Costumer customer : customers) {
-            validateTicketCostumer(customer);
-        }
-    }
-
     public void loadDataCostumerList(){
         list = FXCollections.observableArrayList(costumerService.getAll());
         costumerList.setItems(list);
@@ -180,7 +157,7 @@ public class CostumerController implements Initializable, ICostumerList {
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         for (Costumer costumer : list){
-            validateTicketCostumer(costumer);
+            ticketHistoryService.valideTicketByCostumer(costumer);
             costumerService.statusAssign(costumer);
         }
         configurationTableView();
