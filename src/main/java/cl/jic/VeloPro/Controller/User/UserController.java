@@ -2,6 +2,7 @@ package cl.jic.VeloPro.Controller.User;
 
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
+import cl.jic.VeloPro.Security.SecurityConfig;
 import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Service.User.IUserService;
 import cl.jic.VeloPro.Session.Session;
@@ -22,6 +23,7 @@ import lombok.Setter;
 import org.controlsfx.control.textfield.CustomPasswordField;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -57,6 +59,7 @@ public class UserController implements Initializable {
     @Autowired private ButtonManager buttonManager;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private NotificationManager notificationManager;
+    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired private Session session;
     @Setter private boolean activeToken;
     private User currentUser;
@@ -81,7 +84,7 @@ public class UserController implements Initializable {
             user.setEmail(txtEmail.getText());
             user.setUsername(txtUsername.getText());
             String password = txtPass.isVisible() ? txtPass.getText() : txtPassVisible.getText();
-            user.setPassword(password);
+            user.setPassword(bCryptPasswordEncoder.encode(password));
             user.setRole(cbRol.getValue());
             userService.addUser(user);
             notificationManager.successNotification("Registro Exitoso!", "Usuario " + user.getName() + " " + user.getSurname() + ", Registrado en el sistema", Pos.CENTER);
@@ -142,7 +145,7 @@ public class UserController implements Initializable {
         if (newPassword.length() <= 7) {
             graphicsValidator.settingAndValidationFieldPassword(txtNewPassword, true, "Ingrese una contraseña válida. (Debe tener 8 o más caracteres)");
         } else {
-            currentUser.setPassword(newPassword);
+            currentUser.setPassword(bCryptPasswordEncoder.encode(newPassword));
         }
     }
 
@@ -272,7 +275,9 @@ public class UserController implements Initializable {
         graphicsValidator.handlePasswordFieldChange(txtNewPassword, lblNewPassword);
 
         for (Rol rol : Rol.values()) {
-            cbRol.getItems().add(rol);
+            if (!rol.equals(Rol.MASTER)){
+                cbRol.getItems().add(rol);
+            }
         }
         setupTogglePasswordVisibility(txtPass, txtPassVisible);
         setupTogglePasswordVisibility(txtCurrentPassword, txtCurrentPasswordVisible);
@@ -312,7 +317,7 @@ public class UserController implements Initializable {
                     if (txtPassUpdate.getText().equals(userSelectedList.getPassword())){
                         userSelectedList.setPassword(userSelectedList.getPassword());
                     }else {
-                        userSelectedList.setPassword(txtPassUpdate.getText());
+                        userSelectedList.setPassword(bCryptPasswordEncoder.encode(txtPassUpdate.getText()));
                     }
                     userSelectedList.setName(txtNameUpdate.getText());
                     userSelectedList.setSurname(txtSurnameUpdate.getText());

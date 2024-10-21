@@ -7,6 +7,7 @@ import cl.jic.VeloPro.Utility.EmailService;
 import cl.jic.VeloPro.Validation.UserValidator;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class UserService implements IUserService {
     @Autowired private UserValidator validator;
     @Autowired private EmailService emailService;
     @Autowired private TokenSecurity token;
+    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public void addUser(User user) {
@@ -72,11 +74,13 @@ public class UserService implements IUserService {
 
     @Override
     public User getAuthUser(String username, String pass) {
-        Optional<User> optionalUser = userRepo.findByUsernameAndPassword(username, pass);
+        Optional<User> optionalUser = userRepo.findByUsername(username);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            validator.validateStatus(user.isStatus());
-            return user;
+            if (bCryptPasswordEncoder.matches(pass, user.getPassword())) {
+                validator.validateStatus(user.isStatus());
+                return user;
+            }
         }
         return null;
     }

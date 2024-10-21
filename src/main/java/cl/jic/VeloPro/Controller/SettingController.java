@@ -21,9 +21,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Setter;
@@ -37,6 +39,7 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Component
@@ -129,8 +132,10 @@ public class SettingController implements Initializable {
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
             stage.setTitle("Editar Info");
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
             buttonManager.selectedButtonStage(btnLocalData, scene, stage);
             stage.show();
         }

@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.controlsfx.control.textfield.CustomPasswordField;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -43,6 +44,7 @@ public class RecordController implements Initializable {
     @FXML private CustomPasswordField txtPassword;
 
     @Autowired private IRecordService recordService;
+    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired private Session session;
     private ObservableList<Record> list;
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -58,7 +60,7 @@ public class RecordController implements Initializable {
         if(session.getCurrentUser().getRole().equals(Rol.MASTER)){
             txtPassword.setOnKeyPressed(keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ENTER){
-                    if (session.getCurrentUser().getPassword().equals(txtPassword.getText())){
+                    if (bCryptPasswordEncoder.matches(txtPassword.getText(), session.getCurrentUser().getPassword())){
                         paneConfirmUser.setVisible(false);
                         tableRecord.setVisible(true);
                         txtSearch.setVisible(true);
