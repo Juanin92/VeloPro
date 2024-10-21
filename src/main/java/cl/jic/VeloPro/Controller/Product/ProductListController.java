@@ -26,7 +26,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Setter;
@@ -36,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Component
@@ -82,8 +85,10 @@ public class ProductListController implements Initializable {
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
             stage.setTitle("Crear Categorías");
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
             buttonManager.selectedButtonStage(btnAddCategories, scene, stage);
             stage.show();
         }
@@ -96,8 +101,10 @@ public class ProductListController implements Initializable {
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
             stage.setTitle("Crear Categorías");
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
             buttonManager.selectedButtonStage(btnAddProduct, scene, stage);
             stage.show();
         }

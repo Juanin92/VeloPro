@@ -23,7 +23,9 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Setter;
@@ -135,8 +137,10 @@ public class ReportController implements Initializable {
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
             stage.setTitle("Kardex");
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
             buttonManager.selectedButtonStage(btnKardex, scene, stage);
             stage.show();
         } else if (e.getSource().equals(btnSaleTable)) {
@@ -148,8 +152,10 @@ public class ReportController implements Initializable {
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
             stage.setTitle("Registro de ventas");
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
             buttonManager.selectedButtonStage(btnSaleTable, scene, stage);
             stage.show();
         }

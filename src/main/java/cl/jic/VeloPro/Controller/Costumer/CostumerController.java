@@ -24,10 +24,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
@@ -39,6 +41,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Component
@@ -94,7 +97,9 @@ public class CostumerController implements Initializable, ICostumerList {
             costumerRegister = new Stage();
             costumerRegister.setScene(scene);
             costumerRegister.setTitle("Crear Cliente");
-            costumerRegister.initStyle(StageStyle.UNDECORATED);
+            costumerRegister.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
+            costumerRegister.setResizable(false);
+            costumerRegister.initModality(Modality.APPLICATION_MODAL);
             buttonManager.selectedButtonStage(btnAddCostumer, scene, costumerRegister);
             costumerRegister.show();
         }
@@ -111,12 +116,19 @@ public class CostumerController implements Initializable, ICostumerList {
         Scene scene = new Scene(root);
         costumerRegister = new Stage();
         costumerRegister.setScene(scene);
+        costumerRegister.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
         costumerRegister.setTitle("Actualización de Cliente");
-        costumerRegister.initStyle(StageStyle.UNDECORATED);
+        costumerRegister.setResizable(false);
+        costumerRegister.initModality(Modality.APPLICATION_MODAL);
         scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ESCAPE) {
                 costumerRegister.close();
+                controller.setCurrentCostumer(null);
             }
+        });
+        costumerRegister.setOnCloseRequest(event -> {
+            costumerRegister.close();
+            controller.setCurrentCostumer(null);
         });
         costumerRegister.show();
     }
@@ -133,8 +145,10 @@ public class CostumerController implements Initializable, ICostumerList {
         Scene scene = new Scene(root);
         costumerRegister = new Stage();
         costumerRegister.setScene(scene);
+        costumerRegister.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
         costumerRegister.setTitle("Pago de Deudas");
-        costumerRegister.initStyle(StageStyle.UNDECORATED);
+        costumerRegister.setResizable(false);
+        costumerRegister.initStyle(StageStyle.DECORATED);
         scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ESCAPE) {
                 costumerRegister.close();

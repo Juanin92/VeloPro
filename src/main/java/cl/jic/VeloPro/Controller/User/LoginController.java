@@ -22,6 +22,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Component
@@ -92,9 +94,11 @@ public class LoginController implements Initializable {
                     Scene scene = new Scene(root);
                     Stage stage = new Stage();
                     stage.setScene(scene);
+                    stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
                     stage.setTitle("Home - Principal");
                     stage.setWidth(Screen.getPrimary().getBounds().getWidth());
                     stage.setHeight(Screen.getPrimary().getBounds().getHeight());
+                    stage.setMaximized(true);
                     stage.show();
                     Stage loginView = (Stage) ((Node) event.getSource()).getScene().getWindow();
                     loginView.close();

@@ -24,7 +24,7 @@
                      <children>
                         <ImageView fx:id="imgLogo" fitHeight="80.0" fitWidth="80.0" layoutX="42.0" layoutY="8.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Images/LOGO%20REDONDO.png" />
+                              <Image url="@../Images/principalLogo.png" />
                            </image>
                            <cursor>
                               <Cursor fx:constant="HAND" />

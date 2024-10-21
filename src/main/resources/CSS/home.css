@@ -1,5 +1,5 @@
-.paneHome8 {
-    -fx-background-image: url("../Images/MesAgosto.jpeg");
+.paneHome3,.paneHome4,.paneHome5,.paneHome6,.paneHome7,.paneHome8,.paneHome10, .paneHome11 {
+    -fx-background-image: url("../Images/Wallpapers/random.jpeg");
     -fx-background-size: cover;
     -fx-background-position: center center;
 }
@@ -9,22 +9,12 @@
     -fx-background-position: center center;
 }
 .paneHome9Special {
-    -fx-background-image: url("../Images/MesSept1.jpeg");
-    -fx-background-size: cover;
-    -fx-background-position: center center;
-}
-.paneHome10 {
-    -fx-background-image: url("../Images/Octubre.jpeg");
-    -fx-background-size: cover;
-    -fx-background-position: center center;
-}
-.paneHome11 {
-    -fx-background-image: url("../Images/Noviembre.jpeg");
+    -fx-background-image: url("../Images/Wallpapers/MesSept1.jpeg");
     -fx-background-size: cover;
     -fx-background-position: center center;
 }
 .paneHome12 {
-    -fx-background-image: url("../Images/Diciembre.jpeg");
+    -fx-background-image: url("../Images/Wallpapers/Diciembre.jpeg");
     -fx-background-size: cover;
     -fx-background-position: center center;
 }

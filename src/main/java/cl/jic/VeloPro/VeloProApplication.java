@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -15,6 +16,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "cl.jic.VeloPro")
@@ -38,6 +40,7 @@ public class VeloProApplication extends Application {
 		Parent root = fxmlLoader.load();
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
+		stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
 		stage.initStyle(StageStyle.UNDECORATED);
 		stage.show();
 
@@ -56,6 +59,7 @@ public class VeloProApplication extends Application {
 			Parent root = fxmlLoader.load();
 			Stage loginStage = new Stage();
 			loginStage.setScene(new Scene(root));
+			loginStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
 			loginStage.initStyle(StageStyle.UNDECORATED);
 			loginStage.show();
 		} catch (IOException e) {

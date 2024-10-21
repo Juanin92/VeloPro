@@ -5,9 +5,11 @@ import cl.jic.VeloPro.Controller.Product.StockController;
 import cl.jic.VeloPro.Controller.Report.ReportController;
 import cl.jic.VeloPro.Controller.Sale.CashRegisterController;
 import cl.jic.VeloPro.Controller.Sale.SaleController;
+import cl.jic.VeloPro.Model.Entity.LocalData;
 import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.Rol;
 import cl.jic.VeloPro.Service.Record.IRecordService;
+import cl.jic.VeloPro.Service.User.ILocalDataService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.NotificationManager;
 import cl.jic.VeloPro.VeloProApplication;
@@ -20,6 +22,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
@@ -34,6 +38,8 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Component
@@ -43,8 +49,10 @@ public class HomeController implements Initializable {
     @FXML private Label lblTimeLocal, lblDateLocal;
     @FXML private StackPane homeView;
     @FXML private AnchorPane paneHome, paneBtnStock, paneBtnSale, paneBtnSetting, paneBtnCostumer, paneBtnReport, paneBtnRecord;
+    @FXML private ImageView imgLogo;
 
     @Autowired private IRecordService recordService;
+    @Autowired private ILocalDataService localDataService;
     @Autowired private Session session;
     @Autowired private NotificationManager notifications;
     @Setter private boolean activeToken;
@@ -153,7 +161,9 @@ public class HomeController implements Initializable {
                 Parent root = fxmlLoader.load();
                 Stage stage = new Stage();
                 stage.setScene(new Scene(root));
+                stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
                 stage.setTitle("Registro Apertura Caja");
+                stage.setResizable(false);
                 if (currentUser.getRole().equals(Rol.MASTER)){
                     stage.initModality(Modality.APPLICATION_MODAL);
                 } else{
@@ -190,7 +200,9 @@ public class HomeController implements Initializable {
                 cashRegisterController.setHomeView(currentStage);
 
                 Stage stage = new Stage();
+                stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
                 stage.setTitle("Registro Cierre Caja");
+                stage.setResizable(false);
                 stage.setScene(new Scene(root));
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.showAndWait();
@@ -225,6 +237,8 @@ public class HomeController implements Initializable {
         DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
         lblDateLocal.setText(date.format(local));
         lblTimeLocal.setText(time.format(local));
+        List<LocalData> list = localDataService.getData();
+        btnLogo.setText(list.getFirst().getName());
     }
 
     private void backgroundSetup(){

@@ -27,9 +27,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
@@ -42,6 +44,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Component
@@ -95,8 +98,10 @@ public class StockController implements Initializable, IProductList{
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
             stage.setTitle("Agregar Productos");
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
             buttonManager.selectedButtonStage(btnAddProduct, scene, stage);
             stage.show();
         } else if (event.getSource().equals(btnAddCategories)) {
@@ -108,8 +113,10 @@ public class StockController implements Initializable, IProductList{
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
             stage.setTitle("Crear Categorías");
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
             buttonManager.selectedButtonStage(btnAddCategories, scene, stage);
             stage.show();
         } else if (event.getSource().equals(btnSupplier)) {
@@ -121,8 +128,10 @@ public class StockController implements Initializable, IProductList{
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
             stage.setTitle("Proveedores");
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
             buttonManager.selectedButtonStage(btnSupplier, scene, stage);
             stage.show();
         } else if (event.getSource().equals(btnPurchase)) {
@@ -134,6 +143,7 @@ public class StockController implements Initializable, IProductList{
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
+            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
             stage.setTitle("Compras");
             stage.initStyle(StageStyle.DECORATED);
             buttonManager.selectedButtonStage(btnPurchase, scene, stage);
@@ -154,13 +164,19 @@ public class StockController implements Initializable, IProductList{
         Scene scene = new Scene(root);
         Stage stage = new Stage();
         stage.setScene(scene);
+        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
         stage.setTitle("Actualización Productos");
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
         scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ESCAPE) {
                 stage.close();
                 controller.setSelectedProduct(null);
             }
+        });
+        stage.setOnCloseRequest(event -> {
+            stage.close();
+            controller.setSelectedProduct(null);
         });
         stage.show();
     }
