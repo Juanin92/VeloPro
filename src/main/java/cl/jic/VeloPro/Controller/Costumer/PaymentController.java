@@ -117,11 +117,11 @@ public class PaymentController implements Initializable {
     private void paymentDebtCostumer(TicketHistory ticket, String comment){
         PaymentCostumer paymentCostumer = new PaymentCostumer();
         paymentCostumer.setCostumer(currentCostumer);
-        paymentCostumer.setAmount(Integer.parseInt(txtPayment.getText()));
         paymentCostumer.setDocument(ticket);
         paymentCostumer.setComment(comment);
         paymentCostumerService.addPayments(paymentCostumer);
-        costumerService.paymentDebt(currentCostumer, txtPayment.getText());
+        paymentCostumer.setAmount(ticket.getTotal());
+        costumerService.paymentDebt(currentCostumer, String.valueOf(ticket.getTotal()));
 
         ICostumerList.loadDataCostumerList();
         ICostumerList.updateTotalDebtLabel();
