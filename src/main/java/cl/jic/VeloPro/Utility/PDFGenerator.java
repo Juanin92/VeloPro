@@ -52,7 +52,7 @@ public class PDFGenerator {
         String fileName = sale.getDocument() + ".pdf";
         String filePath = directoryPath + fileName;
 
-        try (PDDocument document = PDDocument.load(new File(  "C:\\Users\\juano\\Desktop\\VeloPro\\src\\main\\resources\\PDFTemplate\\PlantillaBoleta.pdf"))) {
+        try (PDDocument document = PDDocument.load(new File(  "C:\\Users\\juano\\Desktop\\Proyectos\\VeloPro\\src\\main\\resources\\PDFTemplate\\PlantillaBoleta.pdf"))) {
             // Obtener el formulario interactivo (AcroForm) de la plantilla
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
 
@@ -122,7 +122,8 @@ public class PDFGenerator {
             }
             document.save(filePath);
         } catch (IOException e) {
-            throw new IllegalArgumentException("No se ha podido crear el archivo");
+            e.printStackTrace();
+            throw new IllegalArgumentException("No se ha podido crear el archivo : "+e.getMessage());
         }
     }
 
