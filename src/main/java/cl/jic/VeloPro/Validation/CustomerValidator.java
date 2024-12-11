@@ -30,6 +30,10 @@ public class CustomerValidator {
         if (surname == null || surname.trim().isBlank() || surname.trim().length() < 3 || !surname.matches("[a-zA-Z ]+")){
             throw new IllegalArgumentException("Ingrese apellido válido.");
         }
+        String[] words = surname.trim().split("\\s+");
+        if (words.length != 2) {
+            throw new IllegalArgumentException("Ingrese los 2 apellidos");
+        }
     }
     private void validatePhone(String phone){
         if (phone.trim().isBlank() || phone.trim().length() != 13){
