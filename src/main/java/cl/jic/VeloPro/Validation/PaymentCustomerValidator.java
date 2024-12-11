@@ -3,7 +3,7 @@ package cl.jic.VeloPro.Validation;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PaymentCostumerValidator {
+public class PaymentCustomerValidator {
     public void validatePayment(String amount, String comment) {
         validatePaymentAmount(amount);
         validateComment(comment);

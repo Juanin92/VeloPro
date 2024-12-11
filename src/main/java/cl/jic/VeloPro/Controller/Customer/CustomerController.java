@@ -1,4 +1,4 @@
-package cl.jic.VeloPro.Controller.Costumer;
+package cl.jic.VeloPro.Controller.Customer;
 
 import cl.jic.VeloPro.Controller.HomeController;
 import cl.jic.VeloPro.Model.Entity.User;
@@ -7,10 +7,10 @@ import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.ButtonManager;
 import cl.jic.VeloPro.Utility.EmailService;
-import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
+import cl.jic.VeloPro.Model.Entity.Customer.Customer;
 import cl.jic.VeloPro.Model.Enum.PaymentStatus;
-import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
-import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
+import cl.jic.VeloPro.Service.Customer.Interface.ICustomerService;
+import cl.jic.VeloPro.Service.Customer.Interface.ITicketHistoryService;
 import cl.jic.VeloPro.Validation.ShowingStageValidation;
 import cl.jic.VeloPro.VeloProApplication;
 import javafx.collections.FXCollections;
@@ -45,23 +45,23 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Component
-public class CostumerController implements Initializable, ICostumerList {
+public class CustomerController implements Initializable, ICustomerList {
 
-    @FXML private Button btnAddCostumer;
-    @FXML private TextField txtFindCostumer;
-    @FXML private TableColumn<Costumer, Integer> colDebt;
-    @FXML private TableColumn<Costumer, String> colEmail;
-    @FXML private TableColumn<Costumer, String> colName;
-    @FXML private TableColumn<Costumer, String> colPhone;
-    @FXML private TableColumn<Costumer, Boolean> colAccount;
-    @FXML private TableColumn<Costumer, PaymentStatus> colStatus;
-    @FXML private TableColumn<Costumer, String> colSurname;
-    @FXML private TableColumn<Costumer, Long> colId;
-    @FXML private TableColumn<Costumer, Void> colAction;
-    @FXML private TableView<Costumer> costumerList;
+    @FXML private Button btnAddCustomer;
+    @FXML private TextField txtFindCustomer;
+    @FXML private TableColumn<Customer, Integer> colDebt;
+    @FXML private TableColumn<Customer, String> colEmail;
+    @FXML private TableColumn<Customer, String> colName;
+    @FXML private TableColumn<Customer, String> colPhone;
+    @FXML private TableColumn<Customer, Boolean> colAccount;
+    @FXML private TableColumn<Customer, PaymentStatus> colStatus;
+    @FXML private TableColumn<Customer, String> colSurname;
+    @FXML private TableColumn<Customer, Long> colId;
+    @FXML private TableColumn<Customer, Void> colAction;
+    @FXML private TableView<Customer> customerList;
     @FXML private Label lblTotalDebt;
 
-    @Autowired private ICostumerService costumerService;
+    @Autowired private ICustomerService customerService;
     @Autowired private ITicketHistoryService ticketHistoryService;
     @Autowired private IRecordService recordService;
     @Autowired private EmailService emailService;
@@ -70,96 +70,96 @@ public class CostumerController implements Initializable, ICostumerList {
     @Autowired private Session session;
     @Setter private HomeController homeController;
 
-    private Stage costumerRegister;
-    private ObservableList<Costumer> list;
+    private Stage customerRegister;
+    private ObservableList<Customer> list;
     private User currentUser;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         currentUser = session.getCurrentUser();
-        btnAddCostumer.setDisable(currentUser.getRole().equals(Rol.GUEST));
+        btnAddCustomer.setDisable(currentUser.getRole().equals(Rol.GUEST));
         setupSearchFilter();
-        loadDataCostumerList();
+        loadDataCustomerList();
         updateTotalDebtLabel();
     }
 
     @FXML
-    private void handleButtonCostumer(ActionEvent event) throws IOException {
-        if (event.getSource().equals(btnAddCostumer)){
+    private void handleButtonCustomer(ActionEvent event) throws IOException {
+        if (event.getSource().equals(btnAddCustomer)){
             if (stageValidation.validateStage("Crear Cliente")) return;
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/CostumerView/costumerRegister.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/CustomerView/customerRegister.fxml"));
             fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
             Parent root = fxmlLoader.load();
-            AddEditCostumerController addEditCostumerController = fxmlLoader.getController();
-            addEditCostumerController.setPrincipal(btnAddCostumer);
+            AddEditCustomerController addEditCustomerController = fxmlLoader.getController();
+            addEditCustomerController.setPrincipal(btnAddCustomer);
 
             Scene scene = new Scene(root);
-            costumerRegister = new Stage();
-            costumerRegister.setScene(scene);
-            costumerRegister.setTitle("Crear Cliente");
-            costumerRegister.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
-            costumerRegister.setResizable(false);
-            costumerRegister.initModality(Modality.APPLICATION_MODAL);
-            buttonManager.selectedButtonStage(btnAddCostumer, scene, costumerRegister);
-            costumerRegister.show();
+            customerRegister = new Stage();
+            customerRegister.setScene(scene);
+            customerRegister.setTitle("Crear Cliente");
+            customerRegister.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
+            customerRegister.setResizable(false);
+            customerRegister.initModality(Modality.APPLICATION_MODAL);
+            buttonManager.selectedButtonStage(btnAddCustomer, scene, customerRegister);
+            customerRegister.show();
         }
         homeController.handleButton(event);
     }
 
-    private void editViewCostumer(Costumer costumer) throws IOException {
+    private void editViewCustomer(Customer customer) throws IOException {
         if (stageValidation.validateStage("Actualización de Cliente")) return;
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/CostumerView/costumerRegister.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/CustomerView/customerRegister.fxml"));
         fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
         Parent root = fxmlLoader.load();
-        AddEditCostumerController controller = fxmlLoader.getController();
-        controller.setCurrentCostumer(costumer);
+        AddEditCustomerController controller = fxmlLoader.getController();
+        controller.setCurrentCustomer(customer);
         Scene scene = new Scene(root);
-        costumerRegister = new Stage();
-        costumerRegister.setScene(scene);
-        costumerRegister.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
-        costumerRegister.setTitle("Actualización de Cliente");
-        costumerRegister.setResizable(false);
-        costumerRegister.initModality(Modality.APPLICATION_MODAL);
+        customerRegister = new Stage();
+        customerRegister.setScene(scene);
+        customerRegister.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
+        customerRegister.setTitle("Actualización de Cliente");
+        customerRegister.setResizable(false);
+        customerRegister.initModality(Modality.APPLICATION_MODAL);
         scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                costumerRegister.close();
-                controller.setCurrentCostumer(null);
+                customerRegister.close();
+                controller.setCurrentCustomer(null);
             }
         });
-        costumerRegister.setOnCloseRequest(event -> {
-            costumerRegister.close();
-            controller.setCurrentCostumer(null);
+        customerRegister.setOnCloseRequest(event -> {
+            customerRegister.close();
+            controller.setCurrentCustomer(null);
         });
-        costumerRegister.show();
+        customerRegister.show();
     }
 
-    private void paymentCostumerView(Costumer costumer) throws IOException {
+    private void paymentCustomerView(Customer customer) throws IOException {
         if (stageValidation.validateStage("Pago de Deudas")) return;
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/CostumerView/payment.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/CustomerView/payment.fxml"));
         fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
         Parent root = fxmlLoader.load();
 
         PaymentController controller = fxmlLoader.getController();
-        controller.setCurrentCostumer(costumer);
+        controller.setCurrentCustomer(customer);
 
         Scene scene = new Scene(root);
-        costumerRegister = new Stage();
-        costumerRegister.setScene(scene);
-        costumerRegister.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
-        costumerRegister.setTitle("Pago de Deudas");
-        costumerRegister.setResizable(false);
-        costumerRegister.initStyle(StageStyle.DECORATED);
+        customerRegister = new Stage();
+        customerRegister.setScene(scene);
+        customerRegister.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Images/principalLogo.png"))));
+        customerRegister.setTitle("Pago de Deudas");
+        customerRegister.setResizable(false);
+        customerRegister.initStyle(StageStyle.DECORATED);
         scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                costumerRegister.close();
+                customerRegister.close();
             }
         });
-        costumerRegister.show();
+        customerRegister.show();
     }
 
-    public void loadDataCostumerList(){
-        list = FXCollections.observableArrayList(costumerService.getAll());
-        costumerList.setItems(list);
+    public void loadDataCustomerList(){
+        list = FXCollections.observableArrayList(customerService.getAll());
+        customerList.setItems(list);
 
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -170,47 +170,47 @@ public class CostumerController implements Initializable, ICostumerList {
         colDebt.setCellValueFactory(new PropertyValueFactory<>("debt"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        for (Costumer costumer : list){
-            ticketHistoryService.valideTicketByCostumer(costumer);
-            costumerService.statusAssign(costumer);
+        for (Customer customer : list){
+            ticketHistoryService.valideTicketByCustomer(customer);
+            customerService.statusAssign(customer);
         }
         configurationTableView();
     }
 
     private void configurationTableView() {
-        Callback<TableColumn<Costumer, Void>, TableCell<Costumer, Void>> cellFactory = new Callback<TableColumn<Costumer, Void>, TableCell<Costumer, Void>>() {
+        Callback<TableColumn<Customer, Void>, TableCell<Customer, Void>> cellFactory = new Callback<TableColumn<Customer, Void>, TableCell<Customer, Void>>() {
 
             @Override
-            public TableCell<Costumer, Void> call(final TableColumn<Costumer, Void> param) {
-                return new TableCell<Costumer, Void>() {
+            public TableCell<Customer, Void> call(final TableColumn<Customer, Void> param) {
+                return new TableCell<Customer, Void>() {
                     private final Button btnPay = buttonManager.createButton("btnPayIcon.png","green", 30, 30);
                     private final Button btnEdit = buttonManager.createButton("btnEditIcon.png","yellow", 30, 30);
                     private final Button btnEliminate = buttonManager.createButton("btnDeleteIcon.png", "red", 30, 30);
                     {
                         btnEliminate.setOnAction((event) -> {
-                            Costumer costumer = getTableView().getItems().get(getIndex());
-                            costumerService.delete(costumer);
-                            loadDataCostumerList();
-                            costumerList.refresh();
-                            recordService.registerAction(currentUser,"DELETE", "Elimino Cliente " + costumer.getName() + " " + costumer.getSurname());
+                            Customer customer = getTableView().getItems().get(getIndex());
+                            customerService.delete(customer);
+                            loadDataCustomerList();
+                            customerList.refresh();
+                            recordService.registerAction(currentUser,"DELETE", "Elimino Cliente " + customer.getName() + " " + customer.getSurname());
                         });
                         btnEdit.setOnAction((event) -> {
-                            Costumer costumer = getTableView().getItems().get(getIndex());
+                            Customer customer = getTableView().getItems().get(getIndex());
                             try {
-                                editViewCostumer(costumer);
+                                editViewCustomer(customer);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
-                            loadDataCostumerList();
+                            loadDataCustomerList();
                         });
                         btnPay.setOnAction((event) -> {
-                            Costumer costumer = getTableView().getItems().get(getIndex());
+                            Customer customer = getTableView().getItems().get(getIndex());
                             try {
-                                paymentCostumerView(costumer);
+                                paymentCustomerView(customer);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
-                            loadDataCostumerList();
+                            loadDataCustomerList();
                         });
                     }
 
@@ -220,13 +220,13 @@ public class CostumerController implements Initializable, ICostumerList {
                         if (empty) {
                             setGraphic(null);
                         } else {
-                            Costumer costumer = getTableView().getItems().get(getIndex());
-                            if (costumer.getDebt() > 0 || !costumer.isAccount() || currentUser.getRole().equals(Rol.GUEST)){
+                            Customer customer = getTableView().getItems().get(getIndex());
+                            if (customer.getDebt() > 0 || !customer.isAccount() || currentUser.getRole().equals(Rol.GUEST)){
                                 btnEliminate.setVisible(false);
                             }
                             btnEliminate.setDisable(currentUser.getRole().equals(Rol.SELLER));
                             btnEdit.setVisible(!currentUser.getRole().equals(Rol.GUEST));
-                            btnPay.setVisible(costumer.getDebt() > 0);
+                            btnPay.setVisible(customer.getDebt() > 0);
 
                             HBox buttons = new HBox(btnPay, btnEdit, btnEliminate);
                             buttons.setAlignment(Pos.CENTER);
@@ -239,7 +239,7 @@ public class CostumerController implements Initializable, ICostumerList {
         };
         colAction.setCellFactory(cellFactory);
 
-        colAccount.setCellFactory(column -> new TableCell<Costumer,Boolean>(){
+        colAccount.setCellFactory(column -> new TableCell<Customer,Boolean>(){
             @Override
             protected void updateItem(Boolean item,boolean empty){
                 super.updateItem(item, empty);
@@ -251,7 +251,7 @@ public class CostumerController implements Initializable, ICostumerList {
                 }
             }
         });
-        colDebt.setCellFactory(column -> new TableCell<Costumer, Integer>() {
+        colDebt.setCellFactory(column -> new TableCell<Customer, Integer>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
@@ -269,7 +269,7 @@ public class CostumerController implements Initializable, ICostumerList {
                 }
             }
         });
-        colId.setCellFactory(column -> new TableCell<Costumer,Long>(){
+        colId.setCellFactory(column -> new TableCell<Customer,Long>(){
             @Override
             protected void updateItem(Long item, boolean empty) {
                 super.updateItem(item, empty);
@@ -281,7 +281,7 @@ public class CostumerController implements Initializable, ICostumerList {
                 }
             }
         });
-        colEmail.setCellFactory(column -> new TableCell<Costumer,String>(){
+        colEmail.setCellFactory(column -> new TableCell<Customer,String>(){
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -298,7 +298,7 @@ public class CostumerController implements Initializable, ICostumerList {
                 }
             }
         });
-        colStatus.setCellFactory(column -> new TableCell<Costumer,PaymentStatus>(){
+        colStatus.setCellFactory(column -> new TableCell<Customer,PaymentStatus>(){
             @Override
             protected void updateItem(PaymentStatus item, boolean empty) {
                 super.updateItem(item, empty);
@@ -323,29 +323,29 @@ public class CostumerController implements Initializable, ICostumerList {
 
     @FXML
     private void setupSearchFilter() {
-        txtFindCostumer.textProperty().addListener((observable, oldValue, newValue) -> {
+        txtFindCustomer.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
-                costumerList.setItems(list);
-                costumerList.refresh();
+                customerList.setItems(list);
+                customerList.refresh();
             } else {
                 String lowerCaseFilter = newValue.toLowerCase();
-                ObservableList<Costumer> filteredList = FXCollections.observableArrayList();
-                for (Costumer costumer : list) {
-                    String costumerStatus = costumer.isAccount() ? "activo" : "inactivo";
-                    if (costumer.getName().toLowerCase().contains(lowerCaseFilter) ||
-                            costumer.getSurname().toLowerCase().contains(lowerCaseFilter) ||
-                            costumerStatus.equals(lowerCaseFilter)) {
-                        filteredList.add(costumer);
+                ObservableList<Customer> filteredList = FXCollections.observableArrayList();
+                for (Customer customer : list) {
+                    String customerStatus = customer.isAccount() ? "activo" : "inactivo";
+                    if (customer.getName().toLowerCase().contains(lowerCaseFilter) ||
+                            customer.getSurname().toLowerCase().contains(lowerCaseFilter) ||
+                            customerStatus.equals(lowerCaseFilter)) {
+                        filteredList.add(customer);
                     }
                 }
-                costumerList.setItems(filteredList);
+                customerList.setItems(filteredList);
             }
         });
     }
 
     public void updateTotalDebtLabel() {
-        int totalDebts = costumerList.getItems().stream()
-                .mapToInt(Costumer::getDebt)
+        int totalDebts = customerList.getItems().stream()
+                .mapToInt(Customer::getDebt)
                 .sum();
         lblTotalDebt.setText(String.format("$%,d", totalDebts));
     }

@@ -1,7 +1,8 @@
 package cl.jic.VeloPro.Utility;
 
-import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
-import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
+import cl.jic.VeloPro.Model.Entity.Customer.Customer;
+import cl.jic.VeloPro.Model.Entity.Customer.Customer;
+import cl.jic.VeloPro.Model.Entity.Customer.TicketHistory;
 import cl.jic.VeloPro.Model.Entity.LocalData;
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
 import cl.jic.VeloPro.Model.Entity.User;
@@ -41,10 +42,10 @@ public class EmailService {
         return mailSender;
     }
 
-    public void sendEmailDebtDelay(Costumer costumer, TicketHistory ticket){
-        String to = costumer.getEmail();
+    public void sendEmailDebtDelay(Customer customer, TicketHistory ticket){
+        String to = customer.getEmail();
         String subject = "Aviso: Su ticket ha vencido";
-        String text = "Hola " + costumer.getName() + ",\nTe recordamos que tu boleta " + ticket.getDocument()
+        String text = "Hola " + customer.getName() + ",\nTe recordamos que tu boleta " + ticket.getDocument()
                 + " ha vencido. Con fecha de compra " + ticket.getDate() + ".\nPor favor, póngase en contacto con nosotros para el pago.";
 
         JavaMailSenderImpl mailSender = getJavaMailSender();
@@ -55,10 +56,10 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    public void sendEmailWithReceipt(Costumer costumer, Sale sale, String filePath) {
-        String to = costumer.getEmail();
+    public void sendEmailWithReceipt(Customer customer, Sale sale, String filePath) {
+        String to = customer.getEmail();
         String subject = "Confirmación de Venta - " + sale.getDocument();
-        String text = "Hola " + costumer.getName() + ",\nSe ha generado una venta " + sale.getDocument()
+        String text = "Hola " + customer.getName() + ",\nSe ha generado una venta " + sale.getDocument()
                 + " con el método de préstamo con un valor de $" + sale.getTotalSale() + ".\nAgradecemos su compra. \nAdjunto encontrarás la boleta de tu compra.";
         if ("x@x.xxx".equals(to)){
             return;

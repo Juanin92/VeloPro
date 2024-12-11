@@ -1,6 +1,5 @@
 package cl.jic.VeloPro.Model.Entity;
 
-import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
 import cl.jic.VeloPro.Model.Entity.Sale.CashRegister;
 import cl.jic.VeloPro.Model.Enum.Rol;
 import jakarta.persistence.*;

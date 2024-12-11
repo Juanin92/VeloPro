@@ -12,7 +12,7 @@
 <?import org.controlsfx.control.CheckListView?>
 <?import org.controlsfx.control.textfield.CustomTextField?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="501.0" prefWidth="520.0" styleClass="popView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.Costumer.PaymentController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="501.0" prefWidth="520.0" styleClass="popView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.Customer.PaymentController">
    <children>
       <AnchorPane prefHeight="501.0" prefWidth="503.0">
          <children>
@@ -26,7 +26,7 @@
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-            <Label fx:id="lblDebtCostumer" layoutX="217.0" layoutY="91.0" prefHeight="27.0" prefWidth="86.0" textFill="WHITE">
+            <Label fx:id="lblDebtCustomer" layoutX="217.0" layoutY="91.0" prefHeight="27.0" prefWidth="86.0" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
@@ -35,7 +35,7 @@
                <font>
                   <Font size="18.0" />
                </font></CustomTextField>
-            <TableView fx:id="listPaymentCostumer" layoutX="8.0" layoutY="299.0" prefHeight="188.0" prefWidth="495.0" stylesheets="@../../CSS/tableView.css">
+            <TableView fx:id="listPaymentCustomer" layoutX="8.0" layoutY="299.0" prefHeight="188.0" prefWidth="495.0" stylesheets="@../../CSS/tableView.css">
               <columns>
                 <TableColumn fx:id="colDate" prefWidth="75.0" sortType="DESCENDING" text="Fecha" />
                 <TableColumn fx:id="colAmount" prefWidth="75.0" text="Monto" />

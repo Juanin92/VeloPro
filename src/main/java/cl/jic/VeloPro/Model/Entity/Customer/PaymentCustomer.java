@@ -1,4 +1,4 @@
-package cl.jic.VeloPro.Model.Entity.Costumer;
+package cl.jic.VeloPro.Model.Entity.Customer;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,8 +9,8 @@ import java.time.LocalDate;
 
 @Entity
 @Data
-@Table(name = "payment_costumer")
-public class PaymentCostumer {
+@Table(name = "payment_customer")
+public class PaymentCustomer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +24,8 @@ public class PaymentCostumer {
     private LocalDate date;
 
     @ManyToOne
-    @JoinColumn(name = "costumer_id", nullable = false)
-    private Costumer costumer;
+    @JoinColumn(name = "Customer_id", nullable = false)
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "ticketHistory_id", nullable = false)

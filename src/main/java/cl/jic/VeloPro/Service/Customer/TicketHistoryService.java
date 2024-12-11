@@ -1,11 +1,11 @@
-package cl.jic.VeloPro.Service.Costumer;
+package cl.jic.VeloPro.Service.Customer;
 
-import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
-import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
+import cl.jic.VeloPro.Model.Entity.Customer.Customer;
+import cl.jic.VeloPro.Model.Entity.Customer.TicketHistory;
 import cl.jic.VeloPro.Model.Enum.PaymentStatus;
-import cl.jic.VeloPro.Repository.Costumer.TicketHistoryRepo;
-import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
-import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
+import cl.jic.VeloPro.Repository.Customer.TicketHistoryRepo;
+import cl.jic.VeloPro.Service.Customer.Interface.ICustomerService;
+import cl.jic.VeloPro.Service.Customer.Interface.ITicketHistoryService;
 import cl.jic.VeloPro.Utility.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,19 +18,19 @@ import java.util.List;
 public class TicketHistoryService implements ITicketHistoryService {
 
     @Autowired private TicketHistoryRepo ticketHistoryRepo;
-    @Autowired private ICostumerService costumerService;
+    @Autowired private ICustomerService customerService;
     @Autowired private EmailService emailService;
     private LocalDate lastValidationDate;
 
     @Override
-    public void AddTicketToCostumer(Costumer costumer, Long number, int total, LocalDate date) {
+    public void AddTicketToCustomer(Customer customer, Long number, int total, LocalDate date) {
         TicketHistory ticket = new TicketHistory();
         String name = "BO00" + number;
         ticket.setTotal(total);
         ticket.setDocument(name);
         ticket.setStatus(false);
         ticket.setDate(date);
-        ticket.setCostumer(costumer);
+        ticket.setCustomer(customer);
         ticketHistoryRepo.save(ticket);
     }
 
@@ -40,20 +40,20 @@ public class TicketHistoryService implements ITicketHistoryService {
     }
 
     @Override
-    public List<TicketHistory> getByCostumerId(Long id) {
-        return ticketHistoryRepo.findByCostumerId(id);
+    public List<TicketHistory> getByCustomerId(Long id) {
+        return ticketHistoryRepo.findByCustomerId(id);
     }
 
     @Override
-    public void valideTicketByCostumer(Costumer costumer) {
+    public void valideTicketByCustomer(Customer customer) {
         LocalDate today = LocalDate.now();
         if (lastValidationDate == null || !lastValidationDate.equals(today)) {
-            List<TicketHistory> tickets = getByCostumerId(costumer.getId());
+            List<TicketHistory> tickets = getByCustomerId(customer.getId());
             for (TicketHistory ticket : tickets) {
                 if (!ticket.isStatus() && validateDate(ticket)) {
-                    costumer.setStatus(PaymentStatus.VENCIDA);
-                    costumerService.updateTotalDebt(costumer);
-                    emailService.sendEmailDebtDelay(costumer, ticket);
+                    customer.setStatus(PaymentStatus.VENCIDA);
+                    customerService.updateTotalDebt(customer);
+                    emailService.sendEmailDebtDelay(customer, ticket);
                 }
             }
             lastValidationDate = today;

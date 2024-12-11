@@ -68,9 +68,9 @@
                                     </Button>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane fx:id="paneBtnCostumer" layoutY="203.0" prefHeight="53.0" prefWidth="163.0" style="-fx-background-color: #090e11;">
+                              <AnchorPane fx:id="paneBtnCustomer" layoutY="203.0" prefHeight="53.0" prefWidth="163.0" style="-fx-background-color: #090e11;">
                                  <children>
-                                    <Button fx:id="btnCostumer" layoutX="24.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-color: transparent; -fx-text-fill: white;" text="Clientes">
+                                    <Button fx:id="btnCustomer" layoutX="24.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleButton" style="-fx-background-color: transparent; -fx-text-fill: white;" text="Clientes">
                                        <font>
                                           <Font size="24.0" />
                                        </font>

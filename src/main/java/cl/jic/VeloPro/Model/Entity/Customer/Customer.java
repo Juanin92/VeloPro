@@ -1,4 +1,4 @@
-package cl.jic.VeloPro.Model.Entity.Costumer;
+package cl.jic.VeloPro.Model.Entity.Customer;
 
 import cl.jic.VeloPro.Model.Enum.PaymentStatus;
 import jakarta.persistence.*;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class Costumer {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Costumer {
     private boolean account;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
-    private List<PaymentCostumer> paymentCostumerList = new ArrayList<>();
+    private List<PaymentCustomer> paymentCustomerList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<TicketHistory> ticketHistoryList = new ArrayList<>();

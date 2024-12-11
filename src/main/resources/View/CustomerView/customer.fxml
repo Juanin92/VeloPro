@@ -13,11 +13,11 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="costumerView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1123.0" styleClass="principalView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.Costumer.CostumerController">
+<StackPane fx:id="customerView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1123.0" styleClass="principalView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.Customer.CustomerController">
    <children>
       <AnchorPane prefHeight="625.0" prefWidth="1123.0" StackPane.alignment="CENTER">
          <children>
-            <TableView fx:id="costumerList" layoutX="19.0" layoutY="178.0" prefHeight="400.0" prefWidth="1072.0" stylesheets="@../../CSS/tableView.css">
+            <TableView fx:id="customerList" layoutX="19.0" layoutY="178.0" prefHeight="400.0" prefWidth="1072.0" stylesheets="@../../CSS/tableView.css">
               <columns>
                   <TableColumn fx:id="colId" editable="false" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" text="Cod" />
                 <TableColumn fx:id="colName" maxWidth="150.0" minWidth="120.0" prefWidth="120.0" sortable="false" text="Nombre" />
@@ -33,7 +33,7 @@
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
-            <TextField fx:id="txtFindCostumer" layoutX="19.0" layoutY="132.0" prefHeight="39.0" prefWidth="354.0">
+            <TextField fx:id="txtFindCustomer" layoutX="19.0" layoutY="132.0" prefHeight="39.0" prefWidth="354.0">
                <font>
                   <Font size="18.0" />
                </font></TextField>
@@ -41,7 +41,7 @@
                <font>
                   <Font size="25.0" />
                </font></Label>
-            <Button fx:id="btnAddCostumer" contentDisplay="TOP" layoutX="902.0" layoutY="35.0" mnemonicParsing="false" onAction="#handleButtonCostumer" styleClass="custom-button" stylesheets="@../../CSS/button.css" text="Agregar Cliente" textFill="WHITE">
+            <Button fx:id="btnAddCustomer" contentDisplay="TOP" layoutX="902.0" layoutY="35.0" mnemonicParsing="false" onAction="#handleButtonCustomer" styleClass="custom-button" stylesheets="@../../CSS/button.css" text="Agregar Cliente" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>

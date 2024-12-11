@@ -48,7 +48,7 @@
                      <font>
                         <Font size="24.0" />
                      </font></Label>
-                  <Label fx:id="lblCostumer" alignment="CENTER" contentDisplay="CENTER" layoutX="829.0" layoutY="3.0" prefHeight="71.0" prefWidth="253.0" text="Nombre Cliente" textAlignment="CENTER" textFill="#fdfcfc" visible="false" wrapText="true">
+                  <Label fx:id="lblCustomer" alignment="CENTER" contentDisplay="CENTER" layoutX="829.0" layoutY="3.0" prefHeight="71.0" prefWidth="253.0" text="Nombre Cliente" textAlignment="CENTER" textFill="#fdfcfc" visible="false" wrapText="true">
                      <font>
                         <Font size="24.0" />
                      </font></Label>
@@ -60,7 +60,7 @@
                      <font>
                         <Font size="24.0" />
                      </font></Label>
-                  <ComboBox fx:id="cbCostumer" layoutX="839.0" layoutY="21.0" prefHeight="39.0" prefWidth="231.0" promptText="Seleccione Cliente" visible="false" />
+                  <ComboBox fx:id="cbCustomer" layoutX="839.0" layoutY="21.0" prefHeight="39.0" prefWidth="231.0" promptText="Seleccione Cliente" visible="false" />
                </children>
             </AnchorPane>
             <TableView fx:id="saleTable" prefHeight="298.0" prefWidth="1120.0" stylesheets="@../../CSS/tableView.css">

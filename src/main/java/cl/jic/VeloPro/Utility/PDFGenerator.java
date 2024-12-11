@@ -91,7 +91,7 @@ public class PDFGenerator {
                     debtField.setValue(String.format("$%,d", sale.getTotalSale()));
 
                     PDField customerField = acroForm.getField("Text1");
-                    customerField.setValue(sale.getCostumer().getName());
+                    customerField.setValue(sale.getCustomer().getName());
                 }
                 PDField totalSaleTable = acroForm.getField("Text11");
                 totalSaleTable.setValue(String.format("$%,d", sale.getTotalSale()));

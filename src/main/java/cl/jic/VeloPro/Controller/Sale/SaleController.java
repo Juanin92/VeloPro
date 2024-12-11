@@ -11,12 +11,12 @@ import cl.jic.VeloPro.Service.Sale.Interfaces.IPaymentService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.*;
 import cl.jic.VeloPro.Model.DTO.DetailSaleDTO;
-import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
+import cl.jic.VeloPro.Model.Entity.Customer.Customer;
 import cl.jic.VeloPro.Model.Entity.Product.*;
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
 import cl.jic.VeloPro.Model.Enum.PaymentMethod;
-import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
-import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
+import cl.jic.VeloPro.Service.Customer.Interface.ICustomerService;
+import cl.jic.VeloPro.Service.Customer.Interface.ITicketHistoryService;
 import cl.jic.VeloPro.Service.Product.Interface.IProductService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleDetailService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleService;
@@ -71,19 +71,19 @@ public class SaleController implements Initializable {
     @FXML private TableColumn<DetailSaleDTO, Integer> colTotal;
     @FXML private TableColumn<DetailSaleDTO, String> colUnit;
     @FXML private TableColumn<DetailSaleDTO, Void> colAction;
-    @FXML private Label lblCash, lblChange, lblChangeFixed, lblCostumer, lblDate, lblNumberSale;
+    @FXML private Label lblCash, lblChange, lblChangeFixed, lblCustomer, lblDate, lblNumberSale;
     @FXML private Label lblTotal, lblTypePay, lblUser, lblDiscount, lblDiscountFixed;
     @FXML private Label lblRemainFixed, lblLoanFixed;
     @FXML private CustomTextField txtAmountCash, txtDiscount;
     @FXML private CheckBox cbDiscount;
     @FXML private AnchorPane saleTypePane, paneDiscount, paneAmount, paneLabels;
-    @FXML private ComboBox<Costumer> cbCostumer;
+    @FXML private ComboBox<Customer> cbCustomer;
 
     @Autowired private IProductService productService;
     @Autowired private ISaleService saleService;
     @Autowired private ISaleDetailService saleDetailService;
     @Autowired private IPaymentService paymentService;
-    @Autowired private ICostumerService costumerService;
+    @Autowired private ICustomerService customerService;
     @Autowired private ITicketHistoryService ticketHistoryService;
     @Autowired private IKardexService kardexService;
     @Autowired private IRecordService recordService;
@@ -97,7 +97,7 @@ public class SaleController implements Initializable {
 
     @Setter private HomeController homeController;
     @Setter private boolean isViewSelected = true;
-    private Costumer selectedCostumer;
+    private Customer selectedCustomer;
     private User currentUser;
     private final ObservableList<DetailSaleDTO> dtoList = FXCollections.observableArrayList();
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("es", "CL"));
@@ -115,7 +115,7 @@ public class SaleController implements Initializable {
         btnMixed.setVisible(!currentUser.getRole().equals(Rol.GUEST));
         graphicsValidator.handleTextfieldChange(txtAmountCash);
         loadData();
-        loadCostumer();
+        loadCustomer();
     }
 
     @FXML
@@ -178,7 +178,7 @@ public class SaleController implements Initializable {
             int discountAmount = txtDiscount.getText().isEmpty() ? 0 : Integer.parseInt(txtDiscount.getText());
             int cashAmount = txtAmountCash.getText().isEmpty() ? 0 : Integer.parseInt(txtAmountCash.getText());
             Sale sale = saleService.addSale(discount, total, dtoList, discountAmount,
-                    cbDiscount.isSelected(), selectedCostumer, numberSale, cashAmount, active);
+                    cbDiscount.isSelected(), selectedCustomer, numberSale, cashAmount, active);
 
             if (active == PaymentMethod.DEBITO || active == PaymentMethod.CREDITO) {
                 handleDialogs( sale,"Comprobante", "Transacción");
@@ -192,11 +192,11 @@ public class SaleController implements Initializable {
             String filePath = userHome + File.separator + "Documents" + File.separator + "Boletas" + File.separator + sale.getDocument() + ".pdf";
 
             if (active.equals(PaymentMethod.PRESTAMO) || active.equals(PaymentMethod.MIXTO)){
-                costumerService.addSaleToCostumer(selectedCostumer);
+                customerService.addSaleToCustomer(selectedCustomer);
                 try{
-                    emailService.sendEmailWithReceipt(selectedCostumer, sale, filePath);
+                    emailService.sendEmailWithReceipt(selectedCustomer, sale, filePath);
                 }catch (Exception e){
-                    notificationManager.warningNotification("Error en el envío del correo", e.getMessage() + " " + selectedCostumer.getName(), Pos.CENTER);
+                    notificationManager.warningNotification("Error en el envío del correo", e.getMessage() + " " + selectedCustomer.getName(), Pos.CENTER);
                 }
             }
             for (DetailSaleDTO dto : dtoList) {
@@ -278,7 +278,7 @@ public class SaleController implements Initializable {
     }
 
     private void mixedPayments(){
-        cbCostumer.setVisible(true);
+        cbCustomer.setVisible(true);
         txtAmountCash.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 try{
@@ -323,17 +323,17 @@ public class SaleController implements Initializable {
         lblTotal.setText(currencyFormat.format(total - discount));
     }
 
-    private void loadCostumer(){
-        List<Costumer> costumerList = costumerService.getAll();
-        ObservableList<Costumer> costumers = FXCollections.observableArrayList(costumerList);
-        FilteredList<Costumer> filterCostumer = new FilteredList<>(costumers, Costumer::isAccount);
-        cbCostumer.setItems(filterCostumer);
-        cbCostumer.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+    private void loadCustomer(){
+        List<Customer> customerList = customerService.getAll();
+        ObservableList<Customer> customers = FXCollections.observableArrayList(customerList);
+        FilteredList<Customer> filterCustomer = new FilteredList<>(customers, Customer::isAccount);
+        cbCustomer.setItems(filterCustomer);
+        cbCustomer.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                lblCostumer.setText(newValue.toString());
-                lblCostumer.setVisible(true);
-                cbCostumer.setVisible(false);
-                selectedCostumer = newValue;
+                lblCustomer.setText(newValue.toString());
+                lblCustomer.setVisible(true);
+                cbCustomer.setVisible(false);
+                selectedCustomer = newValue;
                 btnPay.setDisable(false);
             }
         });
@@ -543,7 +543,7 @@ public class SaleController implements Initializable {
         selectedButton = null;
         handleButtonDisable(btnPay);
 
-        cbCostumer.getSelectionModel().clearSelection();
+        cbCustomer.getSelectionModel().clearSelection();
         paneDiscount.setVisible(false);
         lblTotal.setText(currencyFormat.format(0));
         discount = 0;
@@ -572,9 +572,9 @@ public class SaleController implements Initializable {
             lblDiscount.setText(currencyFormat.format(0));
             paneAmount.setVisible(false);
             paneDiscount.setVisible(false);
-            selectedCostumer = null;
-            lblCostumer.setVisible(false);
-            cbCostumer.setVisible(false);
+            selectedCustomer = null;
+            lblCustomer.setVisible(false);
+            cbCustomer.setVisible(false);
             paneLabels.setVisible(false);
             dtoList.clear();
             saleTable.getItems().clear();
@@ -603,8 +603,8 @@ public class SaleController implements Initializable {
         lblDiscount.setText(currencyFormat.format(0));
         if (btn.equals(btnCash)){
             cbDiscount.setVisible(true);
-            cbCostumer.setVisible(false);
-            lblCostumer.setVisible(false);
+            cbCustomer.setVisible(false);
+            lblCustomer.setVisible(false);
             lblTypePay.setVisible(true);
             lblChangeFixed.setVisible(true);
             lblChange.setVisible(true);
@@ -614,7 +614,7 @@ public class SaleController implements Initializable {
             cbDiscount.setSelected(false);
         } else if (btn.equals(btnLoan)) {
             cbDiscount.setVisible(true);
-            cbCostumer.setVisible(true);
+            cbCustomer.setVisible(true);
             lblTypePay.setVisible(false);
             lblLoanFixed.setVisible(true);
             lblChangeFixed.setVisible(false);
@@ -626,7 +626,7 @@ public class SaleController implements Initializable {
             paneAmount.setVisible(false);
             cbDiscount.setSelected(false);
         } else if (btn.equals(btnMixed)) {
-            cbCostumer.setVisible(true);
+            cbCustomer.setVisible(true);
             paneDiscount.setVisible(false);
             lblRemainFixed.setVisible(true);
             lblTypePay.setVisible(false);
@@ -636,7 +636,7 @@ public class SaleController implements Initializable {
             cbDiscount.setSelected(false);
             lblDiscount.setVisible(true);
         } else {
-            cbCostumer.setVisible(false);
+            cbCustomer.setVisible(false);
             cbDiscount.setVisible(true);
             cbDiscount.setSelected(false);
             lblTypePay.setVisible(false);

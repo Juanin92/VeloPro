@@ -1,4 +1,4 @@
-package cl.jic.VeloPro.Model.Entity.Costumer;
+package cl.jic.VeloPro.Model.Entity.Customer;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -29,8 +29,8 @@ public class TicketHistory {
     private LocalDate notificationsDate;
 
     @ManyToOne
-    @JoinColumn(name = "id_costumer")
-    private Costumer costumer;
+    @JoinColumn(name = "id_customer")
+    private Customer customer;
 
     @Override
     public String toString() {

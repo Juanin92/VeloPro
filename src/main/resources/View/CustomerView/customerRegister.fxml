@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.textfield.CustomTextField?>
 
-<StackPane fx:id="stackpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="379.0" style="-fx-border-radius: 20px;" styleClass="popView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.Costumer.AddEditCostumerController">
+<StackPane fx:id="stackpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="379.0" style="-fx-border-radius: 20px;" styleClass="popView" stylesheets="@../../CSS/backgroundView.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cl.jic.VeloPro.Controller.Customer.AddEditCustomerController">
    <children>
       <VBox alignment="CENTER" prefHeight="400.0" prefWidth="379.0">
          <children>
@@ -43,7 +43,7 @@
             </AnchorPane>
             <AnchorPane fx:id="paneTextField" prefHeight="385.0" prefWidth="379.0">
                <children>
-                  <CustomTextField fx:id="txtNameCostumer" alignment="CENTER" layoutX="83.0" layoutY="14.0" promptText="Ingrese nombre" style="-fx-background-radius: 10; -fx-background-color: transparent; -fx-border-color: transparent  transparent white; -fx-text-fill: white;">
+                  <CustomTextField fx:id="txtNameCustomer" alignment="CENTER" layoutX="83.0" layoutY="14.0" promptText="Ingrese nombre" style="-fx-background-radius: 10; -fx-background-color: transparent; -fx-border-color: transparent  transparent white; -fx-text-fill: white;">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -51,7 +51,7 @@
                         <Cursor fx:constant="TEXT" />
                      </cursor>
                   </CustomTextField>
-                  <CustomTextField fx:id="txtSurnameCostumer" alignment="CENTER" layoutX="83.0" layoutY="74.0" promptText="Ingrese apellidos" style="-fx-background-radius: 10; -fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;">
+                  <CustomTextField fx:id="txtSurnameCustomer" alignment="CENTER" layoutX="83.0" layoutY="74.0" promptText="Ingrese apellidos" style="-fx-background-radius: 10; -fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -59,7 +59,7 @@
                         <Cursor fx:constant="TEXT" />
                      </cursor>
                   </CustomTextField>
-                  <CustomTextField fx:id="txtPhoneCostumer" alignment="CENTER" layoutX="83.0" layoutY="134.0" promptText="Ingrese N° Telefono" style="-fx-background-radius: 10; -fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;" text="+569 ">
+                  <CustomTextField fx:id="txtPhoneCustomer" alignment="CENTER" layoutX="83.0" layoutY="134.0" promptText="Ingrese N° Telefono" style="-fx-background-radius: 10; -fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;" text="+569 ">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -67,7 +67,7 @@
                         <Cursor fx:constant="TEXT" />
                      </cursor>
                   </CustomTextField>
-                  <CustomTextField fx:id="txtEmailCostumer" alignment="CENTER" layoutX="83.0" layoutY="191.0" prefHeight="37.0" prefWidth="200.0" promptText="Ingrese Email" style="-fx-background-radius: 10; -fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;">
+                  <CustomTextField fx:id="txtEmailCustomer" alignment="CENTER" layoutX="83.0" layoutY="191.0" prefHeight="37.0" prefWidth="200.0" promptText="Ingrese Email" style="-fx-background-radius: 10; -fx-background-color: transparent; -fx-border-color: transparent transparent white; -fx-text-fill: white;">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -96,7 +96,7 @@
                <children>
                   <StackPane layoutX="74.0" layoutY="27.0" prefHeight="67.0" prefWidth="122.0">
                      <children>
-                        <Button fx:id="btnSaveCostumer" mnemonicParsing="false" onAction="#addCostumer" style="-fx-background-radius: 10; -fx-background-color: green; -fx-text-fill: white;" text="Guardar">
+                        <Button fx:id="btnSaveCustomer" mnemonicParsing="false" onAction="#addCustomer" style="-fx-background-radius: 10; -fx-background-color: green; -fx-text-fill: white;" text="Guardar">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -107,7 +107,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <Button fx:id="btnUpdateCostumer" mnemonicParsing="false" onAction="#handleButtonCostumer" style="-fx-background-radius: 10; -fx-background-color: green; -fx-text-fill: white;" text="Actualizar" visible="false">
+                        <Button fx:id="btnUpdateCustomer" mnemonicParsing="false" onAction="#handleButtonCustomer" style="-fx-background-radius: 10; -fx-background-color: green; -fx-text-fill: white;" text="Actualizar" visible="false">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -120,7 +120,7 @@
                         </Button>
                      </children>
                   </StackPane>
-                  <Button fx:id="btnCancelCostumer" layoutX="203.0" layoutY="41.0" mnemonicParsing="false" onAction="#handleButtonCostumer" style="-fx-background-radius: 10; -fx-text-fill: white; -fx-background-color: red;" text="Cancelar">
+                  <Button fx:id="btnCancelCustomer" layoutX="203.0" layoutY="41.0" mnemonicParsing="false" onAction="#handleButtonCustomer" style="-fx-background-radius: 10; -fx-text-fill: white; -fx-background-color: red;" text="Cancelar">
                      <font>
                         <Font size="18.0" />
                      </font>

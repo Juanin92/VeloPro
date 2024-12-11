@@ -1,6 +1,6 @@
 package cl.jic.VeloPro.Controller;
 
-import cl.jic.VeloPro.Controller.Costumer.CostumerController;
+import cl.jic.VeloPro.Controller.Customer.CustomerController;
 import cl.jic.VeloPro.Controller.Product.StockController;
 import cl.jic.VeloPro.Controller.Report.ReportController;
 import cl.jic.VeloPro.Controller.Sale.CashRegisterController;
@@ -45,10 +45,10 @@ import java.util.ResourceBundle;
 @Component
 public class HomeController implements Initializable {
 
-    @FXML private Button btnCostumer, btnExit, btnReport, btnSale, btnSetting, btnStock, btnLogo, btnRecord;
+    @FXML private Button btnCustomer, btnExit, btnReport, btnSale, btnSetting, btnStock, btnLogo, btnRecord;
     @FXML private Label lblTimeLocal, lblDateLocal;
     @FXML private StackPane homeView;
-    @FXML private AnchorPane paneHome, paneBtnStock, paneBtnSale, paneBtnSetting, paneBtnCostumer, paneBtnReport, paneBtnRecord;
+    @FXML private AnchorPane paneHome, paneBtnStock, paneBtnSale, paneBtnSetting, paneBtnCustomer, paneBtnReport, paneBtnRecord;
     @FXML private ImageView imgLogo;
 
     @Autowired private IRecordService recordService;
@@ -103,16 +103,16 @@ public class HomeController implements Initializable {
                 homeView.getChildren().setAll(root);
             }
             changeColorMenu(paneBtnStock,btnStock);
-        } else if (event.getSource().equals(btnCostumer)) {
-            if (!homeView.getChildren().contains(homeView.lookup("#costumerView"))) {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/CostumerView/costumer.fxml"));
+        } else if (event.getSource().equals(btnCustomer)) {
+            if (!homeView.getChildren().contains(homeView.lookup("#customerView"))) {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/CustomerView/customer.fxml"));
                 fxmlLoader.setControllerFactory(VeloProApplication.getContext()::getBean);
                 Parent root = fxmlLoader.load();
-                CostumerController costumerController = fxmlLoader.getController();
-                costumerController.setHomeController(this);
+                CustomerController customerController = fxmlLoader.getController();
+                customerController.setHomeController(this);
                 homeView.getChildren().setAll(root);
             }
-            changeColorMenu(paneBtnCostumer,btnCostumer);
+            changeColorMenu(paneBtnCustomer,btnCustomer);
         }  else if (event.getSource().equals(btnReport)) {
             if (!homeView.getChildren().contains(homeView.lookup("#reportView"))) {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/ReportView/report.fxml"));
@@ -170,7 +170,7 @@ public class HomeController implements Initializable {
                     stage.initStyle(StageStyle.UNDECORATED);
                     stage.setOnCloseRequest(events -> {
                         btnSale.setVisible(false);
-                        btnCostumer.setVisible(false);
+                        btnCustomer.setVisible(false);
                         btnStock.setVisible(false);
                         btnReport.setVisible(false);
                         btnSetting.setVisible(false);
@@ -222,7 +222,7 @@ public class HomeController implements Initializable {
             btnReport.setDisable(true);
         } else if (user.getRole().equals(Rol.WAREHOUSE)){
             btnSale.setDisable(true);
-            btnCostumer.setDisable(true);
+            btnCustomer.setDisable(true);
         } else if (user.getRole().equals(Rol.GUEST)){
             btnSetting.setDisable(true);
             btnReport.setDisable(true);
@@ -255,18 +255,18 @@ public class HomeController implements Initializable {
     }
 
     private void changeColorMenu(AnchorPane clickedPane, Button clickedBtn) {
-        for (AnchorPane pane : new AnchorPane[]{paneBtnSale, paneBtnStock, paneBtnCostumer, paneBtnReport, paneBtnSetting, paneBtnRecord}) {
+        for (AnchorPane pane : new AnchorPane[]{paneBtnSale, paneBtnStock, paneBtnCustomer, paneBtnReport, paneBtnSetting, paneBtnRecord}) {
             if (pane != clickedPane) {
                 pane.setStyle("-fx-background-color: #090e11;");
             }
         }
-        for (Button btn : new Button[]{btnSale, btnStock, btnCostumer, btnReport, btnExit, btnSetting, btnRecord}) {
+        for (Button btn : new Button[]{btnSale, btnStock, btnCustomer, btnReport, btnExit, btnSetting, btnRecord}) {
             if (btn != clickedBtn) {
                 btn.setStyle("-fx-text-fill: white; -fx-background-color: transparent;");
             }
         }
         if (clickedBtn == btnLogo) {
-            for (AnchorPane pane : new AnchorPane[]{paneBtnSale, paneBtnStock, paneBtnCostumer, paneBtnReport, paneBtnSetting, paneBtnRecord}) {
+            for (AnchorPane pane : new AnchorPane[]{paneBtnSale, paneBtnStock, paneBtnCustomer, paneBtnReport, paneBtnSetting, paneBtnRecord}) {
                 pane.setStyle("-fx-background-color: #090e11;");
             }
         } else {

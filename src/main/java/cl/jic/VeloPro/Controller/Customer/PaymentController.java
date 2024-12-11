@@ -1,12 +1,12 @@
-package cl.jic.VeloPro.Controller.Costumer;
+package cl.jic.VeloPro.Controller.Customer;
 
-import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
-import cl.jic.VeloPro.Model.Entity.Costumer.PaymentCostumer;
-import cl.jic.VeloPro.Model.Entity.Costumer.TicketHistory;
+import cl.jic.VeloPro.Model.Entity.Customer.Customer;
+import cl.jic.VeloPro.Model.Entity.Customer.PaymentCustomer;
+import cl.jic.VeloPro.Model.Entity.Customer.TicketHistory;
 import cl.jic.VeloPro.Model.Entity.User;
-import cl.jic.VeloPro.Service.Costumer.Interface.ICostumerService;
-import cl.jic.VeloPro.Service.Costumer.Interface.IPaymentCostumerService;
-import cl.jic.VeloPro.Service.Costumer.Interface.ITicketHistoryService;
+import cl.jic.VeloPro.Service.Customer.Interface.ICustomerService;
+import cl.jic.VeloPro.Service.Customer.Interface.IPaymentCustomerService;
+import cl.jic.VeloPro.Service.Customer.Interface.ITicketHistoryService;
 import cl.jic.VeloPro.Service.Record.IRecordService;
 import cl.jic.VeloPro.Session.Session;
 import cl.jic.VeloPro.Utility.NotificationManager;
@@ -35,28 +35,28 @@ import java.util.stream.Collectors;
 @Component
 public class PaymentController implements Initializable {
 
-    @FXML private Label lblDebtCostumer, lblPayment, lblTotalDebt;
+    @FXML private Label lblDebtCustomer, lblPayment, lblTotalDebt;
     @FXML private Button btnSavePayment;
     @FXML private CustomTextField txtPayment;
-    @FXML private TableColumn<PaymentCostumer, Integer> colAmount;
-    @FXML private TableColumn<PaymentCostumer, String> colComment;
-    @FXML private TableColumn<PaymentCostumer, LocalDate> colDate;
-    @FXML private TableColumn<PaymentCostumer, TicketHistory> colDocument;
-    @FXML private TableView<PaymentCostumer> listPaymentCostumer;
+    @FXML private TableColumn<PaymentCustomer, Integer> colAmount;
+    @FXML private TableColumn<PaymentCustomer, String> colComment;
+    @FXML private TableColumn<PaymentCustomer, LocalDate> colDate;
+    @FXML private TableColumn<PaymentCustomer, TicketHistory> colDocument;
+    @FXML private TableView<PaymentCustomer> listPaymentCustomer;
     @FXML private ComboBox<String> cbComment;
     @FXML private CheckListView<TicketHistory> cxListViewTicket;
 
-    @Autowired private ICostumerService costumerService;
-    @Autowired private IPaymentCostumerService paymentCostumerService;
+    @Autowired private ICustomerService customerService;
+    @Autowired private IPaymentCustomerService paymentCustomerService;
     @Autowired private ITicketHistoryService ticketHistoryService;
-    @Autowired private ICostumerList ICostumerList;
+    @Autowired private ICustomerList ICustomerList;
     @Autowired private IRecordService recordService;
     @Autowired private GraphicsValidator graphicsValidator;
     @Autowired private NotificationManager notificationManager;
     @Autowired private Session session;
-    @Setter private Costumer currentCostumer;
+    @Setter private Customer currentCustomer;
 
-    ObservableList<PaymentCostumer> paymentList;
+    ObservableList<PaymentCustomer> paymentList;
     ObservableList<TicketHistory> selectedTicket;
     List<TicketHistory> allTickets;
     private User currentUser;
@@ -85,7 +85,7 @@ public class PaymentController implements Initializable {
                 if (selectedTicket.size() > 1) {
                     if (amount == (totalSelectedTickets)) {
                         for (TicketHistory ticket : selectedTicket) {
-                            paymentDebtCostumer(ticket, cbComment.getValue());
+                            paymentDebtCustomer(ticket, cbComment.getValue());
                             ticketHistoryService.updateStatus(ticket);
                         }
                     } else {
@@ -93,11 +93,11 @@ public class PaymentController implements Initializable {
                     }
                 } else {
                     if (amount == (totalSelectedTickets - totalPayment)) {
-                        paymentDebtCostumer(selectedTicket.getFirst(), cbComment.getValue());
+                        paymentDebtCustomer(selectedTicket.getFirst(), cbComment.getValue());
                         ticketHistoryService.updateStatus(selectedTicket.getFirst());
                     } else if (amount < (totalSelectedTickets - totalPayment)) {
-                        paymentCostumerService.addAdjustPayments(amount, selectedTicket.getFirst(), currentCostumer);
-                        costumerService.paymentDebt(currentCostumer, txtPayment.getText());
+                        paymentCustomerService.addAdjustPayments(amount, selectedTicket.getFirst(), currentCustomer);
+                        customerService.paymentDebt(currentCustomer, txtPayment.getText());
                     }else {
                        handleValidationException("El monto supera el valor de la deuda.");
                     }
@@ -114,45 +114,45 @@ public class PaymentController implements Initializable {
         }
     }
 
-    private void paymentDebtCostumer(TicketHistory ticket, String comment){
-        PaymentCostumer paymentCostumer = new PaymentCostumer();
-        paymentCostumer.setCostumer(currentCostumer);
-        paymentCostumer.setDocument(ticket);
-        paymentCostumer.setComment(comment);
-        paymentCostumerService.addPayments(paymentCostumer);
-        paymentCostumer.setAmount(ticket.getTotal());
-        costumerService.paymentDebt(currentCostumer, String.valueOf(ticket.getTotal()));
+    private void paymentDebtCustomer(TicketHistory ticket, String comment){
+        PaymentCustomer paymentCustomer = new PaymentCustomer();
+        paymentCustomer.setCustomer(currentCustomer);
+        paymentCustomer.setDocument(ticket);
+        paymentCustomer.setComment(comment);
+        paymentCustomerService.addPayments(paymentCustomer);
+        paymentCustomer.setAmount(ticket.getTotal());
+        customerService.paymentDebt(currentCustomer, String.valueOf(ticket.getTotal()));
 
-        ICostumerList.loadDataCostumerList();
-        ICostumerList.updateTotalDebtLabel();
+        ICustomerList.loadDataCustomerList();
+        ICustomerList.updateTotalDebtLabel();
         notificationManager.successNotification("Éxito!", "Se ha agregado el abono al cliente - N° Doc: " + ticket.getDocument(), Pos.CENTER);
-        recordService.registerAction(currentUser, "PAYMENT", "Pago Cliente " + currentCostumer.getName()
-                + " " + currentCostumer.getSurname() + ", Cantidad: " + Integer.parseInt(txtPayment.getText()));
+        recordService.registerAction(currentUser, "PAYMENT", "Pago Cliente " + currentCustomer.getName()
+                + " " + currentCustomer.getSurname() + ", Cantidad: " + Integer.parseInt(txtPayment.getText()));
     }
 
     private void calculateTotalPayment() {
         totalPayment = 0;
-        for (PaymentCostumer payment : paymentList) {
+        for (PaymentCustomer payment : paymentList) {
             totalPayment += payment.getAmount();
         }
         if(selectedTicket.isEmpty()){
-            lblDebtCostumer.setText(String.format("$%,d", 0));
+            lblDebtCustomer.setText(String.format("$%,d", 0));
         }else {
-            lblDebtCostumer.setText(String.format("$%,d", debt - totalPayment));
+            lblDebtCustomer.setText(String.format("$%,d", debt - totalPayment));
         }
         lblPayment.setText(String.format("$%,d", totalPayment));
     }
 
     public void loadDataPaymentList(){
-        List<PaymentCostumer> filteredPayments = paymentCostumerService.getCostumerSelected(currentCostumer.getId())
+        List<PaymentCustomer> filteredPayments = paymentCustomerService.getCustomerSelected(currentCustomer.getId())
                 .stream()
                 .filter(payment -> allTickets.stream()
                         .anyMatch(ticket -> Objects.equals(ticket.getId(), payment.getDocument().getId())))
-                .sorted(Comparator.comparing(PaymentCostumer::getDate))
+                .sorted(Comparator.comparing(PaymentCustomer::getDate))
                 .collect(Collectors.toList());
 
         paymentList = FXCollections.observableArrayList(filteredPayments);
-        listPaymentCostumer.setItems(paymentList);
+        listPaymentCustomer.setItems(paymentList);
 
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
@@ -186,7 +186,7 @@ public class PaymentController implements Initializable {
         int selectedDebt = 0;
         debt = 0;
         cxListViewTicket.getItems().clear();
-        List<TicketHistory> tickets = ticketHistoryService.getByCostumerId(currentCostumer.getId())
+        List<TicketHistory> tickets = ticketHistoryService.getByCustomerId(currentCustomer.getId())
                 .stream()
                 .sorted(Comparator.comparing(TicketHistory::getTotal))
                 .toList();
@@ -202,7 +202,7 @@ public class PaymentController implements Initializable {
                 change.getAddedSubList().forEach(ticket -> debt += ticket.getTotal());
                 change.getRemoved().forEach(ticket -> debt -= ticket.getTotal());
             }
-            lblDebtCostumer.setText(String.format("$%,d", (debt - totalPayment)));
+            lblDebtCustomer.setText(String.format("$%,d", (debt - totalPayment)));
         });
         allTickets = cxListViewTicket.getItems();
         cbComment.getItems().addAll("Efectivo", "Tarjeta", "Otro");
@@ -213,7 +213,7 @@ public class PaymentController implements Initializable {
         txtPayment.clear();
         cxListViewTicket.refresh();
         cxListViewTicket.getCheckModel().clearChecks();
-        lblDebtCostumer.setText("0");
+        lblDebtCustomer.setText("0");
     }
 
     private void handleValidationException(String errorMessage){

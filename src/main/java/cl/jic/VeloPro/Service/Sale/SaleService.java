@@ -1,15 +1,12 @@
 package cl.jic.VeloPro.Service.Sale;
 
 import cl.jic.VeloPro.Model.DTO.DetailSaleDTO;
-import cl.jic.VeloPro.Model.Entity.Costumer.Costumer;
+import cl.jic.VeloPro.Model.Entity.Customer.Customer;
 import cl.jic.VeloPro.Model.Entity.Sale.Sale;
-import cl.jic.VeloPro.Model.Entity.User;
 import cl.jic.VeloPro.Model.Enum.PaymentMethod;
 import cl.jic.VeloPro.Repository.Sale.SaleRepo;
-import cl.jic.VeloPro.Service.Costumer.TicketHistoryService;
+import cl.jic.VeloPro.Service.Customer.TicketHistoryService;
 import cl.jic.VeloPro.Service.Sale.Interfaces.ISaleService;
-import javafx.scene.control.TextInputDialog;
-import javafx.stage.StageStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +27,7 @@ public class SaleService implements ISaleService {
 
     @Override
     public Sale addSale(int discount, int total, List<DetailSaleDTO> dto, int discountAmount, boolean isSelected,
-        Costumer costumer, Long numberSale, int comment, PaymentMethod active){
+        Customer customer, Long numberSale, int comment, PaymentMethod active){
         Sale sale = new Sale();
         sale.setDiscount(discount);
         sale.setTotalSale(total - discount);
@@ -42,7 +39,7 @@ public class SaleService implements ISaleService {
             totalTax = calculateTax(dto);
         }
         sale.setTax(totalTax);
-        configurePaymentMethod(sale, costumer, total, numberSale, comment, active);
+        configurePaymentMethod(sale, customer, total, numberSale, comment, active);
         sale.setDate(LocalDate.now());
         sale.setDocument("BO_" + totalSales());
         sale.setStatus(true);
@@ -105,37 +102,37 @@ public class SaleService implements ISaleService {
     }
 
     @Override
-    public void configurePaymentMethod(Sale sale, Costumer costumer, int total, Long numberSale, int comment, PaymentMethod active) {
+    public void configurePaymentMethod(Sale sale, Customer customer, int total, Long numberSale, int comment, PaymentMethod active) {
         switch (active) {
             case PRESTAMO:
                 sale.setPaymentMethod(PaymentMethod.PRESTAMO);
-                sale.setCostumer(costumer);
+                sale.setCustomer(customer);
                 sale.setComment(null);
-                costumer.setTotalDebt(costumer.getDebt() + total);
-                ticketHistoryService.AddTicketToCostumer(costumer, numberSale, total, LocalDate.now());
+                customer.setTotalDebt(customer.getDebt() + total);
+                ticketHistoryService.AddTicketToCustomer(customer, numberSale, total, LocalDate.now());
                 break;
             case MIXTO:
                 sale.setPaymentMethod(PaymentMethod.MIXTO);
-                sale.setCostumer(costumer);
+                sale.setCustomer(customer);
                 sale.setComment("Abono inicial: $" + comment);
-                costumer.setTotalDebt(costumer.getDebt() + total);
-                ticketHistoryService.AddTicketToCostumer(costumer, numberSale, total, LocalDate.now());
+                customer.setTotalDebt(customer.getDebt() + total);
+                ticketHistoryService.AddTicketToCustomer(customer, numberSale, total, LocalDate.now());
                 break;
             case DEBITO:
                 sale.setPaymentMethod(PaymentMethod.DEBITO);
-                sale.setCostumer(null);
+                sale.setCustomer(null);
                 break;
             case CREDITO:
                 sale.setPaymentMethod(PaymentMethod.CREDITO);
-                sale.setCostumer(null);
+                sale.setCustomer(null);
                 break;
             case TRANSFERENCIA:
                 sale.setPaymentMethod(PaymentMethod.TRANSFERENCIA);
-                sale.setCostumer(null);
+                sale.setCustomer(null);
                 break;
             case EFECTIVO:
                 sale.setPaymentMethod(PaymentMethod.EFECTIVO);
-                sale.setCostumer(null);
+                sale.setCustomer(null);
                 sale.setComment(null);
                 break;
         }
