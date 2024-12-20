@@ -182,31 +182,40 @@ public class PaymentController implements Initializable {
         });
     }
 
-    private void loadData(){
-        int selectedDebt = 0;
-        debt = 0;
+    private void loadData() {
+        debt = currentCustomer.getDebt();
         cxListViewTicket.getItems().clear();
+
         List<TicketHistory> tickets = ticketHistoryService.getByCustomerId(currentCustomer.getId())
                 .stream()
                 .sorted(Comparator.comparing(TicketHistory::getTotal))
                 .toList();
-        for (TicketHistory ticket : tickets){
-            if (!ticket.isStatus()){
+
+        for (TicketHistory ticket : tickets) {
+            if (!ticket.isStatus()) {
                 cxListViewTicket.getItems().add(ticket);
-                selectedDebt += ticket.getTotal();
-                lblTotalDebt.setText(String.format("$%,d", selectedDebt));
             }
         }
+        lblTotalDebt.setText(String.format("$%,d", debt));
+
         cxListViewTicket.getCheckModel().getCheckedItems().addListener((ListChangeListener<TicketHistory>) change -> {
-            while (change.next()) {
-                change.getAddedSubList().forEach(ticket -> debt += ticket.getTotal());
-                change.getRemoved().forEach(ticket -> debt -= ticket.getTotal());
+            int totalDebtSelected = 0;
+            for (TicketHistory ticket : cxListViewTicket.getCheckModel().getCheckedItems()) {
+                totalDebtSelected += calculateRemainingDebtForTicket(ticket);
             }
-            lblDebtCustomer.setText(String.format("$%,d", (debt - totalPayment)));
+            lblDebtCustomer.setText(String.format("$%,d", Math.max(totalDebtSelected, 0)));
         });
         allTickets = cxListViewTicket.getItems();
         cbComment.getItems().addAll("Efectivo", "Tarjeta", "Otro");
         selectedTicket = cxListViewTicket.getCheckModel().getCheckedItems();
+    }
+
+    private int calculateRemainingDebtForTicket(TicketHistory ticket) {
+        int paidAmount = paymentList.stream()
+                .filter(payment -> payment.getDocument().getId().equals(ticket.getId()))
+                .mapToInt(PaymentCustomer::getAmount)
+                .sum();
+        return Math.max(ticket.getTotal() - paidAmount, 0);
     }
 
     private void cleanInfo(){
