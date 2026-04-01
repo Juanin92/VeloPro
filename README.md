@@ -1,91 +1,203 @@
-<img src="src/main/resources/Images/principalLogo.png" alt="Logo de VeloPro" width="50"/>
+<p align="center">
+  <img src="./src/main/resources/Images/principalLogo.png" width="120"/>
+</p>
 
-# VeloPro - Sistema de Gestión de Ventas e Inventario
+# VeloPro Desktop
 
-**VeLoPro** es un sistema de gestión de ventas e inventario diseñado para pequeños comercios que operan sin acceso a internet. La aplicación es completamente local y facilita la administración de ventas, inventario, clientes y reportes de manera eficiente.
-<hr>
+![Java](https://img.shields.io/badge/Backend-Java%2021-orange)
+![Spring Boot](https://img.shields.io/badge/Framework-Spring%20Boot%203-brightgreen)
+![JavaFX](https://img.shields.io/badge/UI-JavaFX-blue)
+![Architecture](https://img.shields.io/badge/Architecture-Layered-blue)
+![Type](https://img.shields.io/badge/System-Desktop%20App%20%7C%20ERP--like-purple)
+![Database](https://img.shields.io/badge/Database-MySQL-blue)
 
-## Características Principales
+**VeloPro Desktop** es una aplicación de escritorio tipo ERP orientada a la gestión de ventas e inventario en entornos sin conexión a internet.
 
-- **Roles de Usuario**: El sistema cuenta con cinco roles predefinidos, cada uno con accesos y permisos específicos:
-    - **Master**: Tiene acceso completo a todas las funcionalidades del sistema.
-    - **Administrador**: Control total, incluyendo la modificación de roles.
-    - **Inventarista**: Acceso solo a la gestión de inventario, sin permisos para realizar ventas ni gestionar abonos de clientes.
-    - **Vendedor**: Acceso a la venta y gestión de inventario, pero limitado en la creación de clientes y compras.
-    - **Invitado**: Acceso limitado, con permisos muy restringidos.
+Diseñada para ofrecer control total de las operaciones comerciales de forma local, asegurando continuidad operativa, trazabilidad de datos y eficiencia en la gestión diaria.
 
-- **Login y Recuperación de Contraseña**: El usuario inicia sesión mediante una pantalla de login. Si olvida su contraseña, puede solicitar el envío de la misma al correo registrado.
+---
 
-- **Gestión de Caja**: Al iniciar sesión, se solicita al usuario ingresar los valores de apertura de caja (excepto al rol Inventarista). Al salir del sistema, se registra el cierre de caja y el cierre de terminal POS.
+## 📌 Descripción
 
-- **Gestión de Ventas**: En la sección de ventas, el usuario puede seleccionar productos y métodos de pago como efectivo, débito, crédito, transferencia, préstamo (se requiere seleccionar un cliente) o pago mixto. Al finalizar la venta, se ofrece la opción de imprimir la boleta.
+VeloPro Desktop centraliza procesos críticos de un negocio en una sola aplicación, permitiendo administrar ventas, inventario, clientes y reportes sin depender de conexión a internet.
 
-- **Inventario**: Permite visualizar, actualizar y eliminar productos. Se pueden agregar nuevos productos, crear categorías y subcategorías, gestionar proveedores y registrar compras de productos.
+El sistema reduce errores operativos, mejora la organización de la información y permite mantener un control completo del negocio desde un único punto.
 
-- **Clientes**: Gestión de clientes con detalles, saldo de deudas y la posibilidad de abonar a cuentas pendientes.
+---
 
-- **Reportes y Kardex**: Se generan gráficos y tablas con datos de ventas y movimientos de productos. Además, es posible exportar reportes en formato Excel.
+## ⚙️ Características Principales
 
-- **Historial de Actividades**: El rol Master tiene acceso a un registro completo de todas las acciones realizadas por los usuarios en el sistema.
+* **Sistema de Punto de Venta (POS interno):** Registro de ventas con múltiples métodos de pago (efectivo, débito, crédito, transferencia, préstamo y pago mixto).
+* **Gestión de Caja:** Apertura y cierre de caja por sesión de usuario.
+* **Gestión de Inventario:** Control de productos, categorías, proveedores y compras.
+* **Gestión de Clientes:** Registro de clientes, control de deudas y abonos.
+* **Reportes y Kardex:** Visualización de datos y exportación a Excel.
+* **Historial de Transacciones:** Auditoría completa de operaciones del sistema.
+* **Control de Usuarios:** Gestión de roles y permisos personalizados.
 
-- **Configuración de Usuarios**: Solo los roles Master y Administrador pueden crear nuevos usuarios y gestionar las cuentas existentes.
-<hr>
+---
 
-## Tecnologías Utilizadas
+## 🛠️ Stack Técnico
 
-- **Lenguaje**: Java
-- **Frameworks**: Spring Boot, JavaFX
-- **Base de Datos**: MySQL
-- **Interfaz de Usuario**: CSS y JavaFX (con SceneBuilder)
-- **Bibliotecas**:
-    - Apache PDFBox (para generación de PDFs)
-    - Apache POI (para manejo de archivos Excel)
-<hr>
+### Backend / Core
 
-## Requisitos de Instalación
+* Java 21
+* Spring Boot 3
+* Spring Data JPA / JDBC
+* MySQL
+* Lombok
 
-Para ejecutar **VeloPro**, asegúrate de tener instaladas las siguientes herramientas en tu equipo:
+### Interfaz de Usuario
 
-1. **Java JDK 21 o superior**.
-2. **MySQL** para la gestión de base de datos.
-3. **Maven** para gestionar las dependencias del proyecto.
-4. **SceneBuilder** para editar las interfaces gráficas, si es necesario.
-<hr>
+* JavaFX
+* CSS
+* SceneBuilder
 
-### Configuración de MySQL
+### Librerías
 
-1. Crea una base de datos en MySQL con el siguiente script:
-    ```sql
-    CREATE DATABASE velopro;
-    ```
-2. Actualiza los valores de conexión en el archivo `application.properties` en el proyecto para conectar correctamente tu base de datos.
-<hr>
+* Apache PDFBox (generación de PDFs)
+* Apache POI (exportación a Excel)
 
-### Ejecución del Proyecto
+---
 
-1. Clona este repositorio:
-    ```bash
-    git clone https://github.com/tuusuario/VeloPro.git
-    ```
-2. Configura tu entorno de desarrollo y ejecuta el siguiente comando desde la raíz del proyecto:
-    ```bash
-    mvn spring-boot:run
-    ```
+## 🏗️ Arquitectura del Proyecto
 
-El programa iniciará en la vista de login, y el primer usuario por defecto será el "Master" con acceso completo. El username: "ADMIN", contraseña: "ADMINxxxx". Debes cambiar los valores X será el año actual que se ejecutó el programa.  
-<hr>
+El sistema sigue una arquitectura en capas (Layered Architecture), adaptada a una aplicación de escritorio con manejo de estado local y sesiones activas:
 
-## Contribuciones
+1. **Controller Layer:** Manejo de eventos e interacción con la UI (JavaFX)
+2. **Service Layer:** Lógica de negocio y procesamiento de operaciones
+3. **Repository Layer:** Acceso y persistencia de datos
+4. **Model Layer:** DTOs, entidades y enums del sistema
 
-Si deseas contribuir a este proyecto, sigue los siguientes pasos:
+Módulos complementarios:
 
-1. Haz un fork de este repositorio.
-2. Crea una nueva rama (`git checkout -b feature/nueva-funcionalidad`).
-3. Realiza los cambios y haz un commit (`git commit -am 'Agregar nueva funcionalidad'`).
-4. Haz push de la rama (`git push origin feature/nueva-funcionalidad`).
-5. Envía un pull request.
-<hr>
+* **Security:** Gestión de autenticación y control de acceso
+* **Session:** Manejo de sesión activa del usuario
+* **Validation:** Validación de datos y reglas de entrada
+* **Utility:** Funciones auxiliares reutilizables
 
-## Licencia
+Aplicando buenas prácticas de:
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+* Clean Code  
+* Principios SOLID  
+* Separación de responsabilidades  
+
+---
+
+## 📁 Estructura del Proyecto
+
+```bash
+## 📁 
+veloPro/
+│
+├── VeloPro/
+│   ├── controller/
+│   ├── model/
+│   │   ├── dto/
+│   │   ├── entity/
+│   │   └── enums/
+│   ├── repository/
+│   ├── service/
+│   ├── security/
+│   ├── session/
+│   ├── utility/
+│   └── validation/
+│
+├── resources/
+│   ├── CSS/
+│   ├── images/
+│   ├── PDFTemplate/
+│   └── view/
+```
+
+---
+
+## 🔐 Seguridad
+
+* Autenticación mediante login
+* Recuperación de contraseña vía correo
+* Control de acceso basado en roles
+* Validaciones en operaciones críticas:
+
+  * Apertura y cierre de caja
+  * Modificación de datos sensibles
+  * Acciones restringidas según rol
+
+---
+
+## 📸 Capturas del Sistema
+
+![Demo](./src/main/resources/Images/VeLoPro.gif)
+
+---
+
+## ⚡ Beneficios del Sistema
+
+* Operación completamente offline
+* Reducción de errores manuales
+* Control centralizado del negocio
+* Mejora en la trazabilidad de operaciones
+* Adaptabilidad a pequeños comercios
+
+---
+
+## 🛠️ Instalación y Ejecución
+
+### Requisitos
+
+* Java 21
+* MySQL
+* Maven
+
+---
+
+### Configuración de Base de Datos
+
+```sql
+CREATE DATABASE velopro;
+```
+
+Configurar credenciales en:
+
+```
+application.properties
+```
+
+---
+
+### Ejecución
+
+```bash
+git clone https://github.com/tuusuario/VeloPro.git
+cd VeloPro
+mvn spring-boot:run
+```
+
+---
+
+### Credenciales Iniciales
+
+* Usuario: `ADMIN`
+* Contraseña: `ADMINxxxx` (xxxx = año actual)
+
+⚠️ Se recomienda cambiar las credenciales en el primer uso.
+
+---
+
+## 📌 Estado del Proyecto
+
+Proyecto funcional desarrollado como solución real para gestión de negocios en entornos offline.
+
+---
+
+## 👨‍💻 Autor
+
+**Juan Ignacio Clavería** - *Full Stack Developer*
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge\&logo=linkedin\&logoColor=white)](https://www.linkedin.com/in/juan-ignacio-claver%C3%ADa/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-222222?style=for-the-badge\&logo=github\&logoColor=white)](https://juanin92.github.io/)
+
+---
+
+> 💡 **Nota para Reclutadores:**
+> Este proyecto demuestra experiencia en desarrollo de aplicaciones de escritorio con Java, diseño de sistemas offline, implementación de arquitectura en capas y construcción de soluciones orientadas a negocio con múltiples módulos integrados.
